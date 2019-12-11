@@ -26,8 +26,8 @@ class Common(Configuration):
         'django_filters',            # for filtering rest endpoints
 
         # Your apps
-        'tumar.users',
-        'tumar.animals',
+        'tumar.users.apps.UsersConfig',
+        'tumar.animals.apps.AnimalsConfig',
     )
 
     # https://docs.djangoproject.com/en/2.0/topics/http/middleware/
