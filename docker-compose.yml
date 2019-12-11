@@ -5,6 +5,7 @@ services:
     image: mdillon/postgis:9.6
   web:
     restart: always
+    user: 1000:1000
     environment:
       - DJANGO_SECRET_KEY=local
     image: web
