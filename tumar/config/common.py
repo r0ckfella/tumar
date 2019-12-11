@@ -25,7 +25,7 @@ class Common(Configuration):
 
         # Your apps
         'tumar.users',
-
+        'tumar.animals',
     )
 
     # https://docs.djangoproject.com/en/2.0/topics/http/middleware/
