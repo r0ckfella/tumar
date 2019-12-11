@@ -14,6 +14,7 @@ RUN apt-get update -y && \
       python3-gdal \
       curl \
       locales \
+      gettext \
       apt-transport-https && \
     rm -rf /var/lib/apt/lists/*
 

@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.conf.urls.i18n import i18n_patterns
 from django.urls import path, re_path, include, reverse_lazy
 from django.conf.urls.static import static
 from django.contrib import admin
@@ -11,7 +12,7 @@ router = DefaultRouter()
 router.register(r'users', UserViewSet)
 router.register(r'users', UserCreateViewSet)
 
-urlpatterns = [
+urlpatterns = i18n_patterns(
     path('admin/', admin.site.urls),
     path('api/v1/', include(router.urls)),
     path('api-token-auth/', views.obtain_auth_token),
@@ -21,4 +22,6 @@ urlpatterns = [
     # http://www.django-rest-framework.org/api-guide/routers/#defaultrouter
     re_path(r'^$', RedirectView.as_view(url=reverse_lazy('api-root'), permanent=False)),
 
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    # If no prefix is given, use the default language
+    prefix_default_language=False
+) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

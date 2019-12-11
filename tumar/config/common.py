@@ -1,8 +1,10 @@
 import os
+from django.utils.translation import gettext_lazy as _
 from os.path import join
 from distutils.util import strtobool
 import dj_database_url
 from configurations import Configuration
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -32,6 +34,7 @@ class Common(Configuration):
     MIDDLEWARE = (
         'django.middleware.security.SecurityMiddleware',
         'django.contrib.sessions.middleware.SessionMiddleware',
+        'django.middleware.locale.LocaleMiddleware',
         'django.middleware.common.CommonMiddleware',
         'django.middleware.csrf.CsrfViewMiddleware',
         'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -64,9 +67,16 @@ class Common(Configuration):
     APPEND_SLASH = False
     TIME_ZONE = 'Asia/Almaty'
     LANGUAGE_CODE = 'en-us'
+    LANGUAGES = [
+        ('en', _('English')),
+        ('ru', _('Russian')),
+    ]
+    SITE_ROOT = os.path.dirname(os.path.realpath(__name__))
+    LOCALE_PATHS = [os.path.join(SITE_ROOT, 'locale')]
+
     # If you set this to False, Django will make some optimizations so as not
     # to load the internationalization machinery.
-    USE_I18N = False
+    USE_I18N = True
     USE_L10N = True
     USE_TZ = True
     LOGIN_REDIRECT_URL = '/'
@@ -201,3 +211,4 @@ class Common(Configuration):
             'rest_framework.authentication.TokenAuthentication',
         )
     }
+
