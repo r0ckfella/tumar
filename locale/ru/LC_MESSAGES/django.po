@@ -67,7 +67,7 @@ msgstr "Геолокация"
 
 #: tumar/animals/models.py:48
 msgid "Geo-locations"
-msgstr "Геолокация"
+msgstr "Геолокации"
 
 #: tumar/config/common.py:72
 msgid "English"

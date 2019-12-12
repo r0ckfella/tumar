@@ -17,7 +17,9 @@ class Farm(models.Model):
         verbose_name_plural = _('Farms')
 
     def __str__(self):
-        return self.id + ":" + self.name
+        if self.name:
+            return self.name
+        return str(self.id) + ":" + self.name
 
 
 class Animal(models.Model):
@@ -34,6 +36,8 @@ class Animal(models.Model):
         verbose_name_plural = _('Animals')
 
     def __str__(self):
+        if self.cow_code:
+            return self.cow_code
         return self.imei + ":" + self.cow_code
 
 
@@ -43,9 +47,9 @@ class Geolocation(models.Model):
     time = models.DateTimeField(verbose_name=_('time'))
 
     class Meta:
-        unique_together = ('animal', 'position', 'time',)
+        unique_together = ('animal', 'time',)
         verbose_name = _('Geo-location')
         verbose_name_plural = _('Geo-locations')
 
     def __str__(self):
-        return self.animal.imei + " was at " + self.position + " at " + str(self.time)
+        return str(self.animal.imei) + " was at " + str(self.time)
