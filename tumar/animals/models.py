@@ -28,8 +28,8 @@ class Animal(models.Model):
     imei_regex = RegexValidator(regex=r'^\d{15}$',
                                 message=("Imei must be entered in the format: '123456789012345'. "
                                          "Up to 15 digits allowed."))
-    imei = models.CharField(validators=[imei_regex], max_length=15, null=True, blank=True)
-    cow_code = models.CharField(max_length=25, null=True, blank=True, verbose_name=_('Animal ID'))
+    imei = models.CharField(validators=[imei_regex], max_length=15, null=True, blank=True, unique=True)
+    cow_code = models.CharField(max_length=25, null=True, blank=True, verbose_name=_('Animal ID'), unique=True)
 
     class Meta:
         verbose_name = _('Animal')
