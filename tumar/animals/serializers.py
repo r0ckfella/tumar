@@ -36,13 +36,13 @@ class FarmAnimalsSerializer(FarmSerializer):
 class GeolocationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Geolocation
-        fields = ('position', 'time',)
-        read_only_fields = ('position', 'time',)
+        fields = ('time', 'position',)
+        read_only_fields = ('time', 'position',)
 
 
 class GeolocationAnimalSerializer(GeolocationSerializer):
     cow_code = serializers.CharField(source='animal.cow_code')
 
     class Meta(GeolocationSerializer.Meta):
-        fields = GeolocationSerializer.Meta.fields + ('cow_code',)
-        read_only_fields = GeolocationSerializer.Meta.read_only_fields + ('cow_code',)
+        fields = ('cow_code',) + GeolocationSerializer.Meta.fields
+        read_only_fields = ('cow_code',) + GeolocationSerializer.Meta.read_only_fields
