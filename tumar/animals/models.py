@@ -6,6 +6,8 @@ from django.utils.translation import gettext_lazy as _
 
 
 # Create your models here.
+from .managers import GeolocationQuerySet
+
 
 class Farm(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -45,6 +47,8 @@ class Geolocation(models.Model):
     animal = models.ForeignKey(Animal, on_delete=models.CASCADE, related_name="geolocation", verbose_name=_('Animal'))
     position = models.PointField(srid=3857, verbose_name=_('position'))
     time = models.DateTimeField(verbose_name=_('time'))
+
+    geolocations = GeolocationQuerySet.as_manager()
 
     class Meta:
         unique_together = ('animal', 'time',)

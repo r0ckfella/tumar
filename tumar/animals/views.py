@@ -20,7 +20,7 @@ class AnimalFarmViewSet(viewsets.ReadOnlyModelViewSet):
     """
     Lists and retrieves animals and their farm
     """
-    queryset = Animal.objects.all()
+    queryset = Animal.objects.all().order_by('imei')
     serializer_class = AnimalFarmSerializer
     permission_classes = (AllowAny,)
 
@@ -29,6 +29,6 @@ class GeolocationAnimalViewSet(viewsets.ReadOnlyModelViewSet):
     """
     Lists and retrieves geolocations and their animal
     """
-    queryset = Geolocation.objects.all().order_by('id')
+    queryset = Geolocation.geolocations.all().order_by('time')
     serializer_class = GeolocationAnimalSerializer
     permission_classes = (AllowAny,)
