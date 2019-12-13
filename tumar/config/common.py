@@ -66,7 +66,7 @@ class Common(Configuration):
     # General
     APPEND_SLASH = False
     TIME_ZONE = 'Asia/Almaty'
-    LANGUAGE_CODE = 'en-us'
+    LANGUAGE_CODE = 'ru'
     LANGUAGES = [
         ('en', _('English')),
         ('ru', _('Russian')),

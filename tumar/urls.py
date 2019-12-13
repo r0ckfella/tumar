@@ -7,7 +7,7 @@ from django.views.generic.base import RedirectView
 from rest_framework.authtoken import views
 from rest_framework.routers import DefaultRouter
 
-from tumar.animals.views import FarmViewSet, GeolocationAnimalViewSet, AnimalFarmViewSet
+from .animals.views import FarmViewSet, GeolocationAnimalViewSet, AnimalFarmViewSet, GetAnimalPath
 from .users.views import UserViewSet, UserCreateViewSet
 
 router = DefaultRouter()
@@ -19,7 +19,10 @@ router.register(r'geolocations', GeolocationAnimalViewSet)
 
 urlpatterns = i18n_patterns(
     path('admin/', admin.site.urls),
-    path('api/v1/', include(router.urls)),
+
+    # Custom API endpoints
+    path('api/v1/', include([path('get-path/', GetAnimalPath.as_view(), name='get_path'),
+                             ] + router.urls)),
     path('api-token-auth/', views.obtain_auth_token),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 

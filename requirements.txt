@@ -18,7 +18,7 @@ django_unique_upload==0.2.1
 djangorestframework==3.9.1
 Markdown==3.0.1
 django-filter==2.1.0
-djangorestframework-gis==0.15
+
 
 # Developer Tools
 ipdb==0.11
@@ -40,4 +40,5 @@ boto3==1.9.93
 # Additional Added Packages
 requests==2.22.0
 
-
+# GeoSpatial packages
+djangorestframework-gis==0.15
