@@ -1,17 +1,17 @@
-from django.contrib.gis import admin
-from django.contrib.auth.models import Group
-from django.contrib.gis.geos import Point
+import json
+from datetime import datetime as dt
+
+import django.utils.timezone as tz
+import pytz
+import requests
 from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth.models import Group
+from django.contrib.gis import admin
+from django.contrib.gis.geos import Point
 from django.http import HttpResponseRedirect
 from django.urls import path
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
-
-import requests
-import json
-import pytz
-import django.utils.timezone as tz
-from datetime import datetime as dt
 
 # Register your models here.
 from .models import Farm, Animal, Geolocation

@@ -1,15 +1,15 @@
 import os
-from django.utils.translation import gettext_lazy as _
-from os.path import join
 from distutils.util import strtobool
+from os.path import join
+
 import dj_database_url
 from configurations import Configuration
+from django.utils.translation import gettext_lazy as _
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 class Common(Configuration):
-
     INSTALLED_APPS = (
         'django.contrib.admin',
         'django.contrib.auth',
@@ -19,12 +19,11 @@ class Common(Configuration):
         'django.contrib.staticfiles',
         'django.contrib.gis',  # geodjango support
 
-
         # Third party apps
-        'rest_framework',            # utilities for rest apis
+        'rest_framework',  # utilities for rest apis
         'rest_framework_gis',
         'rest_framework.authtoken',  # token authentication
-        'django_filters',            # for filtering rest endpoints
+        'django_filters',  # for filtering rest endpoints
 
         # Your apps
         'tumar.users.apps.UsersConfig',
@@ -212,4 +211,3 @@ class Common(Configuration):
             'rest_framework.authentication.TokenAuthentication',
         )
     }
-

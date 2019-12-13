@@ -1,9 +1,8 @@
 import datetime
+import random
 from decimal import Decimal
 
 import factory.fuzzy
-import random
-
 from django.contrib.gis.geos import Point
 from faker import Factory as FakerFactory
 from pytz import timezone
