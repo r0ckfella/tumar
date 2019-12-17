@@ -73,13 +73,13 @@ class GeolocationAdmin(admin.OSMGeoAdmin):
                                                 float(location['latitude']),
                                                 srid=4326),
                                  time=tz.make_aware(my_date, my_tz))
-                if not Geolocation.objects.filter(**arguments).exists():
-                    Geolocation.objects.create(**arguments)
+                if not Geolocation.geolocations.filter(**arguments).exists():
+                    Geolocation.geolocations.create(**arguments)
             except Animal.DoesNotExist:
                 print("New animal is added, and the corresponding location too.")
                 the_farm = Farm.objects.get(key=payload['key'])
                 the_animal = Animal.objects.create(farm=the_farm, imei=location['imei'], cow_code=location['cow_code'])
-                Geolocation.objects.create(animal=the_animal,
+                Geolocation.geolocations.create(animal=the_animal,
                                            position=Point(float(location['longitude']), float(location['latitude']),
                                                           srid=4326),
                                            time=tz.make_aware(my_date, my_tz))
