@@ -1,13 +1,10 @@
-from datetime import datetime as dt
-
-import django.utils.timezone as tz
-import pytz
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from . import utils
+from .filters import AnimalPathFilter
 from .models import Farm, Animal, Geolocation
 from .serializers import FarmSerializer, AnimalFarmSerializer, GeolocationAnimalSerializer
 
@@ -36,7 +33,7 @@ class GeolocationAnimalViewSet(viewsets.ReadOnlyModelViewSet):
     """
     Lists and retrieves geolocations and their animal
     """
-    queryset = Geolocation.geolocations.all().order_by('time')
+    queryset = Geolocation.geolocations.all().order_by('-time')
     serializer_class = GeolocationAnimalSerializer
     permission_classes = (AllowAny,)
 
@@ -47,20 +44,23 @@ class GetAnimalPath(APIView):
     """
     permission_classes = (AllowAny,)
 
-    def post(self, request):
+    def get(self, request):
         """
         Return a Linestring(GeoJSON) of the path.
+
+        url example: /api/v1/get-path/?imei=869270046995022&time_before=2019-12-03 00:00:00
         """
-        my_tz = pytz.timezone('Asia/Almaty')
-        start_time = dt.strptime(request.data['start_time'], "%Y-%m-%d %H:%M:%S")
-        start_time_aware = tz.make_aware(start_time, my_tz)
-        end_time = dt.strptime(request.data['end_time'], "%Y-%m-%d %H:%M:%S")
-        end_time_aware = tz.make_aware(end_time, my_tz)
+        valid_query_params = ('imei', 'time_after', 'time_before',)
+        queryset = Geolocation.geolocations.none()  # return empty QuerySet if there are no query params
 
-        geolocations_qs = Geolocation.geolocations.get_path(animal_imei=request.data['animal_imei'],
-                                                            start_time=start_time_aware,
-                                                            end_time=end_time_aware)
+        if request.GET and all(param in valid_query_params for param in tuple(request.query_params.keys())):
+            queryset = Geolocation.geolocations.all().order_by(
+                'time')  # return all objects if query params are present and valid
+        else:
+            return Response({"valid query params": valid_query_params}, status=status.HTTP_404_NOT_FOUND)
 
-        linestring = utils.get_linestring_from_geolocations(geolocations_qs)
+        filtered_data = AnimalPathFilter(request.GET, queryset=queryset)
+
+        linestring = utils.get_linestring_from_geolocations(filtered_data.qs)
 
         return Response(linestring.geojson)  # Any Python primitive is ok, linestring.geojson is str
