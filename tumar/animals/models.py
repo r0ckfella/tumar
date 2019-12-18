@@ -11,17 +11,16 @@ from .managers import GeolocationQuerySet
 
 class Farm(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    key = models.CharField(max_length=32)
-    name = models.CharField(max_length=50, null=True, blank=True, verbose_name=_('name'))
+    iin = models.CharField(max_length=32, unique=True, verbose_name=_('IIN/BIN'))
+    legal_person = models.CharField(max_length=50, null=True, blank=True, verbose_name=_('Legal Person'))
+    cadastre_num = models.CharField(max_length=25, null=True, blank=True, verbose_name=_('Cadastre Number'))
 
     class Meta:
         verbose_name = _('Farm')
         verbose_name_plural = _('Farms')
 
     def __str__(self):
-        if self.name:
-            return self.name
-        return str(self.id) + ":" + self.name
+        return self.iin + ":" + self.legal_person
 
 
 class Animal(models.Model):
