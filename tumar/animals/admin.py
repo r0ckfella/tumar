@@ -31,7 +31,7 @@ class FarmAdmin(admin.ModelAdmin):
 class GeolocationAdmin(admin.OSMGeoAdmin):
     list_display = ('animal', 'time')
     date_hierarchy = 'time'
-    list_filter = ('time',)
+    list_filter = ('time', 'animal',)
     default_lat = 6256619
     default_lon = 7470047
     default_zoom = 4

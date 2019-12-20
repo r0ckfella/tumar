@@ -41,7 +41,7 @@ class Animal(models.Model):
     def __str__(self):
         if self.cow_code:
             return self.cow_code
-        return self.imei + ":" + self.cow_code
+        return self.imei
 
 
 class Geolocation(models.Model):
