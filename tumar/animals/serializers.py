@@ -6,8 +6,8 @@ from .models import Farm, Animal, Geolocation
 class AnimalSerializer(serializers.ModelSerializer):
     class Meta:
         model = Animal
-        fields = ('imei', 'cow_code',)
-        read_only_fields = ('imei', 'cow_code',)
+        fields = ('id', 'imei', 'cow_code',)
+        read_only_fields = ('id', 'imei', 'cow_code',)
 
 
 class AnimalFarmSerializer(AnimalSerializer):
@@ -21,8 +21,8 @@ class AnimalFarmSerializer(AnimalSerializer):
 class FarmSerializer(serializers.ModelSerializer):
     class Meta:
         model = Farm
-        fields = ('key', 'name',)
-        read_only_fields = ('key', 'name',)
+        fields = ('id', 'key', 'name',)
+        read_only_fields = ('id', 'key', 'name',)
 
 
 class FarmAnimalsSerializer(FarmSerializer):
@@ -36,8 +36,8 @@ class FarmAnimalsSerializer(FarmSerializer):
 class GeolocationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Geolocation
-        fields = ('time', 'position',)
-        read_only_fields = ('time', 'position',)
+        fields = ('id', 'time', 'position',)
+        read_only_fields = ('id', 'time', 'position',)
 
 
 class GeolocationAnimalSerializer(GeolocationSerializer):
