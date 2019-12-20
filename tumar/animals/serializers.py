@@ -11,18 +11,18 @@ class AnimalSerializer(serializers.ModelSerializer):
 
 
 class AnimalFarmSerializer(AnimalSerializer):
-    farm_name = serializers.CharField(source='farm.name')
+    farm_iin = serializers.CharField(source='farm.iin')
 
     class Meta(AnimalSerializer.Meta):
-        fields = AnimalSerializer.Meta.fields + ('farm_name',)
-        read_only_fields = AnimalSerializer.Meta.read_only_fields + ('farm_name',)
+        fields = AnimalSerializer.Meta.fields + ('farm_iin',)
+        read_only_fields = AnimalSerializer.Meta.read_only_fields + ('farm_iin',)
 
 
 class FarmSerializer(serializers.ModelSerializer):
     class Meta:
         model = Farm
-        fields = ('id', 'key', 'name',)
-        read_only_fields = ('id', 'key', 'name',)
+        fields = ('id', 'iin', 'legal_person',)
+        read_only_fields = ('id', 'iin', 'legal_person',)
 
 
 class FarmAnimalsSerializer(FarmSerializer):

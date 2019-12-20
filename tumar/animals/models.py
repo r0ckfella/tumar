@@ -20,7 +20,9 @@ class Farm(models.Model):
         verbose_name_plural = _('Farms')
 
     def __str__(self):
-        return self.iin + ":" + self.legal_person
+        if self.iin and self.legal_person:
+            return self.iin + ":" + self.legal_person
+        return self.id
 
 
 class Animal(models.Model):
