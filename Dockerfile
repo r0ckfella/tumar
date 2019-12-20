@@ -32,6 +32,3 @@ WORKDIR code
 EXPOSE 8088
 
 RUN adduser --disabled-password --gecos '' myuser
-# CMD ["python3", "-u", "manage.py", "migrate"]
-# CMD ["python3", "-u", "manage.py", "collectstatic", "--noinput"]
-#CMD ["python3", "-u", "manage.py", "runserver", "[::]:8088"]

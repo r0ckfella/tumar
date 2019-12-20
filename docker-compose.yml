@@ -42,13 +42,6 @@ services:
       - "DJANGO_SECRET_KEY=production"
       - "DJANGO_CONFIGURATION=Production"
       - "DJANGO_SETTINGS_MODULE=tumar.config.production"
-#    labels:
-#     - "traefik.enable=true"
-#      - "traefik.port=8088"
-#      - "traefik.backend=arys"
-#      - "traefik.frontend.rule=Host:${DOMAIN_NAME}"
-#      - "traefik.docker.network=arys"
-#      - "traefik.frontend.passHostHeader=true"
 
 networks:
   arys:
