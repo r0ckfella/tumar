@@ -16,7 +16,7 @@ services:
       - "arys"
     labels:
       - "traefik.frontend.rule=Host:${DOMAIN_NAME}"
-    command: /bin/bash -c "envsubst '$${DOMAIN_NAME} $${PROXY_PASS}' < /etc/nginx/conf.d/templates/conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
+    command: /bin/bash -c "envsubst '$${DOMAIN_NAME} $${PROXY_PASS}' < /etc/nginx/conf.d/templates/arys.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
 
   app:
     image: "hub.egistic.kz/tumar:latest"
