@@ -1,3 +1,4 @@
+from django_filters import rest_framework as filters
 from rest_framework import viewsets, status
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -33,9 +34,11 @@ class GeolocationAnimalViewSet(viewsets.ReadOnlyModelViewSet):
     """
     Lists and retrieves geolocations and their animal
     """
-    queryset = Geolocation.geolocations.all().order_by('-time')
+    queryset = Geolocation.geolocations.all().order_by('animal__imei', '-time')
     serializer_class = GeolocationAnimalSerializer
     permission_classes = (AllowAny,)
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_fields = ('animal__imei',)
 
 
 class GetAnimalPath(APIView):

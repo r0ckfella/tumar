@@ -41,8 +41,9 @@ class GeolocationSerializer(serializers.ModelSerializer):
 
 
 class GeolocationAnimalSerializer(GeolocationSerializer):
+    imei = serializers.CharField(source='animal.imei')
     cow_code = serializers.CharField(source='animal.cow_code')
 
     class Meta(GeolocationSerializer.Meta):
-        fields = ('cow_code',) + GeolocationSerializer.Meta.fields
-        read_only_fields = ('cow_code',) + GeolocationSerializer.Meta.read_only_fields
+        fields = ('cow_code', 'imei',) + GeolocationSerializer.Meta.fields
+        read_only_fields = ('cow_code', 'imei',) + GeolocationSerializer.Meta.read_only_fields
