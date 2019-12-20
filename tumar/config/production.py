@@ -1,5 +1,7 @@
 import os
 
+import dj_database_url
+
 from .common import Common
 
 
@@ -32,3 +34,11 @@ class Production(Common):
     #     'Cache-Control': 'max-age=86400, s-maxage=86400, must-revalidate',
     # }
     STATIC_ROOT = '/static/'
+
+    # Postgis
+    DATABASES = {
+        'default': dj_database_url.config(
+            default='postgis://docker:docker@db_default:5432/tumar',
+            conn_max_age=int(os.getenv('POSTGRES_CONN_MAX_AGE', 600))
+        )
+    }
