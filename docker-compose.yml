@@ -1,32 +1,57 @@
-version: '2'
-
+version: "3"
 services:
-  postgres:
-    image: mdillon/postgis:9.6
+
   web:
-    restart: always
-    user: 1000:1000
+    image: "hub.egistic.kz/nginx:latest"
+    restart: "always"
+    expose:
+      - "80"
     environment:
-      - DJANGO_SECRET_KEY=local
-      - DJANGO_CONFIGURATION=Local
-      - DJANGO_SETTINGS_MODULE=tumar.config.local
-    image: web
-    build: ./
+      - "DOMAIN_NAME=${DOMAIN_NAME}"
+      - "PROXY_PASS=http://app:80"
+    volumes:
+      - "../nginx/conf.d:/etc/nginx/conf.d/templates"
+      - /static:/static
+    networks:
+      - "arys"
+    labels:
+      - "traefik.frontend.rule=Host:${DOMAIN_NAME}"
+    command: /bin/bash -c "envsubst '$${DOMAIN_NAME} $${PROXY_PASS}' < /etc/nginx/conf.d/templates/conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
+
+  app:
+    image: "hub.egistic.kz/tumar:latest"
+    restart: "always"
+    expose:
+      - "80"
+    networks:
+      - "arys"
+      - "postgis"
+    volumes:
+      - ".:/code"
+      - /static:/static
     command: >
-      bash -c "python wait_for_postgres.py &&
-               ./manage.py migrate &&
-               ./manage.py runserver 0.0.0.0:8000"
-    volumes:
-      - ./:/code
-    ports:
-      - "8000:8000"
-    depends_on:
-      - postgres
-  documentation:
-    restart: always
-    build: ./
-    command: "mkdocs serve"
-    volumes:
-      - ./:/code
-    ports:
-      - "8001:8001"
+      bash -c "./manage.py migrate &&
+               ./manage.py compilemessages &&
+               ./manage.py runserver 0.0.0.0:80"
+    environment:
+      - "DEFAULT_DB_HOST=db_default"
+      - "DEFAULT_DB_PORT=5432"
+      - "DEFAULT_DB_NAME=tumar"
+      - "DEFAULT_DB_USER=docker"
+      - "DEFAULT_DB_PASSWORD=docker"
+      - "DJANGO_SECRET_KEY=production"
+      - "DJANGO_CONFIGURATION=Production"
+      - "DJANGO_SETTINGS_MODULE=tumar.config.production"
+#    labels:
+#     - "traefik.enable=true"
+#      - "traefik.port=8088"
+#      - "traefik.backend=arys"
+#      - "traefik.frontend.rule=Host:${DOMAIN_NAME}"
+#      - "traefik.docker.network=arys"
+#      - "traefik.frontend.passHostHeader=true"
+
+networks:
+  arys:
+    external: true
+  postgis:
+    external: true

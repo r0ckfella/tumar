@@ -1,9 +1,7 @@
 FROM python:3.6
-ENV PYTHONUNBUFFERED 1
 
-# Update and install packages recomended by Django documentation:
-# https://docs.djangoproject.com/ja/1.9/ref/contrib/gis/install/geolibs/
-# and extra needed packages
+WORKDIR /usr/src/app
+
 RUN apt-get update -y && \
     apt-get install --auto-remove -y \
       libgeos-dev \
@@ -13,6 +11,8 @@ RUN apt-get update -y && \
       libgdal-dev \
       python3-gdal \
       curl \
+      mc \
+      nano\
       locales \
       gettext \
       apt-transport-https && \
@@ -29,9 +29,9 @@ RUN pip install -r requirements.txt
 COPY . code
 WORKDIR code
 
-EXPOSE 8000
+EXPOSE 8088
 
-# Migrates the database, uploads staticfiles, and runs the production server
-CMD ./manage.py migrate && \
-    ./manage.py collectstatic --noinput && \
-    newrelic-admin run-program gunicorn --bind 0.0.0.0:$PORT --access-logfile - tumar.wsgi:application
+RUN adduser --disabled-password --gecos '' myuser
+# CMD ["python3", "-u", "manage.py", "migrate"]
+# CMD ["python3", "-u", "manage.py", "collectstatic", "--noinput"]
+#CMD ["python3", "-u", "manage.py", "runserver", "[::]:8088"]
