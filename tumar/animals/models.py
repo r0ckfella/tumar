@@ -22,7 +22,7 @@ class Farm(models.Model):
     def __str__(self):
         if self.iin and self.legal_person:
             return self.iin + ":" + self.legal_person
-        return self.id
+        return str(self.id)
 
 
 class Animal(models.Model):
