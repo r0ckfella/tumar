@@ -57,7 +57,7 @@ class Common(Configuration):
     # Postgres
     DATABASES = {
         'default': dj_database_url.config(
-            default='postgis://postgres:@postgres:5432/postgres',
+            default='postgis://postgres:01470258@postgres:5432/postgres',
             conn_max_age=int(os.getenv('POSTGRES_CONN_MAX_AGE', 600))
         )
     }
@@ -211,3 +211,5 @@ class Common(Configuration):
             'rest_framework.authentication.TokenAuthentication',
         )
     }
+
+    AUTHENTICATION_BACKENDS = ('tumar.users.backends.PhoneNumberOrEmailBackend',)

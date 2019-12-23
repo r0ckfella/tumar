@@ -3,6 +3,8 @@ version: '2'
 services:
   postgres:
     image: mdillon/postgis:9.6
+    environment:
+      - POSTGRES_PASSWORD=01470258
   web:
     restart: always
     user: 1000:1000
