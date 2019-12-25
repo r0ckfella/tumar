@@ -7,7 +7,8 @@ from django.views.generic.base import RedirectView
 from rest_framework.authtoken import views
 from rest_framework.routers import DefaultRouter
 
-from .animals.views import FarmViewSet, GeolocationAnimalViewSet, AnimalFarmViewSet, GetAnimalPath
+from .animals.views import FarmViewSet, GeolocationAnimalViewSet, AnimalFarmViewSet, GetAnimalPath, \
+    MachineryFarmViewSet, EventAnimalViewSet
 from .users.views import UserViewSet, UserCreateViewSet
 
 router = DefaultRouter()
@@ -16,6 +17,8 @@ router.register(r'users', UserCreateViewSet)
 router.register(r'farms', FarmViewSet)
 router.register(r'animals', AnimalFarmViewSet)
 router.register(r'geolocations', GeolocationAnimalViewSet)
+router.register(r'machinery', MachineryFarmViewSet)
+router.register(r'events', EventAnimalViewSet)
 
 urlpatterns = i18n_patterns(
     path('admin/', admin.site.urls),

@@ -211,5 +211,3 @@ class Common(Configuration):
             'rest_framework.authentication.TokenAuthentication',
         )
     }
-
-    AUTHENTICATION_BACKENDS = ('tumar.users.backends.PhoneNumberOrEmailBackend',)
