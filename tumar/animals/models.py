@@ -61,7 +61,7 @@ class Animal(models.Model):
     imei = models.CharField(validators=[imei_regex], max_length=15, null=True, blank=True, unique=True)
     tag_number = models.CharField(max_length=25, null=True, verbose_name=_('Animal tag number'), unique=True)
     name = models.CharField(max_length=30, null=True, blank=True, verbose_name=_('Animal name'))
-    updated = models.DateTimeField(auto_now=True)
+    updated = models.DateTimeField(default=timezone.now)
     imsi = models.CharField(max_length=30, null=True, blank=True, verbose_name=_('IMSI number'))
     battery_charge = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name=_('Battery charge'))
 
