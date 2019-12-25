@@ -28,6 +28,7 @@ class FarmAdmin(admin.OSMGeoAdmin):
     default_lat = 6256619
     default_lon = 7470047
     default_zoom = 4
+    modifiable = False
 
 
 @admin.register(Geolocation)
@@ -104,14 +105,15 @@ class MachineryAdmin(admin.ModelAdmin):
 
 @admin.register(Animal)
 class AnimalAdmin(admin.ModelAdmin):
-    list_display = ('imei', 'tag_number', 'farm')
+    list_display = ('imei', 'tag_number', 'name', 'farm',)
     list_filter = ('farm',)
 
 
 @admin.register(Event)
 class EventAdmin(admin.ModelAdmin):
     list_display = ('title', 'time', 'animal',)
-    list_filter = ('animal', 'time', 'completed',)
+    list_filter = ('time', 'completed', 'animal',)
+    date_hierarchy = 'time'
 
 
 admin.site.unregister(Group)

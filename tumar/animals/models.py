@@ -24,7 +24,7 @@ class Farm(models.Model):
     requisites = models.CharField(max_length=80, null=True, blank=True, verbose_name=_('Requisites'))
     breeding_stock = models.PositiveIntegerField(blank=True, default=0, verbose_name=_('Breeding stock'))
     calves_number = models.PositiveIntegerField(blank=True, default=0, verbose_name=_('Number of calves'))
-    cadastre_land = models.GeometryField(srid=3857, blank=True, null=True, verbose_name=_('Personal land'))
+    cadastre_land = models.GeometryCollectionField(srid=3857, blank=True, null=True, verbose_name=_('Personal land'))
 
     class Meta:
         verbose_name = _('Farm')
@@ -70,10 +70,11 @@ class Animal(models.Model):
         verbose_name_plural = _('Animals')
 
     def __str__(self):
-        if self.tag_number:
-            return self.tag_number
         if self.name:
             return self.name
+        if self.tag_number:
+            return self.tag_number
+
         return self.imei
 
     @property
