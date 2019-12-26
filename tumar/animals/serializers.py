@@ -1,28 +1,25 @@
 from rest_framework import serializers
 
-from .models import Farm, Animal, Geolocation
+from .models import Farm, Animal, Geolocation, Machinery, Event
 
 
 class AnimalSerializer(serializers.ModelSerializer):
     class Meta:
         model = Animal
-        fields = ('id', 'imei', 'cow_code',)
-        read_only_fields = ('id', 'imei', 'cow_code',)
+        fields = ('id', 'farm', 'imei', 'tag_number', 'name', 'updated', 'imsi', 'battery_charge', 'status',)
 
 
-class AnimalFarmSerializer(AnimalSerializer):
-    farm_iin = serializers.CharField(source='farm.iin')
-
-    class Meta(AnimalSerializer.Meta):
-        fields = AnimalSerializer.Meta.fields + ('farm_iin',)
-        read_only_fields = AnimalSerializer.Meta.read_only_fields + ('farm_iin',)
+class MachinerySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Machinery
+        fields = ('id', 'farm', 'type', 'machinery_code',)
 
 
 class FarmSerializer(serializers.ModelSerializer):
     class Meta:
         model = Farm
-        fields = ('id', 'iin', 'legal_person',)
-        read_only_fields = ('id', 'iin', 'legal_person',)
+        fields = ('id', 'user', 'iin', 'legal_person', 'requisites', 'breeding_stock', 'calves_number', 'cadastres',
+                  'cadastre_land',)
 
 
 class FarmAnimalsSerializer(FarmSerializer):
@@ -30,20 +27,31 @@ class FarmAnimalsSerializer(FarmSerializer):
 
     class Meta(FarmSerializer.Meta):
         fields = FarmSerializer.Meta.fields + ('animals',)
-        read_only_fields = FarmSerializer.Meta.read_only_fields + ('animals',)
 
 
 class GeolocationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Geolocation
-        fields = ('id', 'time', 'position',)
-        read_only_fields = ('id', 'time', 'position',)
+        fields = ('id', 'position', 'time', 'animal',)
 
 
 class GeolocationAnimalSerializer(GeolocationSerializer):
     imei = serializers.CharField(source='animal.imei')
-    cow_code = serializers.CharField(source='animal.cow_code')
+    tag_number = serializers.CharField(source='animal.tag_number')
 
     class Meta(GeolocationSerializer.Meta):
-        fields = ('cow_code', 'imei',) + GeolocationSerializer.Meta.fields
-        read_only_fields = ('cow_code', 'imei',) + GeolocationSerializer.Meta.read_only_fields
+        fields = GeolocationSerializer.Meta.fields + ('tag_number', 'imei',)
+
+
+class EventSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Event
+        fields = ('id', 'title', 'time', 'description', 'completed', 'animal',)
+
+
+class EventAnimalSerializer(EventSerializer):
+    imei = serializers.CharField(source='animal.imei')
+    tag_number = serializers.CharField(source='animal.tag_number')
+
+    class Meta(EventSerializer.Meta):
+        fields = EventSerializer.Meta.fields + ('tag_number', 'imei',)

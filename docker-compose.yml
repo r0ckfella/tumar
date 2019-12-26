@@ -1,6 +1,5 @@
 version: "3"
 services:
-
   web:
     image: "hub.egistic.kz/nginx:latest"
     restart: "always"
