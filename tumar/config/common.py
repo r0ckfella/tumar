@@ -211,3 +211,7 @@ class Common(Configuration):
             'rest_framework.authentication.TokenAuthentication',
         )
     }
+
+    CRON_CLASSES = [
+        "tumar.animals.scheduling.GeolocationsDownloadCronJob",
+    ]
