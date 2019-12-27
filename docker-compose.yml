@@ -5,6 +5,10 @@ services:
     image: mdillon/postgis:9.6
     environment:
       - POSTGRES_PASSWORD=01470258
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
   web:
     restart: always
     user: 1000:1000
@@ -24,6 +28,7 @@ services:
       - "8000:8000"
     depends_on:
       - postgres
+      - redis
   documentation:
     restart: always
     build: ./
