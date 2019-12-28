@@ -10,6 +10,7 @@ from faker import Factory as FakerFactory
 from pytz import timezone
 
 from ..models import Farm, Animal, Geolocation, Event, Machinery
+from ...users.test.factories import UserFactory
 
 User = get_user_model()
 faker = FakerFactory.create()
@@ -21,10 +22,10 @@ faker = FakerFactory.create()
 class FarmFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Farm
-        django_get_or_create = ('id', 'iin', 'legal_person',)
+        django_get_or_create = ('iin',)
 
-    user = factory.Iterator(User.objects.all())
     id = factory.Faker('uuid4')
+    user = factory.Iterator(User.objects.all())
     iin = factory.Faker('numerify', text="#############")
     legal_person = factory.Faker('name')
     requisites = ''
@@ -55,7 +56,7 @@ class FarmFactory(factory.django.DjangoModelFactory):
 class AnimalFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Animal
-        django_get_or_create = ('id', 'tag_number', 'imei',)
+        django_get_or_create = ('tag_number', 'imei',)
 
     id = factory.Faker('uuid4')
     farm = factory.Iterator(Farm.objects.all())
@@ -126,7 +127,7 @@ class EventFactory(factory.django.DjangoModelFactory):
 class MachineryFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Machinery
-        django_get_or_create = ('id', 'machinery_code',)
+        django_get_or_create = ('machinery_code',)
 
     id = factory.Faker('uuid4')
     farm = factory.Iterator(Farm.objects.all())

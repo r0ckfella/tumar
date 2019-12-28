@@ -1,5 +1,11 @@
 version: "3"
 services:
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+
   web:
     image: "hub.egistic.kz/nginx:latest"
     restart: "always"
@@ -28,6 +34,8 @@ services:
     volumes:
       - ".:/code"
       - /static:/static
+    depends_on:
+      - redis
     command: >
       bash -c "./manage.py migrate &&
                ./manage.py compilemessages &&

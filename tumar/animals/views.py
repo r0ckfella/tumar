@@ -26,6 +26,8 @@ class AnimalFarmViewSet(viewsets.ReadOnlyModelViewSet):
     """
     queryset = Animal.objects.all().order_by('imei')
     serializer_class = AnimalSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_fields = ('imei',)
 
 
 class MachineryFarmViewSet(viewsets.ReadOnlyModelViewSet):
@@ -43,7 +45,7 @@ class GeolocationAnimalViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Geolocation.geolocations.all().order_by('animal__imei', '-time')
     serializer_class = GeolocationAnimalSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filterset_fields = ('animal__imei',)
+    filterset_fields = ('animal__imei', 'time',)
 
 
 class EventAnimalViewSet(viewsets.ReadOnlyModelViewSet):

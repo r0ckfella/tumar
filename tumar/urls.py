@@ -9,7 +9,7 @@ from rest_framework.routers import DefaultRouter
 
 from .animals.views import FarmViewSet, GeolocationAnimalViewSet, AnimalFarmViewSet, GetAnimalPath, \
     MachineryFarmViewSet, EventAnimalViewSet
-from .users.views import UserViewSet, UserCreateViewSet
+from .users.views import UserViewSet, UserCreateViewSet, CustomAuthToken
 
 router = DefaultRouter()
 router.register(r'users', UserViewSet)
@@ -26,7 +26,7 @@ urlpatterns = i18n_patterns(
     # Custom API endpoints
     path('api/v1/', include([path('get-path/', GetAnimalPath.as_view(), name='get_path'),
                              ] + router.urls)),
-    path('api-token-auth/', views.obtain_auth_token),
+    path('api-token-auth/', CustomAuthToken.as_view()),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 
     # the 'api-root' from django rest-frameworks default router

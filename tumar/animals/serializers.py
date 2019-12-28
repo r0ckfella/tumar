@@ -36,11 +36,10 @@ class GeolocationSerializer(serializers.ModelSerializer):
 
 
 class GeolocationAnimalSerializer(GeolocationSerializer):
-    imei = serializers.CharField(source='animal.imei')
-    tag_number = serializers.CharField(source='animal.tag_number')
+    animal = AnimalSerializer()
 
     class Meta(GeolocationSerializer.Meta):
-        fields = GeolocationSerializer.Meta.fields + ('tag_number', 'imei',)
+        fields = GeolocationSerializer.Meta.fields
 
 
 class EventSerializer(serializers.ModelSerializer):

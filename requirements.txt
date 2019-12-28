@@ -40,5 +40,9 @@ boto3==1.9.93
 # Additional Added Packages
 requests==2.22.0
 
+# Async/Scheduling
+celery==4.4.0
+redis==3.3.11
+
 # GeoSpatial packages
 djangorestframework-gis==0.15
