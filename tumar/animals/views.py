@@ -26,6 +26,8 @@ class AnimalFarmViewSet(viewsets.ReadOnlyModelViewSet):
     """
     queryset = Animal.objects.all().order_by('imei')
     serializer_class = AnimalSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_fields = ('imei',)
 
 
 class MachineryFarmViewSet(viewsets.ReadOnlyModelViewSet):
