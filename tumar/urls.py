@@ -7,8 +7,8 @@ from django.views.generic.base import RedirectView
 from rest_framework.authtoken import views
 from rest_framework.routers import DefaultRouter
 
-from .animals.views import FarmViewSet, GeolocationAnimalViewSet, AnimalFarmViewSet, GetAnimalPath, \
-    MachineryFarmViewSet, EventAnimalViewSet
+from .animals.views import FarmViewSet, GeolocationAnimalViewSet, AnimalFarmViewSet, GetAnimalPathView, \
+    MachineryFarmViewSet, EventAnimalViewSet, LatestGroupedGeolocationsView
 from .users.views import UserViewSet, UserCreateViewSet, CustomAuthToken
 
 router = DefaultRouter()
@@ -24,7 +24,9 @@ urlpatterns = i18n_patterns(
     path('admin/', admin.site.urls),
 
     # Custom API endpoints
-    path('api/v1/', include([path('get-path/', GetAnimalPath.as_view(), name='get_path'),
+    path('api/v1/', include([path('get-path/', GetAnimalPathView.as_view(), name='get_path'),
+                             path('latest-geolocs/', LatestGroupedGeolocationsView.as_view(),
+                                  name='latest_grouped_geolocations'),
                              ] + router.urls)),
     path('api-token-auth/', CustomAuthToken.as_view()),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),

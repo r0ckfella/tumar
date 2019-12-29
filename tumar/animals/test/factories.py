@@ -85,11 +85,16 @@ class GeolocationFactory(factory.django.DjangoModelFactory):
         model = Geolocation
 
     animal = factory.Iterator(Animal.objects.all())
-    time = factory.Faker('date_time_between',
-                         tzinfo=timezone('Asia/Almaty'),
-                         end_date="now",
-                         start_date=datetime.datetime(2016, 1, 1,
-                                                      tzinfo=timezone('Asia/Almaty')))
+
+    @factory.lazy_attribute
+    def time(self):
+        time = faker.date_time_between(
+            tzinfo=timezone('Asia/Almaty'),
+            end_date="now",
+            start_date=datetime.datetime(2019, 12, 1,
+                                         tzinfo=timezone('Asia/Almaty')))
+        time = time.replace(minute=0, second=0)
+        return time
 
     @factory.lazy_attribute
     def position(self):
