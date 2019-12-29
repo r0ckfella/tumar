@@ -1,3 +1,5 @@
+import datetime
+
 import django.utils.timezone as tz
 
 from django.contrib.gis.geos import Point, Polygon
@@ -111,7 +113,8 @@ class LatestGroupedGeolocationsView(APIView):
             Find most populated group
             """
             qs = Geolocation.geolocations.filter(animal__in=animal_pks,
-                                                 time__range=(tz.now() - tz.timedelta(hours=1), tz.now()))
+                                                 time=datetime.datetime(2019, 12, 30, 4, 0, 0))
+                                                 # time__range=(tz.now() - tz.timedelta(hours=1), tz.now()))
             zoom_level = 0
         else:
             center_lon = request.query_params.get('lon')
@@ -119,7 +122,8 @@ class LatestGroupedGeolocationsView(APIView):
             zoom_level = request.query_params.get('zoom')
 
             qs = Geolocation.geolocations.filter(animal__in=animal_pks,
-                                                 time__range=(tz.now() - tz.timedelta(hours=1), tz.now()),
+                                                 time=datetime.datetime(2019, 12, 30, 4, 0, 0),
+                                                 # time__range=(tz.now() - tz.timedelta(hours=1), tz.now()),
                                                  position__dwithin=(
                                                      Point(float(center_lon), float(center_lat), srid=3857),
                                                      d(km=self.zoom_distance[int(zoom_level)][
