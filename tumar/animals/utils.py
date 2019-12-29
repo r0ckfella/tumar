@@ -7,6 +7,9 @@ import requests
 from django.contrib.gis.geos import LineString, Point
 from datetime import datetime as dt
 
+from django.contrib.gis.db.models.functions import Distance
+from django.contrib.gis.measure import Distance as d
+
 from .models import Animal, Geolocation, Farm
 
 
@@ -54,3 +57,33 @@ def download_geolocations():
                                                            srid=4326),
                                             time=tz.make_aware(my_date, my_tz))
             print("New animal is added, and the corresponding location too.")
+
+
+def cluster_geolocations(queryset, zoom_distance, zoom_level):
+    groups = []
+    animal_group_mapping = dict.fromkeys(queryset.values_list('pk', flat=True))
+    starting_animal_pk = next(iter(animal_group_mapping.keys()))
+    animal_group_mapping[starting_animal_pk] = 0
+    groups.append({starting_animal_pk, })
+
+    for unique_animal_pk in animal_group_mapping.keys():
+        if animal_group_mapping[unique_animal_pk] is None:
+            groups.append({unique_animal_pk, })
+            animal_group_mapping[unique_animal_pk] = len(groups) - 1
+            current_animal_group = groups[animal_group_mapping[unique_animal_pk]]
+        else:
+            current_animal_group = groups[animal_group_mapping[unique_animal_pk]]
+
+        current_point = queryset.get(pk=unique_animal_pk).position
+        current_animal_group.update(
+            queryset.exclude(pk__in=[pk for group in groups for pk in group])
+                    .annotate(distance=Distance('position', current_point))
+                    .filter(distance__lte=d(km=zoom_distance[int(zoom_level)][1]))
+                    .values_list('pk', flat=True)
+        )
+        animal_group_mapping.update(
+            {pk: animal_group_mapping[unique_animal_pk] for pk in current_animal_group}
+        )
+    assert len(
+        [item for group in groups for item in group]) == queryset.count(), "PKs in groups dublicate in another groups"
+    return groups

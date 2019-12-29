@@ -32,14 +32,14 @@ class FarmAnimalsSerializer(FarmSerializer):
 class GeolocationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Geolocation
-        fields = ('id', 'position', 'time', 'animal',)
+        fields = ('id', 'position', 'time',)
 
 
 class GeolocationAnimalSerializer(GeolocationSerializer):
     animal = AnimalSerializer()
 
     class Meta(GeolocationSerializer.Meta):
-        fields = GeolocationSerializer.Meta.fields
+        fields = GeolocationSerializer.Meta.fields + ('animal',)
 
 
 class EventSerializer(serializers.ModelSerializer):
