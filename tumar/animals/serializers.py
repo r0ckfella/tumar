@@ -7,6 +7,7 @@ class AnimalSerializer(serializers.ModelSerializer):
     class Meta:
         model = Animal
         fields = ('id', 'farm', 'imei', 'tag_number', 'name', 'updated', 'imsi', 'battery_charge', 'status',)
+        read_only_fields = ('id', 'updated', 'status', 'battery_charge',)
 
 
 class MachinerySerializer(serializers.ModelSerializer):

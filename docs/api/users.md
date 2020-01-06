@@ -16,6 +16,8 @@ password   | string | Yes      | The password for the new user account.
 first_name | string | No       | The user's given name.
 last_name  | string | No       | The user's family name.
 email      | string | No       | The user's email address.
+phone_num  | string | No       | The user's phone number (+77076143537).
+
 
 *Note:*
 
@@ -33,6 +35,7 @@ Content-Type application/json
   "first_name": "Richard",
   "last_name": "Hendriks",
   "email": "richard@piedpiper.com",
+  "phone_num": "+777712345678",
   "auth_token": "132cf952e0165a274bf99e115ab483671b3d9ff6"
 }
 ```
@@ -65,6 +68,7 @@ Content-Type application/json
   "first_name": "Richard",
   "last_name": "Hendriks",
   "email": "richard@piedpiper.com",
+  "phone_num": "+777712345678",
 }
 ```
 
@@ -82,6 +86,7 @@ Name       | Type   | Description
 first_name | string | The first_name of the user object.
 last_name  | string | The last_name of the user object.
 email      | string | The user's email address.
+phone_num  | string | The user's phone number (+777712345678).
 
 
 
@@ -102,5 +107,6 @@ Content-Type application/json
   "first_name": "Richard",
   "last_name": "Hendriks",
   "email": "richard@piedpiper.com",
+  "phone_num": "+777712345678",
 }
 ```

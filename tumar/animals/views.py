@@ -26,7 +26,7 @@ class FarmViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = FarmSerializer
 
 
-class AnimalFarmViewSet(viewsets.ReadOnlyModelViewSet):
+class AnimalFarmViewSet(viewsets.ModelViewSet):
     """
     Lists and retrieves animals and their farm
     """
