@@ -36,7 +36,7 @@ class Common(Configuration):
         # Social Auth
         'allauth.socialaccount',
         'allauth.socialaccount.providers.facebook',
-        'allauth.socialaccount.providers.twitter',
+        'allauth.socialaccount.providers.google',
 
         # Your apps
         'tumar.users.apps.UsersConfig',
@@ -237,6 +237,13 @@ class Common(Configuration):
     SITE_ID = 1
     OLD_PASSWORD_FIELD_ENABLED = True
     LOGOUT_ON_PASSWORD_CHANGE = False
+
+    # ACCOUNT_EMAIL_REQUIRED = True
+    # ACCOUNT_UNIQUE_EMAIL = True
+    # ACCOUNT_USERNAME_REQUIRED = False
+    # USER_MODEL_USERNAME_FIELD = None
+    USERNAME_VALIDATORS = ['tumar.users.models.main_validator', ]
+    ACCOUNT_ADAPTER = 'tumar.users.adapter.MyAccountAdapter'
 
     # Add settings for phone_verify to work
     PHONE_VERIFICATION = {

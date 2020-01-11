@@ -1,3 +1,5 @@
+from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
+from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
 from django.utils.translation import gettext_lazy as _
 from phone_verify.base import response
 from phone_verify.services import send_security_code_and_generate_session_token
@@ -9,7 +11,6 @@ from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
-from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
 from rest_auth.registration.views import SocialLoginView
 
 from .models import User
@@ -59,6 +60,10 @@ class CustomAuthToken(ObtainAuthToken):
 
 class FacebookLogin(SocialLoginView):
     adapter_class = FacebookOAuth2Adapter
+
+
+class GoogleLogin(SocialLoginView):
+    adapter_class = GoogleOAuth2Adapter
 
 
 class CustomVerificationViewSet(VerificationViewSet):

@@ -25,6 +25,7 @@ class User(AbstractUser):
         _('phone number'),
         max_length=16,
         unique=True,
+        null=True,
         help_text=_("Required. Phone number must be entered in the format: '+77076143537'. "
                     "Up to 15 digits allowed."
                     ),

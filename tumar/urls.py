@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.conf.urls import url
 from django.conf.urls.i18n import i18n_patterns
 from django.conf.urls.static import static
 from django.contrib import admin
@@ -9,7 +10,8 @@ from rest_framework.routers import DefaultRouter
 
 from .animals.views import FarmViewSet, GeolocationAnimalViewSet, AnimalFarmViewSet, GetAnimalPathView, \
     MachineryFarmViewSet, EventAnimalViewSet, LatestGroupedGeolocationsView
-from .users.views import UserViewSet, UserCreateViewSet, CustomAuthToken, FacebookLogin, CustomVerificationViewSet
+from .users.views import UserViewSet, UserCreateViewSet, CustomAuthToken, FacebookLogin, GoogleLogin, \
+    CustomVerificationViewSet
 
 router = DefaultRouter()
 
@@ -38,6 +40,8 @@ urlpatterns = i18n_patterns(
     # django-rest-auth
     path('rest-auth/', include('rest_auth.urls')),
     path('rest-auth/facebook/', FacebookLogin.as_view(), name='fb_login'),
+    path('rest-auth/google/', GoogleLogin.as_view(), name='ggl_login'),
+    path('accounts/', include('allauth.urls'), name='socialaccount_signup'),
     path('socialaccounts/', SocialAccountListView.as_view(), name='social_account_list'),
     path('socialaccounts/<int:pk>/disconnect/', SocialAccountDisconnectView.as_view(),
          name='social_account_disconnect'),
