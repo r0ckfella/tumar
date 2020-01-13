@@ -1,3 +1,4 @@
+from allauth.socialaccount.models import SocialAccount
 from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
 from django.utils.translation import gettext_lazy as _
@@ -5,19 +6,22 @@ from phone_verify.base import response
 from phone_verify.services import send_security_code_and_generate_session_token
 from phone_verify.api import VerificationViewSet
 from phone_verify import serializers as phone_serializers
-from rest_framework import viewsets, mixins
+from rest_framework import viewsets, mixins, generics
 from rest_framework.decorators import action
+from rest_framework.exceptions import NotFound
+from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_auth.registration.views import SocialLoginView
+from rest_framework.views import APIView
 
-from .models import User
+from .models import User, SocialAccountExtra
 from .permissions import IsUserOrReadOnly
 from .services import create_user_account
 from .serializers import CreateUserSerializer, UserSerializer, SMSCreateUserSerializer, SMSPasswordResetSerializer, \
-    SMSPasswordChangeSerializer
+    SMSPasswordChangeSerializer, SMSPhoneNumberChangeSerializer
 
 
 class UserViewSet(mixins.RetrieveModelMixin,
@@ -39,6 +43,32 @@ class UserCreateViewSet(mixins.CreateModelMixin,
     queryset = User.objects.all()
     serializer_class = CreateUserSerializer
     permission_classes = (IsAdminUser,)
+
+
+class SocialAccountExtraView(generics.RetrieveAPIView):
+    """
+    Retrieve extra info about social account
+    """
+    queryset = SocialAccountExtra.objects.all()
+    serializer_class = CreateUserSerializer
+    permission_classes = (IsAuthenticated,)
+
+
+class SnippetDetail(APIView):
+    """
+    Retrieve
+    """
+    queryset = SocialAccountExtra.objects.all()
+    serializer_class = CreateUserSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, pk, format=None):
+        social_accounts = SocialAccount.objects.filter(user=request.user, socialaccount_extra__has_phone_number=True)
+
+        if not social_accounts:
+            raise NotFound(detail='No associated social accounts with this Tumar account')
+
+        return Response({'has_phone_number': True})
 
 
 class CustomAuthToken(ObtainAuthToken):
@@ -84,10 +114,8 @@ class CustomVerificationViewSet(VerificationViewSet):
     @action(detail=False, methods=['POST'], permission_classes=[AllowAny],
             serializer_class=SMSCreateUserSerializer)
     def verify_and_register(self, request):
-        """Function to verify phone number and register a user
-
-        Most of the code here is corresponding to the "verify" view already present in the package.
-
+        """
+        Function to verify phone number and register a user
         """
 
         serializer = phone_serializers.SMSVerificationSerializer(data=request.data)
@@ -107,10 +135,8 @@ class CustomVerificationViewSet(VerificationViewSet):
     @action(detail=False, methods=['POST'], permission_classes=[AllowAny],
             serializer_class=SMSPasswordResetSerializer)
     def verify_and_reset_password(self, request):
-        """Function to verify phone number and reset the password
-
-        Most of the code here is corresponding to the "verify" view already present in the package.
-
+        """
+        Function to verify phone number and reset the password
         """
 
         serializer = phone_serializers.SMSVerificationSerializer(data=request.data)
@@ -125,19 +151,21 @@ class CustomVerificationViewSet(VerificationViewSet):
         )
 
     @action(detail=False, methods=['POST'], permission_classes=[IsAuthenticated],
-            serializer_class=SMSPasswordChangeSerializer)
-    def verify_and_change_password(self, request):
-        """Function to verify phone number and change the password
-
-        Most of the code here is corresponding to the "verify" view already present in the package.
-
+            serializer_class=SMSPhoneNumberChangeSerializer)
+    def verify_and_change_phone_number(self, request):
         """
-
+        Function to verify phone number and change the phone number to another one
+        """
         serializer = phone_serializers.SMSVerificationSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        serializer = SMSPasswordChangeSerializer(data=request.data, context={'request': request})
+        user = get_object_or_404(User, username=request.user)
+
+        # Borodatyi code
+        serializer = SMSPhoneNumberChangeSerializer(user,
+                                                    data={'new_phone_number': request.data.get('new_phone_number')},
+                                                    partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
-        return Response({"detail": _("New password has been saved.")})
+        return Response({"detail": _("New phone number has been saved.")})

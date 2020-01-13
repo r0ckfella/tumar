@@ -1,5 +1,6 @@
 import uuid
 
+from allauth.socialaccount.models import SocialAccount
 from django.conf import settings
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
@@ -11,8 +12,8 @@ from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import gettext_lazy as _
 from rest_framework.authtoken.models import Token
 
-main_validator = RegexValidator(regex=r'^\+?\d?\d{11,15}$',
-                                message=("Phone number must be entered in the format: '+77076143537'. "
+main_validator = RegexValidator(regex=r'^\+\d{11}$',
+                                message=("Phone number must be entered in the format: '+77076143537' or '77076143537'. "
                                          "Up to 15 digits allowed."))
 
 
@@ -43,7 +44,28 @@ class User(AbstractUser):
         return self.username
 
 
+class SocialAccountExtra(models.Model):
+    socialaccount = models.OneToOneField(SocialAccount,
+                                         on_delete=models.CASCADE,
+                                         primary_key=True, related_name='socialaccount_extra',
+                                         verbose_name=_('Social Account'))
+    has_phone_number = models.BooleanField(default=False, verbose_name=_('Has Phone Number?'))
+
+    class Meta:
+        verbose_name = _('Social Account Extra')
+        verbose_name_plural = _('Social Accounts Extra')
+
+    def __str__(self):
+        return self.socialaccount.provider + self.socialaccount.user.email
+
+
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_auth_token(sender, instance=None, created=False, **kwargs):
     if created:
         Token.objects.create(user=instance)
+
+
+@receiver(post_save, sender=SocialAccount)
+def create_auth_token(sender, instance=None, created=False, **kwargs):
+    if created:
+        SocialAccountExtra.objects.create(socialaccount=instance)

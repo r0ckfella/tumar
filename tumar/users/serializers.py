@@ -1,5 +1,8 @@
 from django.conf import settings
 from django.contrib.auth.forms import SetPasswordForm, UserCreationForm
+from django.utils.translation import ugettext as _
+from phonenumber_field.serializerfields import PhoneNumberField
+from phone_verify.backends import get_sms_backend
 from phone_verify.serializers import SMSVerificationSerializer
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
@@ -164,3 +167,23 @@ class PasswordChangeSerializer(serializers.Serializer):
 
 class SMSPasswordChangeSerializer(PasswordChangeSerializer, SMSVerificationSerializer):
     pass
+
+
+class SMSPhoneNumberChangeSerializer(serializers.ModelSerializer):
+    """
+    Serializer for changing phone number.
+    """
+    new_phone_number = serializers.CharField(source='username', required=True)
+    phone_number = PhoneNumberField(required=True)
+    session_token = serializers.CharField(required=True)
+    security_code = serializers.CharField(required=True)
+
+    class Meta:
+        model = User
+        fields = ('new_phone_number', 'phone_number', 'session_token', 'security_code',)
+        extra_kwargs = {
+            'new_phone_number': {'write_only': True},
+            'phone_number': {'write_only': True},
+            'session_token': {'write_only': True},
+            'security_code': {'write_only': True},
+        }
