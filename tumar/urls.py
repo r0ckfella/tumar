@@ -11,7 +11,7 @@ from rest_framework.routers import DefaultRouter
 from .animals.views import FarmViewSet, GeolocationAnimalViewSet, AnimalFarmViewSet, GetAnimalPathView, \
     MachineryFarmViewSet, EventAnimalViewSet, LatestGroupedGeolocationsView
 from .users.views import UserViewSet, UserCreateViewSet, CustomAuthToken, FacebookLogin, GoogleLogin, \
-    CustomVerificationViewSet
+    CustomVerificationViewSet, SocialAccountExtraView
 
 router = DefaultRouter()
 
@@ -24,8 +24,8 @@ router.register(r'machinery', MachineryFarmViewSet)
 router.register(r'events', EventAnimalViewSet)
 
 sms_router = DefaultRouter(trailing_slash=False)
-sms_router.register('phone', CustomVerificationViewSet, basename='phone')
 
+sms_router.register('phone', CustomVerificationViewSet, basename='phone')
 urlpatterns = i18n_patterns(
     path('admin/', admin.site.urls),
 
@@ -33,6 +33,7 @@ urlpatterns = i18n_patterns(
     path('api/v1/', include([path('get-path/', GetAnimalPathView.as_view(), name='get_path'),
                              path('latest-geolocs/', LatestGroupedGeolocationsView.as_view(),
                                   name='latest_grouped_geolocations'),
+                             path('users/social-account-has-phone-number/', SocialAccountExtraView.as_view()),
                              ] + router.urls + sms_router.urls)),
     path('api-token-auth/', CustomAuthToken.as_view()),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),

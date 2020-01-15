@@ -45,24 +45,13 @@ class UserCreateViewSet(mixins.CreateModelMixin,
     permission_classes = (IsAdminUser,)
 
 
-class SocialAccountExtraView(generics.RetrieveAPIView):
-    """
-    Retrieve extra info about social account
-    """
-    queryset = SocialAccountExtra.objects.all()
-    serializer_class = CreateUserSerializer
-    permission_classes = (IsAuthenticated,)
-
-
-class SnippetDetail(APIView):
+class SocialAccountExtraView(APIView):
     """
     Retrieve
     """
-    queryset = SocialAccountExtra.objects.all()
-    serializer_class = CreateUserSerializer
     permission_classes = (IsAuthenticated,)
 
-    def get(self, request, pk, format=None):
+    def get(self, request, format=None):
         social_accounts = SocialAccount.objects.filter(user=request.user, socialaccount_extra__has_phone_number=True)
 
         if not social_accounts:
