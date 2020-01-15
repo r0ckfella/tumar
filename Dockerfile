@@ -15,6 +15,7 @@ RUN apt-get update -y && \
       nano\
       locales \
       gettext \
+      postgresql \
       apt-transport-https && \
     rm -rf /var/lib/apt/lists/*
 

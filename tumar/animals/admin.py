@@ -72,6 +72,4 @@ class EventAdmin(admin.ModelAdmin):
     date_hierarchy = 'time'
 
 
-admin.site.unregister(Group)
-
 admin.site.site_header = _("Tumar Control Panel")

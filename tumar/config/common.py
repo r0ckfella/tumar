@@ -24,6 +24,19 @@ class Common(Configuration):
         'rest_framework_gis',
         'rest_framework.authtoken',  # token authentication
         'django_filters',  # for filtering rest endpoints
+        'rest_auth',
+
+        # Registration related
+        'django.contrib.sites',
+        'allauth',
+        'allauth.account',
+        'rest_auth.registration',
+        'phone_verify',
+
+        # Social Auth
+        'allauth.socialaccount',
+        'allauth.socialaccount.providers.facebook',
+        'allauth.socialaccount.providers.google',
 
         # Your apps
         'tumar.users.apps.UsersConfig',
@@ -219,3 +232,32 @@ class Common(Configuration):
     CELERY_TASK_SERIALIZER = 'json'
     CELERY_RESULT_SERIALIZER = 'json'
     CELERY_TIMEZONE = 'Asia/Almaty'
+
+    # django-rest-auth
+    SITE_ID = 1
+    OLD_PASSWORD_FIELD_ENABLED = True
+    LOGOUT_ON_PASSWORD_CHANGE = False
+
+    # ACCOUNT_EMAIL_REQUIRED = True
+    # ACCOUNT_UNIQUE_EMAIL = True
+    # ACCOUNT_USERNAME_REQUIRED = False
+    # USER_MODEL_USERNAME_FIELD = None
+    USERNAME_VALIDATORS = ['tumar.users.models.main_validator', ]
+    ACCOUNT_ADAPTER = 'tumar.users.adapter.MyAccountAdapter'
+
+    # Add settings for phone_verify to work
+    PHONE_VERIFICATION = {
+        "BACKEND": "phone_verify.backends.twilio.TwilioBackend",
+        "OPTIONS": {
+            "SID": "fake",
+            "SECRET": "fake",
+            "FROM": "+14755292729",
+            "SANDBOX_TOKEN": "123456",
+        },
+        "TOKEN_LENGTH": 6,
+        "MESSAGE": "Welcome to {app}! Please use security code {security_code} to proceed.",
+        "APP_NAME": "Tumar",
+        "SECURITY_CODE_EXPIRATION_TIME": 3600,  # In seconds only
+        "VERIFY_SECURITY_CODE_ONLY_ONCE": False,
+        # If False, then a security code can be used multiple times for verification
+    }
