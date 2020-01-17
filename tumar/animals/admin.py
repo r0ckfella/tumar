@@ -45,7 +45,7 @@ class GeolocationAdmin(admin.OSMGeoAdmin):
 
     @method_decorator(staff_member_required)
     def download_geolocations(self, request):
-        download_geolocations(request)
+        download_geolocations()
 
         self.message_user(request, 'Geolocations were just updated.')
         return HttpResponseRedirect("../")
