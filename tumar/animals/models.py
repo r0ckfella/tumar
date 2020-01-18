@@ -2,12 +2,14 @@ import uuid
 
 from django.conf import settings
 from django.contrib.gis.db import models
-from django.contrib.postgres.fields import ArrayField
 from django.core.validators import RegexValidator
+from django.db import connections
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 # Create your models here.
+from rest_framework.exceptions import ValidationError
+
 from .managers import GeolocationQuerySet
 
 
@@ -16,15 +18,9 @@ class Farm(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE, related_name="farm")
     iin = models.CharField(max_length=32, unique=True, verbose_name=_('IIN/BIN'))
     legal_person = models.CharField(max_length=50, null=True, blank=True, verbose_name=_('Legal person'))
-    cadastre_num_regex = RegexValidator(regex=r'^\d+$',
-                                        message=("Only digits are allowed for the cadastre number. "
-                                                 "Up to 25 digits allowed."))
-    cadastres = ArrayField(models.CharField(validators=[cadastre_num_regex], max_length=25, blank=True),
-                           blank=True, null=True, verbose_name=_('Cadastres of the farm'))
     requisites = models.CharField(max_length=80, null=True, blank=True, verbose_name=_('Requisites'))
     breeding_stock = models.PositiveIntegerField(blank=True, default=0, verbose_name=_('Breeding stock'))
     calves_number = models.PositiveIntegerField(blank=True, default=0, verbose_name=_('Number of calves'))
-    cadastre_land = models.GeometryCollectionField(srid=3857, blank=True, null=True, verbose_name=_('Personal land'))
 
     class Meta:
         verbose_name = _('Farm')
@@ -111,3 +107,39 @@ class Event(models.Model):
 
     def __str__(self):
         return str(self.animal.tag_number) + ":" + str(self.title) + " at " + str(self.time)
+
+
+class Cadastre(models.Model):
+    farm = models.ForeignKey(Farm, on_delete=models.CASCADE, related_name="cadastres", verbose_name=_('Farm'))
+    cadastre_num_regex = RegexValidator(regex=r'^\d+$',
+                                        message=("Only digits are allowed for the cadastre number. "
+                                                 "Up to 30 digits allowed."))
+    cad_number = models.CharField(max_length=30, blank=True, verbose_name=_('Cadastre Number'))
+    geom = models.GeometryField(srid=3857, blank=True, null=True, verbose_name=_('Geometry'))
+    title = models.CharField(max_length=80, blank=True, verbose_name=_('Title'))
+
+    class Meta:
+        verbose_name = _('Cadastre')
+        verbose_name_plural = _('Cadastres')
+
+    def __str__(self):
+        if self.title:
+            return "cad-title:" + str(self.title) + "; farm:" + str(self.farm)
+        if self.cad_number:
+            return "cad-number:" + str(self.cad_number) + "; farm:" + str(self.farm)
+        return "cad-id:" + str(self.id) + "; farm:" + str(self.farm)
+
+    def save(self, *args, **kwargs):
+        if self.cad_number and not self.geom:
+            with connections['egistic_2'].cursor() as cursor:
+                cursor.execute(
+                    "SELECT ST_AsText(ST_Transform(geom, 3857)) FROM cadastres_cadastre WHERE kad_nomer = %s",
+                    [self.cad_number])
+                row = cursor.fetchone()
+                self.geom = row[0]
+        elif not self.cad_number and not self.geom:
+            raise ValidationError('Either cad_number or geom must be sent')
+        elif self.cad_number and self.geom:
+            raise ValidationError('Do not send cad_number and geom together')
+
+        super().save(*args, **kwargs)  # Call the "real" save() method.

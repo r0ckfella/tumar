@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Farm, Animal, Geolocation, Machinery, Event
+from .models import Farm, Animal, Geolocation, Machinery, Event, Cadastre
 
 
 class AnimalSerializer(serializers.ModelSerializer):
@@ -8,6 +8,19 @@ class AnimalSerializer(serializers.ModelSerializer):
         model = Animal
         fields = ('id', 'farm', 'imei', 'tag_number', 'name', 'updated', 'imsi', 'battery_charge', 'status',)
         read_only_fields = ('id', 'updated', 'status', 'battery_charge',)
+
+
+class CadastreSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Cadastre
+        fields = ('id', 'title', 'cad_number', 'geom', 'farm',)
+    #     exclude_when_nested = {'farm', }  # not an official DRF meta attribute ...
+    #
+    # def get_field_names(self, *args, **kwargs):
+    #     field_names = super(CadastreSerializer, self).get_field_names(*args, **kwargs)
+    #     if self.parent:
+    #         field_names = [i for i in field_names if i not in self.Meta.exclude_when_nested]
+    #     return field_names
 
 
 class MachinerySerializer(serializers.ModelSerializer):
@@ -19,8 +32,7 @@ class MachinerySerializer(serializers.ModelSerializer):
 class FarmSerializer(serializers.ModelSerializer):
     class Meta:
         model = Farm
-        fields = ('id', 'user', 'iin', 'legal_person', 'requisites', 'breeding_stock', 'calves_number', 'cadastres',
-                  'cadastre_land',)
+        fields = ('id', 'user', 'iin', 'legal_person', 'requisites', 'breeding_stock', 'calves_number',)
 
 
 class FarmAnimalsSerializer(FarmSerializer):
@@ -28,6 +40,13 @@ class FarmAnimalsSerializer(FarmSerializer):
 
     class Meta(FarmSerializer.Meta):
         fields = FarmSerializer.Meta.fields + ('animals',)
+
+
+class FarmCadastresSerializer(FarmSerializer):
+    cadastres = CadastreSerializer(many=True, read_only=True)
+
+    class Meta(FarmSerializer.Meta):
+        fields = FarmSerializer.Meta.fields + ('cadastres',)
 
 
 class GeolocationSerializer(serializers.ModelSerializer):

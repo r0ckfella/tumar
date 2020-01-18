@@ -11,24 +11,34 @@ from rest_framework.views import APIView
 
 from . import utils
 from .filters import AnimalPathFilter
-from .models import Farm, Animal, Geolocation, Machinery, Event
+from .models import Farm, Animal, Geolocation, Machinery, Event, Cadastre
 from .serializers import FarmSerializer, GeolocationAnimalSerializer, EventAnimalSerializer, AnimalSerializer, \
-    MachinerySerializer
+    MachinerySerializer, CadastreSerializer, FarmCadastresSerializer
 
 
 # Create your views here.
 
-class FarmViewSet(viewsets.ReadOnlyModelViewSet):
+class FarmViewSet(viewsets.ModelViewSet):
     """
-    Lists and retrieves farms
+    Lists, retrieves, creates, and deletes farms
     """
     queryset = Farm.objects.all().order_by('iin')
-    serializer_class = FarmSerializer
+    serializer_class = FarmCadastresSerializer
+
+
+class CadastreFarmViewSet(viewsets.ModelViewSet):
+    """
+    Lists, retrieves, creates, and deletes cadastres and their farm
+    """
+    queryset = Cadastre.objects.all().order_by('id')
+    serializer_class = CadastreSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_fields = ('cad_number',)
 
 
 class AnimalFarmViewSet(viewsets.ModelViewSet):
     """
-    Lists and retrieves animals and their farm
+    Lists, retrieves, creates, and deletes animals and their farm
     """
     queryset = Animal.objects.all().order_by('imei')
     serializer_class = AnimalSerializer

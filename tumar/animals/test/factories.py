@@ -32,25 +32,25 @@ class FarmFactory(factory.django.DjangoModelFactory):
     breeding_stock = factory.Faker('random_int', min=0, max=9999, step=1)
     calves_number = factory.Faker('random_int', min=0, max=9999, step=1)
 
-    cadastres = factory.List([factory.Faker('numerify', text="#############") for _ in range(random.randrange(1, 5))])
+    # cadastres = factory.List([factory.Faker('numerify', text="#############") for _ in range(random.randrange(1, 5))])
 
-    @factory.lazy_attribute
-    def cadastre_land(self):
-        polygons = GeometryCollection(srid=4326)
-
-        for _ in range(len(self.cadastres)):
-            center_lat = faker.coordinate(center=Decimal('52.005850'), radius=0.2)
-            center_lon = faker.coordinate(center=Decimal('67.821587'), radius=0.4)
-            num_of_points = random.randrange(8, 15)
-
-            temp_polygon = [(float(faker.coordinate(center=center_lon, radius=0.004)),
-                             float(faker.coordinate(center=center_lat, radius=0.002))) for _ in
-                            range(num_of_points)]
-
-            temp_polygon.append(temp_polygon[0])
-            polygons.append(Polygon(temp_polygon, srid=4326).convex_hull)
-
-        return polygons
+    # @factory.lazy_attribute
+    # def cadastre_land(self):
+    #     polygons = GeometryCollection(srid=4326)
+    #
+    #     for _ in range(len(self.cadastres)):
+    #         center_lat = faker.coordinate(center=Decimal('52.005850'), radius=0.2)
+    #         center_lon = faker.coordinate(center=Decimal('67.821587'), radius=0.4)
+    #         num_of_points = random.randrange(8, 15)
+    #
+    #         temp_polygon = [(float(faker.coordinate(center=center_lon, radius=0.004)),
+    #                          float(faker.coordinate(center=center_lat, radius=0.002))) for _ in
+    #                         range(num_of_points)]
+    #
+    #         temp_polygon.append(temp_polygon[0])
+    #         polygons.append(Polygon(temp_polygon, srid=4326).convex_hull)
+    #
+    #     return polygons
 
 
 class AnimalFactory(factory.django.DjangoModelFactory):

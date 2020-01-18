@@ -72,6 +72,10 @@ class Common(Configuration):
         'default': dj_database_url.config(
             default='postgis://postgres:01470258@postgres:5432/postgres',
             conn_max_age=int(os.getenv('POSTGRES_CONN_MAX_AGE', 600))
+        ),
+        'egistic_2': dj_database_url.config(
+            default='postgis://docker:docker@94.247.135.91:8086/egistic_2.0',
+            conn_max_age=int(os.getenv('POSTGRES_CONN_MAX_AGE', 600))
         )
     }
     # DATABASES['default']['ENGINE'] = 'django.contrib.gis.db.backends.postgis'
