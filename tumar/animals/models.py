@@ -138,8 +138,8 @@ class Cadastre(models.Model):
                 row = cursor.fetchone()
                 self.geom = row[0]
         elif not self.cad_number and not self.geom:
-            raise ValidationError('Either cad_number or geom must be sent')
+            raise ValidationError('Either cad_number or geometry must be sent')
         elif self.cad_number and self.geom:
-            raise ValidationError('Do not send cad_number and geom together')
+            raise ValidationError('Do not send cad_number and geometry together')
 
         super().save(*args, **kwargs)  # Call the "real" save() method.
