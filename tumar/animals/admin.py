@@ -7,7 +7,7 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 
 # Register your models here.
-from .models import Farm, Animal, Geolocation, Machinery, Event
+from .models import Farm, Animal, Geolocation, Machinery, Event, Cadastre
 from .utils import download_geolocations
 
 
@@ -70,6 +70,11 @@ class EventAdmin(admin.ModelAdmin):
     list_display = ('title', 'time', 'animal',)
     list_filter = ('time', 'completed', 'animal',)
     date_hierarchy = 'time'
+
+
+@admin.register(Cadastre)
+class CadastreAdmin(admin.ModelAdmin):
+    pass
 
 
 admin.site.site_header = _("Tumar Control Panel")

@@ -1,4 +1,7 @@
+from django.db import connections
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
+from rest_framework_gis import serializers as geo_serializers
 
 from .models import Farm, Animal, Geolocation, Machinery, Event, Cadastre
 
@@ -11,16 +14,11 @@ class AnimalSerializer(serializers.ModelSerializer):
 
 
 class CadastreSerializer(serializers.ModelSerializer):
+    geometry = geo_serializers.GeometryField(source='geom', required=False)  # since drf has a bug with required=True
+
     class Meta:
         model = Cadastre
-        fields = ('id', 'title', 'cad_number', 'geom', 'farm',)
-    #     exclude_when_nested = {'farm', }  # not an official DRF meta attribute ...
-    #
-    # def get_field_names(self, *args, **kwargs):
-    #     field_names = super(CadastreSerializer, self).get_field_names(*args, **kwargs)
-    #     if self.parent:
-    #         field_names = [i for i in field_names if i not in self.Meta.exclude_when_nested]
-    #     return field_names
+        fields = ('id', 'title', 'cad_number', 'geometry', 'farm',)
 
 
 class MachinerySerializer(serializers.ModelSerializer):
