@@ -9,7 +9,7 @@ from rest_auth.registration.views import SocialAccountListView, SocialAccountDis
 from rest_framework.routers import DefaultRouter
 
 from .animals.views import FarmViewSet, GeolocationAnimalViewSet, AnimalFarmViewSet, GetAnimalPathView, \
-    MachineryFarmViewSet, EventAnimalViewSet, LatestGroupedGeolocationsView
+    MachineryFarmViewSet, EventAnimalViewSet, LatestGroupedGeolocationsView, CadastreFarmViewSet
 from .users.views import UserViewSet, UserCreateViewSet, CustomAuthToken, FacebookLogin, GoogleLogin, \
     CustomVerificationViewSet, SocialAccountExtraView
 
@@ -22,6 +22,7 @@ router.register(r'animals', AnimalFarmViewSet)
 router.register(r'geolocations', GeolocationAnimalViewSet)
 router.register(r'machinery', MachineryFarmViewSet)
 router.register(r'events', EventAnimalViewSet)
+router.register(r'cadastres', CadastreFarmViewSet)
 
 sms_router = DefaultRouter(trailing_slash=False)
 

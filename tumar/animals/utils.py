@@ -24,7 +24,7 @@ def download_geolocations():
     payload = {
         "key": "ff8080816d5cb3c0016d65cecef300e1",
         "begintime": "2018-01-01 00:00",
-        "endtime": "2019-12-10 23:59",
+        "endtime": "2020-05-13 23:59",
         "imeis": ""
     }
 
