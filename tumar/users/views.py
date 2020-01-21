@@ -6,7 +6,7 @@ from phone_verify.base import response
 from phone_verify.services import send_security_code_and_generate_session_token
 from phone_verify.api import VerificationViewSet
 from phone_verify import serializers as phone_serializers
-from rest_framework import viewsets, mixins, generics
+from rest_framework import viewsets, mixins, generics, status
 from rest_framework.decorators import action
 from rest_framework.exceptions import NotFound
 from rest_framework.generics import get_object_or_404
@@ -32,7 +32,7 @@ class UserViewSet(mixins.RetrieveModelMixin,
     """
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = (IsAdminUser,)
+    permission_classes = (IsUserOrReadOnly,)
 
 
 class UserCreateViewSet(mixins.CreateModelMixin,
@@ -42,7 +42,7 @@ class UserCreateViewSet(mixins.CreateModelMixin,
     """
     queryset = User.objects.all()
     serializer_class = CreateUserSerializer
-    permission_classes = (IsAdminUser,)
+    permission_classes = (AllowAny,)
 
 
 class SocialAccountExtraView(APIView):
@@ -73,7 +73,6 @@ class CustomAuthToken(ObtainAuthToken):
             'user_id': user.id,
             'full_name': user.get_full_name(),
             'email': user.email,
-            'phone_num': user.phone_num
         })
 
 
