@@ -33,6 +33,27 @@ class FarmSerializer(serializers.ModelSerializer):
         fields = ('id', 'user', 'iin', 'legal_person', 'requisites', 'breeding_stock', 'calves_number',)
 
 
+class CreateFarmSerializer(serializers.ModelSerializer):
+    cadastres = serializers.ListField()
+
+    class Meta:
+        model = Farm
+        fields = ('id', 'user', 'iin', 'legal_person', 'requisites', 'breeding_stock', 'calves_number', 'cadastres',)
+
+    def to_representation(self, instance):
+        serializer = FarmCadastresSerializer(instance)
+        return serializer.data
+
+    def create(self, validated_data):
+        cadastres = validated_data.pop('cadastres')
+        farm = Farm.objects.create(**validated_data)
+
+        for cad_number in cadastres:
+            Cadastre.objects.create(farm=farm, cad_number=cad_number)
+
+        return farm
+
+
 class FarmAnimalsSerializer(FarmSerializer):
     animals = AnimalSerializer(many=True, read_only=True)
 

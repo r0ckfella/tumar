@@ -1,10 +1,12 @@
 import django.utils.timezone as tz
 
-from django.contrib.gis.geos import Point, Polygon
+from django.contrib.gis.geos import Point, Polygon, GEOSGeometry
 from django.contrib.gis.measure import Distance as d
 from django.contrib.gis.db.models import Extent
+from django.db import connections
 from django_filters import rest_framework as filters
-from rest_framework import viewsets, status
+from geopy.geocoders import GeoNames
+from rest_framework import viewsets, status, mixins
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -13,7 +15,7 @@ from . import utils
 from .filters import AnimalPathFilter
 from .models import Farm, Animal, Geolocation, Machinery, Event, Cadastre
 from .serializers import FarmSerializer, GeolocationAnimalSerializer, EventAnimalSerializer, AnimalSerializer, \
-    MachinerySerializer, CadastreSerializer, FarmCadastresSerializer
+    MachinerySerializer, CadastreSerializer, FarmCadastresSerializer, CreateFarmSerializer
 
 
 # Create your views here.
@@ -23,7 +25,14 @@ class FarmViewSet(viewsets.ModelViewSet):
     Lists, retrieves, creates, and deletes farms
     """
     queryset = Farm.objects.all().order_by('iin')
-    serializer_class = FarmCadastresSerializer
+    model = Farm
+
+    def get_serializer_class(self):
+        serializers_class_map = {
+            'default': FarmCadastresSerializer,
+            'create': CreateFarmSerializer,
+        }
+        return serializers_class_map.get(self.action, serializers_class_map['default'])
 
 
 class CadastreFarmViewSet(viewsets.ModelViewSet):
@@ -72,6 +81,49 @@ class EventAnimalViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = EventAnimalSerializer
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_fields = ('animal__imei',)
+
+
+class MyFarmView(APIView):
+    def get(self, request):
+        my_farm = get_object_or_404(Farm, user=self.request.user)
+        serializer = FarmCadastresSerializer(my_farm)
+
+        return Response(serializer.data)
+
+
+class SearchCadastreView(APIView):
+    """
+    Search cadastres by cadastre number in Kazakhstan Cadastre Database
+
+        url: api/v1/cadastres/search-cadastre/?cad_number=01011008053
+        input: cad_number
+        output: PK, cad_number, geometry, nearest town
+    """
+
+    def get(self, request):
+        data = {'pk': None, 'cad_number': request.query_params.get('cad_number'), 'geom': None,
+                'nearest_town': None}
+
+        with connections['egistic_2'].cursor() as cursor:
+            cursor.execute(
+                "SELECT id, ST_AsText(ST_Transform(geom, 3857)) FROM cadastres_cadastre WHERE kad_nomer = %s",
+                [data.get('cad_number')])
+            row = cursor.fetchone()
+            data['pk'] = row[0]
+            data['geom'] = row[1]
+
+        # find nearby town
+        cadastre = GEOSGeometry(data['geom'], srid=3857)
+        data['geom'] = cadastre.geojson
+
+        cad_point = cadastre.point_on_surface
+        cad_point.transform(4326)
+        coords = tuple(cad_point.coord_seq)
+        coords = [coords[0][1], coords[0][0]]  # swapping lon and lat
+        geolocator = GeoNames(user_agent="zest88", username='zest88')
+        nearest_town = geolocator.reverse(coords, find_nearby_type='findNearby', exactly_one=False)
+        data['nearest_town'] = str(nearest_town[0])
+        return Response(data)
 
 
 class GetAnimalPathView(APIView):
