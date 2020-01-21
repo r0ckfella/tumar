@@ -5,6 +5,7 @@ from phonenumber_field.serializerfields import PhoneNumberField
 from phone_verify.backends import get_sms_backend
 from phone_verify.serializers import SMSVerificationSerializer
 from rest_framework import serializers
+from rest_framework.authtoken.models import Token
 from rest_framework.exceptions import ValidationError
 
 from .models import User
@@ -18,6 +19,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class CreateUserSerializer(serializers.ModelSerializer):
+    token = serializers.SerializerMethodField()
 
     def create(self, validated_data):
         # call create_user on user object. Without this
@@ -25,10 +27,14 @@ class CreateUserSerializer(serializers.ModelSerializer):
         user = User.objects.create_user(**validated_data)
         return user
 
+    def get_token(self, user):
+        token, created = Token.objects.get_or_create(user=user)
+        return token.key
+
     class Meta:
         model = User
-        fields = ('id', 'username', 'password', 'email', 'first_name', 'last_name', 'auth_token',)
-        read_only_fields = ('auth_token',)
+        fields = ('id', 'username', 'password', 'email', 'first_name', 'last_name', 'token',)
+        read_only_fields = ('token',)
         extra_kwargs = {'password': {'write_only': True}}
 
 
