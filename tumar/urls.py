@@ -9,7 +9,8 @@ from rest_auth.registration.views import SocialAccountListView, SocialAccountDis
 from rest_framework.routers import DefaultRouter
 
 from .animals.views import FarmViewSet, GeolocationAnimalViewSet, AnimalFarmViewSet, GetAnimalPathView, \
-    MachineryFarmViewSet, EventAnimalViewSet, LatestGroupedGeolocationsView, CadastreFarmViewSet
+    MachineryFarmViewSet, EventAnimalViewSet, LatestGroupedGeolocationsView, CadastreFarmViewSet, MyFarmView, \
+    SearchCadastreView
 from .users.views import UserViewSet, UserCreateViewSet, CustomAuthToken, FacebookLogin, GoogleLogin, \
     CustomVerificationViewSet, SocialAccountExtraView
 
@@ -35,6 +36,8 @@ urlpatterns = i18n_patterns(
                              path('latest-geolocs/', LatestGroupedGeolocationsView.as_view(),
                                   name='latest_grouped_geolocations'),
                              path('users/social-account-has-phone-number/', SocialAccountExtraView.as_view()),
+                             path('cadastres/search-cadastre/', SearchCadastreView.as_view()),
+                             path('myfarm/', MyFarmView.as_view()),
                              ] + router.urls + sms_router.urls)),
     path('api-token-auth/', CustomAuthToken.as_view()),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),

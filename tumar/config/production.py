@@ -40,5 +40,9 @@ class Production(Common):
         'default': dj_database_url.config(
             default='postgis://docker:docker@db_default:5432/tumar',
             conn_max_age=int(os.getenv('POSTGRES_CONN_MAX_AGE', 600))
+        ),
+        'egistic_2': dj_database_url.config(
+            default='postgis://docker:docker@94.247.135.91:8086/egistic_2.0',
+            conn_max_age=int(os.getenv('POSTGRES_CONN_MAX_AGE', 600))
         )
     }
