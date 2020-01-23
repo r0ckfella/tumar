@@ -45,7 +45,11 @@ class GeolocationAdmin(admin.OSMGeoAdmin):
 
     @method_decorator(staff_member_required)
     def download_geolocations(self, request):
-        download_geolocations()
+        farms_attrs = Farm.objects.values_list("id", "api_key")
+
+        for farm in farms_attrs:
+            if farm[1]:
+                download_geolocations(farm[0], farm[1])
 
         self.message_user(request, 'Geolocations were just updated.')
         return HttpResponseRedirect("../")

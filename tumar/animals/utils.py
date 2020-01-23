@@ -17,12 +17,12 @@ def get_linestring_from_geolocations(geolocations_qs):
     return LineString([geolocation.position for geolocation in geolocations_qs], srid=3857)
 
 
-def download_geolocations():
+def download_geolocations(farm_pk, farm_api_key):
     url = 'http://www.xiaomutong.vip/farm/api/v2/gpsData'
     # url = 'http://185.125.44.211/farm/api/v2/gpsData'
     headers = {'Content-type': 'application/json', 'Accept': 'application/json'}
     payload = {
-        "key": "ff8080816d5cb3c0016d65cecef300e1",
+        "key": farm_api_key,
         "begintime": "2018-01-01 00:00",
         "endtime": "2020-05-13 23:59",
         "imeis": ""
@@ -48,7 +48,7 @@ def download_geolocations():
             if not Geolocation.geolocations.filter(**arguments).exists():
                 Geolocation.geolocations.create(**arguments)
         except Animal.DoesNotExist:
-            the_farm = Farm.objects.last()
+            the_farm = Farm.objects.get(pk=farm_pk)
             temp_animal = Animal.objects.create(farm=the_farm, imei=location['imei'],
                                                 tag_number=location['cow_code'])
             Geolocation.geolocations.create(animal=temp_animal,

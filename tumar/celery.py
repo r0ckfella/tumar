@@ -6,8 +6,8 @@ from celery.schedules import crontab
 from django.conf import settings
 
 # set the default Django settings module for the 'celery' program.
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tumar.config")
-os.environ.setdefault("DJANGO_CONFIGURATION", "Local")
+# os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tumar.config")
+# os.environ.setdefault("DJANGO_CONFIGURATION", "Local")
 configurations.setup()
 
 app = Celery('tumar-tasks')
@@ -21,16 +21,12 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 # Load task modules from all registered Django app configs.
 app.autodiscover_tasks()
 
-
-@app.on_after_finalize.connect
-def setup_periodic_tasks(sender, **kwargs):
-    # Calls the task every 60 seconds
-    from .animals.tasks import task_download_latest_geolocations
-    # sender.add_periodic_task(30.0, task_download_latest_geolocations.s())
-
-    sender.add_periodic_task(
-        crontab(hour=8, minute=0),
-        task_download_latest_geolocations.s()
-    )
+# Celery beat
+app.conf.beat_schedule = {
+    'scheduled': {
+        'task': 'tumar.animals.tasks.task_download_latest_geolocations',
+        'schedule': crontab(minute='*/1')  # , hour='*/8')
+    }
+}
 
 #  celery -A tumar worker -l info ---AND--- celery -A tumar beat -l info
