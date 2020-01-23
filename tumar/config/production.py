@@ -46,3 +46,6 @@ class Production(Common):
             conn_max_age=int(os.getenv('POSTGRES_CONN_MAX_AGE', 600))
         )
     }
+
+    CELERY_BROKER_URL = 'redis://redis:6378/0'
+    CELERY_RESULT_BACKEND = 'redis://redis:6378/0'
