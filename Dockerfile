@@ -28,8 +28,14 @@ RUN pip install -r requirements.txt
 
 # Adds our application code to the image
 COPY . code
+
+COPY celerybeat /etc/default/celerybeat
+COPY celerybeat-init /etc/init.d/celerybeat
+RUN chmod +x /etc/init.d/celerybeat
+
 WORKDIR code
 
 EXPOSE 8088
 
 RUN adduser --disabled-password --gecos '' myuser
+RUN usermod -a -G myuser root
