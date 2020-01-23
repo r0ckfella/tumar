@@ -3,6 +3,8 @@ services:
 
   redis:
     image: redis:latest
+    networks:
+      - "arys"
     ports:
       - "6378:6379"
 
@@ -47,10 +49,11 @@ services:
       - DJANGO_SETTINGS_MODULE=tumar.config.production
     command: >
       bash -c "update-rc.d celerybeat defaults &&
-          service celerybeat start &&
-          ./manage.py migrate &&
-          ./manage.py compilemessages &&
-          ./manage.py runserver 0.0.0.0:80"
+              service celerybeat start &&
+              service celeryd start &&
+              ./manage.py migrate &&
+              ./manage.py compilemessages &&
+              ./manage.py runserver 0.0.0.0:80"
 
 networks:
   arys:

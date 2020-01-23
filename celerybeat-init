@@ -4,7 +4,7 @@
 # =========================================================
 #
 # :Usage: /etc/init.d/celerybeat {start|stop|force-reload|restart|try-restart|status}
-# :Configuration file: /etc/default/celerybeat or /etc/default/celeryd
+# :Configuration file: /etc/default/celerybeat or /etc/default/celeryd-init
 #
 # See http://docs.celeryproject.org/en/latest/tutorials/daemonizing.html#generic-init-scripts
 
@@ -90,10 +90,10 @@ _config_sanity() {
 
 scripts=""
 
-if test -f /etc/default/celeryd; then
+if test -f /etc/default/celeryd-init; then
     scripts="/etc/default/celeryd"
-    _config_sanity /etc/default/celeryd
-    . /etc/default/celeryd
+    _config_sanity /etc/default/celeryd-init
+    . /etc/default/celeryd-init
 fi
 
 EXTRA_CONFIG="/etc/default/${SCRIPT_NAME}"
