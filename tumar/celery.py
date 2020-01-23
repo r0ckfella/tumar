@@ -26,7 +26,7 @@ app.autodiscover_tasks()
 app.conf.beat_schedule = {
     'scheduled': {
         'task': 'tumar.animals.tasks.task_download_latest_geolocations',
-        'schedule': crontab(minute='*/1')  # , hour='*/8')
+        'schedule': crontab(minute='0', hour='*/8')
     }
 }
 
