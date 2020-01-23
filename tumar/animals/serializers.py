@@ -30,7 +30,9 @@ class MachinerySerializer(serializers.ModelSerializer):
 class FarmSerializer(serializers.ModelSerializer):
     class Meta:
         model = Farm
-        fields = ('id', 'user', 'iin', 'legal_person', 'requisites', 'breeding_stock', 'calves_number',)
+        fields = ('id', 'user', 'iin', 'legal_person', 'iik', 'bank', 'bin', 'address',
+                  'calves_number',)
+        read_only_fields = ('calves_number',)
 
 
 class CreateFarmSerializer(serializers.ModelSerializer):
@@ -38,7 +40,7 @@ class CreateFarmSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Farm
-        fields = ('id', 'iin', 'legal_person', 'requisites', 'breeding_stock', 'calves_number', 'cadastres',)
+        fields = ('id', 'iin', 'legal_person', 'iik', 'bank', 'bin', 'address', 'cadastres',)
 
     def to_representation(self, instance):
         serializer = FarmCadastresSerializer(instance)

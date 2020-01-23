@@ -17,10 +17,16 @@ class Farm(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.OneToOneField(settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE, related_name="farm")
     iin = models.CharField(max_length=32, unique=True, verbose_name=_('IIN/BIN'))
-    legal_person = models.CharField(max_length=50, null=True, blank=True, verbose_name=_('Legal person'))
-    requisites = models.CharField(max_length=80, null=True, blank=True, verbose_name=_('Requisites'))
-    breeding_stock = models.PositiveIntegerField(blank=True, default=0, verbose_name=_('Breeding stock'))
-    calves_number = models.PositiveIntegerField(blank=True, default=0, verbose_name=_('Number of calves'))
+    legal_person = models.CharField(max_length=50, blank=True, verbose_name=_('Legal person'))
+    iik = models.CharField(max_length=80, blank=True, verbose_name=_('IIK'))
+    bank = models.CharField(max_length=80, blank=True, verbose_name=_('BANK'))
+    bin = models.CharField(max_length=80, blank=True, verbose_name=_('BIN'))
+    address = models.CharField(max_length=100, blank=True, verbose_name=_('Address'))
+    api_key = models.CharField(max_length=100, blank=True, verbose_name=_('Chinese API key'))
+
+    @property
+    def calves_number(self):
+        return self.animals.count()
 
     class Meta:
         verbose_name = _('Farm')
@@ -35,7 +41,7 @@ class Farm(models.Model):
 class Machinery(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     farm = models.ForeignKey(Farm, on_delete=models.CASCADE, related_name="machinery", verbose_name=_('Farm'))
-    type = models.CharField(max_length=50, null=True, blank=True, verbose_name=_('Type of machinery'))
+    type = models.CharField(max_length=50, blank=True, verbose_name=_('Type of machinery'))
     machinery_code = models.CharField(max_length=50, verbose_name=_('Identification code of the machinery'))
 
     class Meta:
@@ -54,11 +60,11 @@ class Animal(models.Model):
     imei_regex = RegexValidator(regex=r'^\d{15}$',
                                 message=("Imei must be entered in the format: '123456789012345'. "
                                          "Up to 15 digits allowed."))
-    imei = models.CharField(validators=[imei_regex], max_length=15, null=True, blank=True, unique=True)
+    imei = models.CharField(validators=[imei_regex], max_length=15, blank=True, unique=True)
     tag_number = models.CharField(max_length=25, null=True, verbose_name=_('Animal tag number'), unique=True)
-    name = models.CharField(max_length=30, null=True, blank=True, verbose_name=_('Animal name'))
+    name = models.CharField(max_length=30, blank=True, verbose_name=_('Animal name'))
     updated = models.DateTimeField(default=timezone.now)
-    imsi = models.CharField(max_length=30, null=True, blank=True, verbose_name=_('IMSI number'))
+    imsi = models.CharField(max_length=30, blank=True, verbose_name=_('IMSI number'))
     battery_charge = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name=_('Battery charge'))
 
     class Meta:
@@ -98,7 +104,7 @@ class Event(models.Model):
     animal = models.ForeignKey(Animal, on_delete=models.CASCADE, related_name="events", verbose_name=_('Animal'))
     title = models.CharField(max_length=80, verbose_name=_('Title'))
     time = models.DateTimeField(default=timezone.now, verbose_name=_('Time of the event'))
-    description = models.TextField(blank=True, null=True, verbose_name=_('Description'))
+    description = models.TextField(blank=True, verbose_name=_('Description'))
     completed = models.BooleanField(default=False, verbose_name=_('Completed?'))
 
     class Meta:
