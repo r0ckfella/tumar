@@ -36,21 +36,21 @@ services:
       - /static:/static
     depends_on:
       - redis
-    command: >
-      bash -c "update-rc.d celerybeat defaults &&
-               service celerybeat start &&
-               ./manage.py migrate &&
-               ./manage.py compilemessages &&
-               ./manage.py runserver 0.0.0.0:80"
     environment:
       - "DEFAULT_DB_HOST=db_default"
       - "DEFAULT_DB_PORT=5432"
       - "DEFAULT_DB_NAME=tumar"
       - "DEFAULT_DB_USER=docker"
       - "DEFAULT_DB_PASSWORD=docker"
-      - "DJANGO_SECRET_KEY=production"
-      - "DJANGO_CONFIGURATION=Production"
-      - "DJANGO_SETTINGS_MODULE=tumar.config.production"
+      - DJANGO_SECRET_KEY=production
+      - DJANGO_CONFIGURATION=Production
+      - DJANGO_SETTINGS_MODULE=tumar.config.production
+    command: >
+      bash -c "update-rc.d celerybeat defaults &&
+          service celerybeat start &&
+          ./manage.py migrate &&
+          ./manage.py compilemessages &&
+          ./manage.py runserver 0.0.0.0:80"
 
 networks:
   arys:
