@@ -38,4 +38,5 @@ WORKDIR code
 EXPOSE 8088
 
 RUN adduser --disabled-password --gecos '' myuser
-RUN usermod -a -G myuser root
+#RUN usermod -a -G myuser root
+RUN chmod 640 '/etc/default/celerybeat'
