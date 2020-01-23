@@ -31,18 +31,12 @@ COPY . code
 
 COPY celerybeat /etc/default/celerybeat
 COPY celerybeat-init /etc/init.d/celerybeat
-RUN chmod +x /etc/init.d/celerybeat
-
 COPY celeryd /etc/default/celeryd
 COPY celeryd-init /etc/init.d/celeryd
-RUN chmod +x /etc/init.d/celeryd
-RUN chmod 640 '/etc/default/celerybeat'
-RUN chmod 640 '/etc/default/celeryd'
+RUN chmod +x /etc/init.d/celeryd /etc/init.d/celerybeat && chmod 640 '/etc/default/celerybeat' '/etc/default/celeryd'
 
 WORKDIR code
 
 EXPOSE 8088
 
-RUN adduser --disabled-password --gecos '' celery
-RUN usermod -a -G root celery
-RUN chmod 770 '/usr/src/app/code/'
+RUN adduser --disabled-password --gecos '' celery && usermod -a -G root celery && chmod 770 '/usr/src/app/code/'
