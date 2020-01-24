@@ -10,7 +10,7 @@ from rest_framework.routers import DefaultRouter
 
 from .animals.views import FarmViewSet, GeolocationAnimalViewSet, AnimalFarmViewSet, GetAnimalPathView, \
     MachineryFarmViewSet, EventAnimalViewSet, LatestGroupedGeolocationsView, CadastreFarmViewSet, MyFarmView, \
-    SearchCadastreView
+    SearchCadastreView, SimpleGroupedGeolocationsView
 from .users.views import UserViewSet, UserCreateViewSet, CustomAuthToken, FacebookLogin, GoogleLogin, \
     CustomVerificationViewSet, SocialAccountExtraView
 
@@ -19,7 +19,7 @@ router = DefaultRouter()
 router.register(r'users', UserViewSet)
 router.register(r'users', UserCreateViewSet)
 router.register(r'farms', FarmViewSet)
-router.register(r'animals', AnimalFarmViewSet)
+router.register(r'animals', AnimalFarmViewSet, basename='Animal')
 router.register(r'geolocations', GeolocationAnimalViewSet)
 router.register(r'machinery', MachineryFarmViewSet)
 router.register(r'events', EventAnimalViewSet)
@@ -33,7 +33,7 @@ urlpatterns = i18n_patterns(
 
     # Custom API endpoints
     path('api/v1/', include([path('get-path/', GetAnimalPathView.as_view(), name='get_path'),
-                             path('latest-geolocs/', LatestGroupedGeolocationsView.as_view(),
+                             path('latest-geolocs/', SimpleGroupedGeolocationsView.as_view(),
                                   name='latest_grouped_geolocations'),
                              path('users/social-account-has-phone-number/', SocialAccountExtraView.as_view()),
                              path('cadastres/search-cadastre/', SearchCadastreView.as_view()),
