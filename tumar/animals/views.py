@@ -6,6 +6,7 @@ from django.contrib.gis.geos import Point, Polygon, GEOSGeometry
 from django.contrib.gis.measure import Distance as d
 from django.contrib.gis.db.models import Extent
 from django.db import connections
+from django.db.models import Max
 from django_filters import rest_framework as filters
 from geopy.geocoders import GeoNames
 from rest_framework import viewsets, status, mixins
@@ -51,10 +52,15 @@ class AnimalFarmViewSet(viewsets.ModelViewSet):
     """
     Lists, retrieves, creates, and deletes animals and their farm
     """
-    queryset = Animal.objects.all().order_by('imei')
+    # queryset = Animal.objects.all().order_by('imei')
     serializer_class = AnimalSerializer
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_fields = ('imei',)
+
+    def get_queryset(self):
+        if self.request.user.is_superuser:
+            return Animal.objects.all()
+        return Animal.objects.filter(farm__user=self.request.user)
 
 
 class MachineryFarmViewSet(viewsets.ReadOnlyModelViewSet):
@@ -150,6 +156,25 @@ class GetAnimalPathView(APIView):
         linestring = utils.get_linestring_from_geolocations(filtered_data.qs)
 
         return Response(linestring.geojson)  # Any Python primitive is ok, linestring.geojson is str fyi
+
+
+class SimpleGroupedGeolocationsView(APIView):
+    """
+    View to return latest geolocation for each animal of the farm
+    """
+
+    def get(self, request):
+
+        the_farm = get_object_or_404(Farm, user=request.user)
+        animal_pks = the_farm.animals.values_list('pk', flat=True)
+        response_json = {"animals": [], "groups": []}
+
+        for pk in animal_pks:
+            qs = Geolocation.geolocations.filter(animal_id=pk).latest('time')
+            serializer = GeolocationAnimalSerializer(qs)
+            response_json["animals"].append(serializer.data)
+
+        return Response(response_json)
 
 
 class LatestGroupedGeolocationsView(APIView):
