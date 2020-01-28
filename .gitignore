@@ -54,6 +54,7 @@ coverage.xml
 *.log
 .static_storage/
 .media/
+media/
 local_settings.py
 shell.py
 
@@ -112,3 +113,4 @@ venv.bak/
 
 # Development stuff
 wait_for_postgres.py
+/media/
