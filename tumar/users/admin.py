@@ -10,5 +10,9 @@ class UserAdmin(UserAdmin):
     list_display = ('id', 'username', 'email', 'first_name', 'last_name', 'is_staff',
                     'is_active',)
 
+    fieldsets = UserAdmin.fieldsets + (
+        (None, {'fields': ('image',)}),
+    )
+
 
 admin.site.unregister(Group)

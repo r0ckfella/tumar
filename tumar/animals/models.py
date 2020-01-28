@@ -66,6 +66,7 @@ class Animal(models.Model):
     updated = models.DateTimeField(default=timezone.now)
     imsi = models.CharField(max_length=30, blank=True, verbose_name=_('IMSI number'))
     battery_charge = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name=_('Battery charge'))
+    image = models.ImageField(upload_to='animalimages', max_length=150, null=True)
 
     class Meta:
         verbose_name = _('Animal')

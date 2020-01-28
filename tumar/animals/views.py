@@ -160,17 +160,54 @@ class SimpleGroupedGeolocationsView(APIView):
     """
     View to return latest geolocation for each animal of the farm
     """
+    zoom_distance = {11: (30, 7), 12: (20, 4), 13: (10, 2), 14: (5, 0),
+                     0: (0, 40)}  # (initial query radius, distance bw geolocs)
+    valid_query_params = ('lon', 'lat', 'zoom',)
 
     def get(self, request):
 
+        if not all(param in self.valid_query_params for param in tuple(request.query_params.keys())):
+            return Response({"valid query params": self.valid_query_params}, status=status.HTTP_404_NOT_FOUND)
+
         the_farm = get_object_or_404(Farm, user=request.user)
-        animal_pks = the_farm.animals.values_list('pk', flat=True)
+        # animal_pks = the_farm.animals.values_list('pk', flat=True)
         response_json = {"animals": [], "groups": []}
 
-        for pk in animal_pks:
-            qs = Geolocation.geolocations.filter(animal_id=pk).latest('time')
-            serializer = GeolocationAnimalSerializer(qs)
+        # center_lon = request.query_params.get('lon')
+        # center_lat = request.query_params.get('lat')
+        zoom_level = request.query_params.get('zoom')
+
+        if zoom_level is None:
+            zoom_level = 11
+        elif int(zoom_level) not in list(self.zoom_distance.keys()):
+            zoom_level = 11
+
+        qs = Geolocation.geolocations.filter(animal__farm=the_farm).order_by('animal__id', '-time') \
+            .distinct('animal__id')  # latest for each group
+
+        if int(zoom_level) >= 12:  # list(self.zoom_distance.keys())[-1]:  closest zoom returns all geolocations
+            # for pk in animal_pks:
+            #     qs = Geolocation.geolocations.filter(animal_id=pk).latest('time')
+            #     serializer = GeolocationAnimalSerializer(qs)
+            #     response_json["animals"].append(serializer.data)
+            serializer = GeolocationAnimalSerializer(qs, many=True)
             response_json["animals"].append(serializer.data)
+        else:
+            groups = utils.cluster_geolocations(qs.values_list('pk', flat=True), self.zoom_distance, zoom_level)
+
+            for group in groups:
+                if len(group) != 1:
+                    temp_group_qs = Geolocation.geolocations.filter(pk__in=group)
+                    latest_geoloc_time = temp_group_qs.filter(time__isnull=False).latest('time').time
+                    group_center_point_bbox = temp_group_qs.aggregate(Extent('position'))
+                    group_center_point = Polygon.from_bbox(group_center_point_bbox['position__extent']).centroid
+                    temp_group_data = {"position": group_center_point.json, 'time': latest_geoloc_time,
+                                       'animals_num': len(group)}
+                    response_json["groups"].append(temp_group_data)
+                else:
+                    single_animal = Geolocation.geolocations.get(pk=group.pop())
+                    serializer = GeolocationAnimalSerializer(single_animal)
+                    response_json["animals"].append(serializer.data)
 
         return Response(response_json)
 

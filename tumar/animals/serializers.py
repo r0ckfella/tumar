@@ -9,7 +9,7 @@ from .models import Farm, Animal, Geolocation, Machinery, Event, Cadastre
 class AnimalSerializer(serializers.ModelSerializer):
     class Meta:
         model = Animal
-        fields = ('id', 'farm', 'imei', 'tag_number', 'name', 'updated', 'imsi', 'battery_charge', 'status',)
+        fields = ('id', 'farm', 'imei', 'tag_number', 'name', 'updated', 'imsi', 'battery_charge', 'status', 'image',)
         read_only_fields = ('id', 'updated', 'status', 'battery_charge',)
 
 

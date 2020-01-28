@@ -35,6 +35,7 @@ class User(AbstractUser):
             'unique': _("A user with that phone number already exists."),
         },
     )
+    image = models.ImageField(upload_to='userimages', max_length=150, null=True)
 
     class Meta:
         verbose_name = _('User')
