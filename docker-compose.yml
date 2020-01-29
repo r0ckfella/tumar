@@ -19,6 +19,7 @@ services:
     volumes:
       - "../nginx/conf.d:/etc/nginx/conf.d/templates"
       - /static:/static
+      - media:/media
     networks:
       - "arys"
     labels:
@@ -36,6 +37,7 @@ services:
     volumes:
       - ".:/code"
       - /static:/static
+      - media:/usr/src/app/code/media
     depends_on:
       - redis
     environment:
@@ -60,3 +62,6 @@ networks:
     external: true
   postgis:
     external: true
+
+volumes:
+  media:
