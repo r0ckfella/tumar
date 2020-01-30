@@ -193,7 +193,7 @@ class SimpleGroupedGeolocationsView(APIView):
             #     serializer = GeolocationAnimalSerializer(qs)
             #     response_json["animals"].append(serializer.data)
             serializer = GeolocationAnimalSerializer(qs, many=True)
-            response_json["animals"].append(serializer.data)
+            response_json["animals"] = serializer.data
         else:
             groups = utils.cluster_geolocations(qs.values_list('pk', flat=True), self.zoom_distance, zoom_level)
 
