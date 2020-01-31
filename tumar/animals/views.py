@@ -181,9 +181,7 @@ class SimpleGroupedGeolocationsView(APIView):
         # center_lat = request.query_params.get('lat')
         zoom_level = request.query_params.get('zoom')
 
-        if zoom_level is None:
-            zoom_level = 11
-        elif int(zoom_level) not in list(self.zoom_distance.keys()):
+        if zoom_level is None or int(zoom_level) < 11:
             zoom_level = 11
 
         qs = Geolocation.geolocations.filter(animal__farm=the_farm).order_by('animal__id', '-time') \
