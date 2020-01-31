@@ -7,9 +7,11 @@ from django.contrib.gis.measure import Distance as d
 from django.contrib.gis.db.models import Extent
 from django.db import connections
 from django.db.models import Max
+from django.utils.translation import gettext_lazy as _
 from django_filters import rest_framework as filters
 from geopy.geocoders import GeoNames
 from rest_framework import viewsets, status, mixins
+from rest_framework.exceptions import NotFound
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -152,12 +154,17 @@ class GetAnimalPathView(APIView):
             return Response({"valid query params": valid_query_params}, status=status.HTTP_404_NOT_FOUND)
 
         filtered_data = AnimalPathFilter(request.GET, queryset=queryset)
-        print(filtered_data.qs.count())
+
         if filtered_data.qs.count() > 1:
             geometry = utils.get_linestring_from_geolocations(filtered_data.qs)
         else:
-            geometry = filtered_data.qs[0].position
-            pass
+            modified_get = request.GET.copy()
+            if 'time_after' not in modified_get and filtered_data.qs.count() < 2:
+                raise NotFound(detail=_('Not enough geolocations to construct LineString'))
+
+            modified_get.pop('time_after')
+            filtered_data = AnimalPathFilter(modified_get, queryset=queryset)
+            geometry = utils.get_linestring_from_geolocations(filtered_data.qs[filtered_data.qs.count()-2:])
 
         return Response(geometry.geojson)  # Any Python primitive is ok, linestring.geojson is str fyi
 
