@@ -152,10 +152,14 @@ class GetAnimalPathView(APIView):
             return Response({"valid query params": valid_query_params}, status=status.HTTP_404_NOT_FOUND)
 
         filtered_data = AnimalPathFilter(request.GET, queryset=queryset)
+        print(filtered_data.qs.count())
+        if filtered_data.qs.count() > 1:
+            geometry = utils.get_linestring_from_geolocations(filtered_data.qs)
+        else:
+            geometry = filtered_data.qs[0].position
+            pass
 
-        linestring = utils.get_linestring_from_geolocations(filtered_data.qs)
-
-        return Response(linestring.geojson)  # Any Python primitive is ok, linestring.geojson is str fyi
+        return Response(geometry.geojson)  # Any Python primitive is ok, linestring.geojson is str fyi
 
 
 class SimpleGroupedGeolocationsView(APIView):
@@ -187,11 +191,7 @@ class SimpleGroupedGeolocationsView(APIView):
         qs = Geolocation.geolocations.filter(animal__farm=the_farm).order_by('animal__id', '-time') \
             .distinct('animal__id')  # latest for each group
 
-        if int(zoom_level) >= 12:  # list(self.zoom_distance.keys())[-1]:  closest zoom returns all geolocations
-            # for pk in animal_pks:
-            #     qs = Geolocation.geolocations.filter(animal_id=pk).latest('time')
-            #     serializer = GeolocationAnimalSerializer(qs)
-            #     response_json["animals"].append(serializer.data)
+        if int(zoom_level) >= 14:  # list(self.zoom_distance.keys())[-1]:  closest zoom returns all geolocations
             serializer = GeolocationAnimalSerializer(qs, many=True)
             response_json["animals"] = serializer.data
         else:
