@@ -47,7 +47,7 @@ class CadastreFarmViewSet(viewsets.ModelViewSet):
     queryset = Cadastre.objects.all().order_by('id')
     serializer_class = CadastreSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filterset_fields = ('cad_number',)
+    filterset_fields = ('cad_number', '')
 
 
 class AnimalFarmViewSet(viewsets.ModelViewSet):
@@ -57,7 +57,7 @@ class AnimalFarmViewSet(viewsets.ModelViewSet):
     # queryset = Animal.objects.all().order_by('imei')
     serializer_class = AnimalSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filterset_fields = ('imei',)
+    filterset_fields = ('imei', 'name', 'tag_number',)
 
     def get_queryset(self):
         if self.request.user.is_superuser:
