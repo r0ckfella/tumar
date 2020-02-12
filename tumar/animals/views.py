@@ -15,7 +15,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from . import utils
-from .filters import AnimalPathFilter
+from .filters import AnimalPathFilter, AnimalNameOrTagNumberFilter
 from .models import Farm, Animal, Geolocation, Machinery, Event, Cadastre
 from .serializers import FarmSerializer, GeolocationAnimalSerializer, EventAnimalSerializer, AnimalSerializer, \
     MachinerySerializer, CadastreSerializer, FarmCadastresSerializer, CreateFarmSerializer
@@ -55,7 +55,7 @@ class AnimalFarmViewSet(viewsets.ModelViewSet):
     # queryset = Animal.objects.all().order_by('imei')
     serializer_class = AnimalSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filterset_fields = ('imei', 'name', 'tag_number',)
+    filter_class = AnimalNameOrTagNumberFilter
 
     def get_queryset(self):
         if self.request.user.is_superuser:
