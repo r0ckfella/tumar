@@ -30,6 +30,8 @@ class ImageryRequest(models.Model):
     results_dir = models.CharField(max_length=100, blank=True, verbose_name=_('Directory with results'))
 
     def save(self, *args, **kwargs):
+        # !!! requested_date is timezone.now()
+        self.requested_date = timezone.now()
         super(ImageryRequest, self).save(*args, **kwargs)
         from .tasks import main_request_fetch
         main_request_fetch(imagery_request=self, requested_date=self.requested_date,
