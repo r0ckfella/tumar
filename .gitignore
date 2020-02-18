@@ -108,8 +108,11 @@ venv.bak/
 # mypy
 .mypy_cache/
 
-# PyCharm
+# IDEs
 .idea/
+.vscode/
+.devcontainer
+
 
 # Development stuff
 wait_for_postgres.py
