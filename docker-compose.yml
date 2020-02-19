@@ -1,13 +1,6 @@
 version: "3"
 services:
 
-  redis:
-    image: redis:latest
-    networks:
-      - "arys"
-    ports:
-      - "6378:6379"
-
   web:
     image: "hub.egistic.kz/nginx:latest"
     restart: "always"
@@ -34,12 +27,11 @@ services:
     networks:
       - "arys"
       - "postgis"
+      - "rabbit"
     volumes:
       - ".:/code"
       - /static:/static
       - media:/usr/src/app/code/media
-    depends_on:
-      - redis
     environment:
       - "DEFAULT_DB_HOST=db_default"
       - "DEFAULT_DB_PORT=5432"
@@ -49,6 +41,8 @@ services:
       - DJANGO_SECRET_KEY=production
       - DJANGO_CONFIGURATION=Production
       - DJANGO_SETTINGS_MODULE=tumar.config.production
+      - "RABBITMQ_DEFAULT_USER=patriot"
+      - "RABBITMQ_DEFAULT_PASS=GtzYz4ahBvR3THg6x89E7wpNDCtYGLCZt6LSqZNXWaerEqD3bdkxRqTjZ6DFjL6Z"
     command: >
       bash -c "update-rc.d celerybeat defaults &&
               service celerybeat start &&
@@ -57,11 +51,20 @@ services:
               ./manage.py compilemessages &&
               ./manage.py runserver 0.0.0.0:80"
 
+# celery worker 
+# -Q imagery_requests.handle_process_request // List of queues to enable for this worker, separated by comma. By default all configured queues are enabled.
+# -l ERROR // Logging level, choose between DEBUG, INFO, WARNING, ERROR, CRITICAL, or FATAL.
+# -n tumar_worker // Set custom hostname (e.g., ‘w1@%%h’). Expands: %%h (hostname), %%n (name) and %%d, (domain).
+# -c 8 // Number of child processes processing the queue. The default is the number of CPUs available on your system.
+
 networks:
   arys:
     external: true
   postgis:
     external: true
+  rabbit:
+    external:
+      name: "rabbit"
 
 volumes:
   media:
