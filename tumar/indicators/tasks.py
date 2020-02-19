@@ -25,7 +25,7 @@ def main_request_fetch(imagery_request, requested_date, date_amplitude=14, gener
                            priority=5,
                            )
 
-    result_handler_task_name = 'celery_requests.tasks.handle_process_request'
+    result_handler_task_name = 'imagery_requests.handle_process_request'
     handler_task = app.signature(result_handler_task_name,
                                  kwargs={
                                      "request_id": imagery_request.id
@@ -40,8 +40,8 @@ def main_request_fetch(imagery_request, requested_date, date_amplitude=14, gener
         (result | handler_task).delay()
 
 
-@shared_task(bind=True, ignore_result=True, name='celery_requests.tasks.handle_process_request',
-             queue='celery_requests.tasks.handle_process_request')
+@shared_task(bind=True, ignore_result=True, name='imagery_requests.handle_process_request',
+             queue='imagery_requests.handle_process_request')
 def handle_process_request(self, result, request_id):
     try:
         imagery_request = ImageryRequest.objects.get(pk=request_id)

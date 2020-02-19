@@ -46,3 +46,24 @@ class Production(Common):
             conn_max_age=int(os.getenv('POSTGRES_CONN_MAX_AGE', 600))
         )
     }
+
+    # CELERY SETTIGS
+    broker_username = os.environ.get('RABBITMQ_DEFAULT_USER', 'guest')
+    broker_password = os.environ.get(
+        'RABBITMQ_DEFAULT_PASS', 'GtzYz4ahBvR3THg6x89E7wpNDCtYGLCZt6LSqZNXWaerEqD3bdkxRqTjZ6DFjL6Z')
+
+    CELERY_BROKER_URL = f'amqp://{broker_username}:{broker_password}@rabbitmq:5672//'
+    CELERY_RESULT_BACKEND = 'rpc://'
+
+    # Celery Data Format
+    CELERY_ACCEPT_CONTENT = ['application/json']
+    CELERY_TASK_SERIALIZER = 'json'
+    CELERY_RESULT_SERIALIZER = 'json'
+    CELERY_TIMEZONE = 'UTC'
+    imports = ('indicators.tasks',)
+
+    CELERY_TASK_ACKS_LATE = False
+    CELERY_TASK_QUEUE_MAX_PRIORITY = 10
+    CELERY_CREATE_MISSING_QUEUES = True
+    CELERY_TASK_REMOTE_TRACEBACKS = True
+    CELERY_TASK_DEFAULT_QUEUE = "django_queue"
