@@ -2,4 +2,4 @@ from django.apps import AppConfig
 
 
 class IndicatorsConfig(AppConfig):
-    name = 'indicators'
+    name = 'tumar.indicators'

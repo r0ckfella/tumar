@@ -28,7 +28,7 @@ class LatestIndicatorsView(APIView):
     def get(self, request):
         cad_number = request.query_params.get('cad_number', None)
         if cad_number is None:
-            return Response({"error": "cadastre number was not specified: {URL}/indicators/latest-indicators/?cad_number=<cad_number:int>"}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"error": "cadastre number was not specified: 'baseURL'/indicators/latest/?cad_number=<cad_number:int>"}, status=status.HTTP_404_NOT_FOUND)
 
         cadastre = get_object_or_404(Cadastre, farm__user=self.request.user, cad_number=cad_number)
 

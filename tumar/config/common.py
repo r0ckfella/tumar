@@ -41,6 +41,7 @@ class Common(Configuration):
         # Your apps
         'tumar.users.apps.UsersConfig',
         'tumar.animals.apps.AnimalsConfig',
+        'tumar.indicators.apps.IndicatorsConfig',
     )
 
     # https://docs.djangoproject.com/en/2.0/topics/http/middleware/
