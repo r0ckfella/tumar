@@ -48,6 +48,7 @@ redis==3.3.11
 # GeoSpatial packages
 djangorestframework-gis==0.15
 geopy==1.20.0
+gsconfig-py3==1.0.7
 
 # REST Authentication/Authorization
 django-rest-auth==0.9.5

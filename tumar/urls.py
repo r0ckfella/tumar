@@ -13,6 +13,7 @@ from .animals.views import FarmViewSet, GeolocationAnimalViewSet, AnimalFarmView
     SearchCadastreView, SimpleGroupedGeolocationsView
 from .users.views import UserViewSet, UserCreateViewSet, CustomAuthToken, FacebookLogin, GoogleLogin, \
     CustomVerificationViewSet, SocialAccountExtraView
+from .indicators.views import LatestIndicatorsView, RequestIndicatorsView
 
 router = DefaultRouter()
 
@@ -38,6 +39,8 @@ urlpatterns = i18n_patterns(
                              path('users/social-account-has-phone-number/', SocialAccountExtraView.as_view()),
                              path('cadastres/search-cadastre/', SearchCadastreView.as_view()),
                              path('myfarm/', MyFarmView.as_view()),
+                             path('indicators/latest/', LatestIndicatorsView.as_view()),
+                             path('indicators/request/', RequestIndicatorsView.as_view()),
                              ] + router.urls + sms_router.urls)),
     path('api-token-auth/', CustomAuthToken.as_view()),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
