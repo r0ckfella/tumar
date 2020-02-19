@@ -31,6 +31,10 @@ class ImageryRequest(models.Model):
     actual_date = models.DateTimeField(blank=True, null=True, verbose_name=_('Actual Date'))
     results_dir = models.CharField(max_length=100, blank=True, verbose_name=_('Directory with results'))
 
+    class Meta:
+        verbose_name = _('Imagery Request')
+        verbose_name_plural = _('Imagery Requests')
+
     def save(self, *args, **kwargs):
         # !!! requested_date is timezone.now()
         self.requested_date = datetime.date.today()
