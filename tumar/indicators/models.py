@@ -1,3 +1,5 @@
+import datetime
+
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -31,7 +33,7 @@ class ImageryRequest(models.Model):
 
     def save(self, *args, **kwargs):
         # !!! requested_date is timezone.now()
-        self.requested_date = timezone.now()
+        self.requested_date = datetime.date.today()
         super(ImageryRequest, self).save(*args, **kwargs)
         from .tasks import main_request_fetch
         main_request_fetch(imagery_request=self, requested_date=self.requested_date,
