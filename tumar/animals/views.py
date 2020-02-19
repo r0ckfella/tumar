@@ -1,5 +1,6 @@
 import django.utils.timezone as tz
 
+from django.contrib.auth import get_user_model
 from django.contrib.gis.geos import Point, Polygon, GEOSGeometry
 from django.contrib.gis.measure import Distance as d
 from django.contrib.gis.db.models import Extent
@@ -19,6 +20,8 @@ from .filters import AnimalPathFilter, AnimalNameOrTagNumberFilter
 from .models import Farm, Animal, Geolocation, Machinery, Event, Cadastre
 from .serializers import FarmSerializer, GeolocationAnimalSerializer, EventAnimalSerializer, AnimalSerializer, \
     MachinerySerializer, CadastreSerializer, FarmCadastresSerializer, CreateFarmSerializer
+
+User = get_user_model()
 
 
 # Create your views here.
@@ -173,14 +176,20 @@ class SimpleGroupedGeolocationsView(APIView):
     """
     zoom_distance = {11: (30, 7), 12: (20, 4), 13: (10, 2), 14: (5, 0),
                      0: (0, 40)}  # (initial query radius, distance bw geolocs)
-    valid_query_params = ('lon', 'lat', 'zoom',)
+    valid_query_params = ('lon', 'lat', 'zoom', 'user_id')
 
     def get(self, request):
 
         if not all(param in self.valid_query_params for param in tuple(request.query_params.keys())):
             return Response({"valid query params": self.valid_query_params}, status=status.HTTP_404_NOT_FOUND)
 
-        the_farm = get_object_or_404(Farm, user=request.user)
+        current_user = get_object_or_404(User, username=request.user)
+
+        if current_user.is_superuser:
+            user_id = request.query_params.get('user_id')
+            current_user = get_object_or_404(User, pk=user_id)
+
+        the_farm = get_object_or_404(Farm, user=current_user)
         # animal_pks = the_farm.animals.values_list('pk', flat=True)
         response_json = {"animals": [], "groups": []}
 
