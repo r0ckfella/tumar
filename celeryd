@@ -18,7 +18,7 @@ CELERY_APP="tumar.celery:app"
 #CELERY_APP="proj.tasks:app"
 
 # Where to chdir at start.
-CELERYD_CHDIR="/usr/src/app/code/"
+CELERYD_CHDIR="/code/"
 
 # Extra command-line arguments to the worker
 #CELERYD_OPTS="--time-limit=300 --concurrency=8"

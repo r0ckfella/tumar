@@ -8,7 +8,7 @@ CELERY_APP="tumar.celery:app"
 #CELERY_APP="proj.tasks:app"
 
 # Where to chdir at start.
-CELERYBEAT_CHDIR="/usr/src/app/code/"
+CELERYBEAT_CHDIR="/code/"
 
 # Extra arguments to celerybeat
 #CELERYBEAT_OPTS="--schedule=/var/run/celery/celerybeat-schedule"
