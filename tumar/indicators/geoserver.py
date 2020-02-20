@@ -5,7 +5,7 @@ import requests
 from geoserver.catalog import Catalog
 
 
-def layer_create_tiff(request, name_part='_tumar_', root="/root/Rasters"):
+def layer_create_tiff(request, name_part='_tumar_', root="/imgback_rasters"):
     geo_url = 'http://geoserver:8080/geoserver/rest/' if os.getenv(
         'DEFAULT_DB_HOST') else 'https://geo.egistic.kz/geoserver/rest/'
     cat = Catalog(geo_url, 'admin', 'UxeiJ5ree2riVoi')

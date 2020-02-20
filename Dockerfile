@@ -1,6 +1,6 @@
 FROM python:3.6
 
-WORKDIR /usr/src/app
+WORKDIR /code
 
 RUN apt-get update -y && \
     apt-get install --auto-remove -y \
@@ -27,7 +27,7 @@ COPY ./requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 
 # Adds our application code to the image
-COPY . code
+COPY . .
 
 COPY celerybeat /etc/default/celerybeat
 COPY celerybeat-init /etc/init.d/celerybeat
@@ -35,8 +35,8 @@ COPY celeryd /etc/default/celeryd
 COPY celeryd-init /etc/init.d/celeryd
 RUN chmod +x /etc/init.d/celeryd /etc/init.d/celerybeat && chmod 640 '/etc/default/celerybeat' '/etc/default/celeryd'
 
-WORKDIR code
-
 EXPOSE 8088
 
-RUN adduser --disabled-password --gecos '' celery && usermod -a -G root celery && chmod 770 '/usr/src/app/code/'
+RUN adduser --disabled-password --gecos '' celery && usermod -a -G root celery && chmod 770 '/code/'
+
+RUN mkdir /imgback_rasters /static

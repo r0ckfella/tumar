@@ -29,9 +29,10 @@ services:
       - "postgis"
       - "rabbit"
     volumes:
+      - "/nfs/storage/imgback_rasters:/imgback_rasters"
       - ".:/code"
-      - /static:/static
-      - media:/usr/src/app/code/media
+      # - /static:/static
+      - media:/code/media
     environment:
       - "DEFAULT_DB_HOST=db_default"
       - "DEFAULT_DB_PORT=5432"
@@ -47,6 +48,7 @@ services:
       bash -c "update-rc.d celerybeat defaults &&
               service celerybeat start &&
               service celeryd start &&
+              ./manage.py collectstatic &&
               ./manage.py migrate &&
               ./manage.py compilemessages &&
               ./manage.py runserver 0.0.0.0:80"
