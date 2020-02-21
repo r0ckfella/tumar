@@ -42,8 +42,8 @@ services:
       - DJANGO_SECRET_KEY=production
       - DJANGO_CONFIGURATION=Production
       - DJANGO_SETTINGS_MODULE=tumar.config.production
-      - "RABBITMQ_DEFAULT_USER=patriot"
-      - "RABBITMQ_DEFAULT_PASS=GtzYz4ahBvR3THg6x89E7wpNDCtYGLCZt6LSqZNXWaerEqD3bdkxRqTjZ6DFjL6Z"
+      - RABBITMQ_DEFAULT_USER=patriot
+      - RABBITMQ_DEFAULT_PASS=GtzYz4ahBvR3THg6x89E7wpNDCtYGLCZt6LSqZNXWaerEqD3bdkxRqTjZ6DFjL6Z
     command: >
       bash -c "update-rc.d celerybeat defaults &&
               service celerybeat start &&
