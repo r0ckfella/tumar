@@ -105,7 +105,7 @@ services:
       - RABBITMQ_DEFAULT_USER=patriot
       - RABBITMQ_DEFAULT_PASS=GtzYz4ahBvR3THg6x89E7wpNDCtYGLCZt6LSqZNXWaerEqD3bdkxRqTjZ6DFjL6Z
     command: >
-      bash -c "celery beat -A tumar -l INFO"
+      bash -c "celery beat -A tumar -l INFO --pidfile /tmp/celerybeat.pid -s /tmp/celerybeat-schedule"
 
 networks:
   arys:
