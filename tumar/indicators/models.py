@@ -39,9 +39,10 @@ class ImageryRequest(models.Model):
         # !!! requested_date is timezone.now()
         self.requested_date = datetime.date.today()
         super(ImageryRequest, self).save(*args, **kwargs)
-        from .tasks import main_request_fetch
-        main_request_fetch(imagery_request=self, requested_date=self.requested_date,
-                           generate_bands=self.generate_bands)
+        if self.results_dir == '':
+            from .tasks import main_request_fetch
+            main_request_fetch(imagery_request=self, requested_date=self.requested_date,
+                            generate_bands=self.generate_bands)
 
     def success(self, results_dir, image_date, *args, **kwargs):
         if self.process_status == PENDING:
