@@ -54,7 +54,7 @@ services:
   celery:
     image: "hub.egistic.kz/tumar:latest"
     restart: "always"
-    user: "1000:1000"
+    #user: "1000:1000"
     expose:
       - "80"
     networks:
@@ -82,7 +82,7 @@ services:
   celerybeat:
     image: "hub.egistic.kz/tumar:latest"
     restart: "always"
-    user: "1000:1000"
+    #user: "1000:1000"
     expose:
       - "80"
     networks:

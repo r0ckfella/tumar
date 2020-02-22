@@ -31,6 +31,4 @@ COPY . .
 
 EXPOSE 8088
 
-RUN adduser --disabled-password --gecos '' celery && usermod -a -G root celery && chmod 770 '/code/'
-
 RUN mkdir /imgback_rasters /static
