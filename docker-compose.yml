@@ -76,7 +76,34 @@ services:
       - RABBITMQ_DEFAULT_USER=patriot
       - RABBITMQ_DEFAULT_PASS=GtzYz4ahBvR3THg6x89E7wpNDCtYGLCZt6LSqZNXWaerEqD3bdkxRqTjZ6DFjL6Z
     command: >
-      bash -c "celery multi start w1 w2 --pidfile= --schedule=/var/run/celery/celerybeat-schedule -l INFO -Q:w1 imagery_requests.handle_process_request -c:w1 8 -n:w1 tumar_worker -Q:w2 tumar_celerybeat_worker -c:w2 2 -n:w2 tumar_celerybeat_worker"
+      bash -c "celery -A tumar-tasks worker -l INFO -Q imagery_requests.handle_process_request -c 8 -n tumar_worker --statedb=/var/run/celery/worker.state"
+
+  celerybeat:
+    image: "hub.egistic.kz/tumar:latest"
+    restart: "always"
+    expose:
+      - "80"
+    networks:
+      - "arys"
+      - "postgis"
+      - "rabbit"
+      - "geoserver"
+    volumes:
+      - "/nfs/storage/imgback_rasters:/imgback_rasters"
+      - ".:/code"
+    environment:
+      - "DEFAULT_DB_HOST=db_default"
+      - "DEFAULT_DB_PORT=5432"
+      - "DEFAULT_DB_NAME=tumar"
+      - "DEFAULT_DB_USER=docker"
+      - "DEFAULT_DB_PASSWORD=docker"
+      - DJANGO_SECRET_KEY=production
+      - DJANGO_CONFIGURATION=Production
+      - DJANGO_SETTINGS_MODULE=tumar.config.production
+      - RABBITMQ_DEFAULT_USER=patriot
+      - RABBITMQ_DEFAULT_PASS=GtzYz4ahBvR3THg6x89E7wpNDCtYGLCZt6LSqZNXWaerEqD3bdkxRqTjZ6DFjL6Z
+    command: >
+      bash -c "celery beat -A tumar-tasks --pidfile=/opt/celeryd.pid --schedule=/var/run/celery/celerybeat-schedule -l INFO --statedb=/var/run/celery/worker.state"
 
 networks:
   arys:
