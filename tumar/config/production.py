@@ -49,7 +49,6 @@ class Production(Common):
 
     # CELERY SETTIGS
     broker_username = os.getenv('RABBITMQ_DEFAULT_USER', 'guest')
-    print(broker_username)
     broker_password = os.getenv(
         'RABBITMQ_DEFAULT_PASS', 'GtzYz4ahBvR3THg6x89E7wpNDCtYGLCZt6LSqZNXWaerEqD3bdkxRqTjZ6DFjL6Z')
 
