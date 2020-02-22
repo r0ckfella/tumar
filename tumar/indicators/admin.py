@@ -11,4 +11,4 @@ class ImageryRequestAdmin(admin.ModelAdmin):
     list_filter = ('process_status', 'created_date', 'requested_date', 'actual_date')
     date_hierarchy = 'created_date'
     search_fields = ['id', '=cadastre__cad_number',]
-    exclude = ('generate_bands', 'created_date', 'requested_date', 'actual_date', 'results_dir',)
+    exclude = ('process_status', 'generate_bands', 'created_date', 'requested_date', 'actual_date', 'results_dir',)
