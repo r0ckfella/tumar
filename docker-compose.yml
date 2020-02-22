@@ -28,6 +28,7 @@ services:
       - "arys"
       - "postgis"
       - "rabbit"
+      - "geoserver"
     volumes:
       - "/nfs/storage/imgback_rasters:/imgback_rasters"
       - ".:/code"
@@ -45,19 +46,38 @@ services:
       - RABBITMQ_DEFAULT_USER=patriot
       - RABBITMQ_DEFAULT_PASS=GtzYz4ahBvR3THg6x89E7wpNDCtYGLCZt6LSqZNXWaerEqD3bdkxRqTjZ6DFjL6Z
     command: >
-      bash -c "update-rc.d celerybeat defaults &&
-              service celerybeat start &&
-              service celeryd start &&
-              ./manage.py collectstatic &&
+      bash -c "./manage.py collectstatic &&
               ./manage.py migrate &&
               ./manage.py compilemessages &&
               ./manage.py runserver 0.0.0.0:80"
 
-# celery worker 
-# -Q imagery_requests.handle_process_request // List of queues to enable for this worker, separated by comma. By default all configured queues are enabled.
-# -l ERROR // Logging level, choose between DEBUG, INFO, WARNING, ERROR, CRITICAL, or FATAL.
-# -n tumar_worker // Set custom hostname (e.g., ‘w1@%%h’). Expands: %%h (hostname), %%n (name) and %%d, (domain).
-# -c 8 // Number of child processes processing the queue. The default is the number of CPUs available on your system.
+  celery:
+    image: "hub.egistic.kz/tumar:latest"
+    restart: "always"
+    expose:
+      - "80"
+    networks:
+      - "arys"
+      - "postgis"
+      - "rabbit"
+      - "geoserver"
+    volumes:
+      - "/nfs/storage/imgback_rasters:/imgback_rasters"
+      - ".:/code"
+    environment:
+      - "DEFAULT_DB_HOST=db_default"
+      - "DEFAULT_DB_PORT=5432"
+      - "DEFAULT_DB_NAME=tumar"
+      - "DEFAULT_DB_USER=docker"
+      - "DEFAULT_DB_PASSWORD=docker"
+      - DJANGO_SECRET_KEY=production
+      - DJANGO_CONFIGURATION=Production
+      - DJANGO_SETTINGS_MODULE=tumar.config.production
+      - RABBITMQ_DEFAULT_USER=patriot
+      - RABBITMQ_DEFAULT_PASS=GtzYz4ahBvR3THg6x89E7wpNDCtYGLCZt6LSqZNXWaerEqD3bdkxRqTjZ6DFjL6Z
+    command: >
+      bash -c "celery multi start w1 w2 -Q:w1 imagery_requests.handle_process_request -c:w1 8 -n:w1 tumar_worker 
+              -Q:w2 tumar_celerybeat_worker -c:w2 2 -n:w2 tumar_celerybeat_worker -l ERROR"
 
 networks:
   arys:
@@ -67,6 +87,9 @@ networks:
   rabbit:
     external:
       name: "rabbit"
+  geoserver:
+    external:
+      name: "geoserver"
 
 volumes:
   media:
