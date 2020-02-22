@@ -49,8 +49,9 @@ class ImageryRequest(models.Model):
             self.results_dir = results_dir
             self.process_status = FINISHED
             self.save()
-        print("ImageryRequest's success() method shouldn't have been called with any process_status other than PENDING")
-        self.failure()
+        else:
+            print("ImageryRequest's success() method shouldn't have been called with any process_status other than PENDING")
+            self.failure()
 
     def failure(self, *args, **kwargs):
         self.process_status = FAILURE

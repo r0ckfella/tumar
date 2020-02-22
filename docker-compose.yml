@@ -54,6 +54,7 @@ services:
   celery:
     image: "hub.egistic.kz/tumar:latest"
     restart: "always"
+    user: "1000:1000"
     expose:
       - "80"
     networks:
@@ -76,11 +77,12 @@ services:
       - RABBITMQ_DEFAULT_USER=patriot
       - RABBITMQ_DEFAULT_PASS=GtzYz4ahBvR3THg6x89E7wpNDCtYGLCZt6LSqZNXWaerEqD3bdkxRqTjZ6DFjL6Z
     command: >
-      bash -c "celery -A tumar-tasks worker -l INFO -Q imagery_requests.handle_process_request -c 8 -n tumar_worker --statedb=/var/run/celery/worker.state"
+      bash -c "celery -A tumar worker -l INFO -Q imagery_requests.handle_process_request -c 8 -n tumar_worker"
 
   celerybeat:
     image: "hub.egistic.kz/tumar:latest"
     restart: "always"
+    user: "1000:1000"
     expose:
       - "80"
     networks:
@@ -103,7 +105,7 @@ services:
       - RABBITMQ_DEFAULT_USER=patriot
       - RABBITMQ_DEFAULT_PASS=GtzYz4ahBvR3THg6x89E7wpNDCtYGLCZt6LSqZNXWaerEqD3bdkxRqTjZ6DFjL6Z
     command: >
-      bash -c "celery beat -A tumar-tasks --pidfile=/opt/celeryd.pid --schedule=/var/run/celery/celerybeat-schedule -l INFO --statedb=/var/run/celery/worker.state"
+      bash -c "celery beat -A tumar -l INFO"
 
 networks:
   arys:
