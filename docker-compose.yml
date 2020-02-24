@@ -77,7 +77,7 @@ services:
       - RABBITMQ_DEFAULT_USER=patriot
       - RABBITMQ_DEFAULT_PASS=GtzYz4ahBvR3THg6x89E7wpNDCtYGLCZt6LSqZNXWaerEqD3bdkxRqTjZ6DFjL6Z
     command: >
-      bash -c "celery -A tumar worker -Q imagery_requests.handle_process_request -c 8 -n tumar_worker -l DEBUG"
+      bash -c "celery -A tumar worker -Q imagery_requests.handle_process_request -c 8 -n tumar_worker -l INFO"
 
   celery-worker2:
     image: "hub.egistic.kz/tumar:latest"
@@ -105,7 +105,7 @@ services:
       - RABBITMQ_DEFAULT_USER=patriot
       - RABBITMQ_DEFAULT_PASS=GtzYz4ahBvR3THg6x89E7wpNDCtYGLCZt6LSqZNXWaerEqD3bdkxRqTjZ6DFjL6Z
     command: >
-      bash -c "celery -A tumar worker -Q tumar_celerybeat -c 2 -n tumar_celerybeat_worker -l DEBUG"
+      bash -c "celery -A tumar worker -Q tumar_celerybeat -c 2 -n tumar_celerybeat_worker -l INFO"
 
   celerybeat:
     image: "hub.egistic.kz/tumar:latest"
