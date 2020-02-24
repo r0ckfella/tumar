@@ -47,7 +47,7 @@ def handle_process_request(self, result, request_id):
         imagery_request = ImageryRequest.objects.get(pk=request_id)
     except ImageryRequest.DoesNotExist:
         self.update_state(state=states.FAILURE)
-        return 'IMAGERY_REQUEST_NOT_EXIST'
+        return 'IMAGERY_REQUEST_NOT_EXIST WITH ID: {}'.format(request_id)
 
     # result = (success/failure, (results_dir, image_date)/None)
     if result[0]:
@@ -58,7 +58,7 @@ def handle_process_request(self, result, request_id):
         layer_create_tiff(imagery_request)
         mapproxy()
         self.update_state(state=states.SUCCESS)
-        return 'IMAGERY_SUCCESSFULLY_FINISHED'
+        return 'IMAGERY_SUCCESSFULLY_FINISHED. ID: {}'.format(request_id)
     else:
         # If failure -> resend request
         requested_date = imagery_request.requested_date
@@ -68,7 +68,7 @@ def handle_process_request(self, result, request_id):
         if requested_date < datetime.date(datetime.now()):
             imagery_request.failure()
             self.update_state(state=states.SUCCESS)
-            return 'IMAGERY_DATE_NOT_FOUND_IN_PAST'
+            return 'IMAGERY_DATE_NOT_FOUND_IN_PAST FOR ID: {}'.format(request_id)
 
         # NOW HANDLER
         elif requested_date == datetime.now().date():
@@ -82,4 +82,4 @@ def handle_process_request(self, result, request_id):
             date_amplitude=date_amplitude,
         )
         self.update_state(state=states.SUCCESS)
-        return 'IMAGERY_NOT_FOUND_WAITING_FOR_NEXT_DAY'
+        return 'IMAGERY_NOT_FOUND_WAITING_FOR_NEXT_DAY WITH ID: {}'.format(request_id)

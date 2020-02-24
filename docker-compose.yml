@@ -77,7 +77,7 @@ services:
       - RABBITMQ_DEFAULT_USER=patriot
       - RABBITMQ_DEFAULT_PASS=GtzYz4ahBvR3THg6x89E7wpNDCtYGLCZt6LSqZNXWaerEqD3bdkxRqTjZ6DFjL6Z
     command: >
-      bash -c "celery -A tumar worker -l INFO -Q imagery_requests.handle_process_request -c 8 -n tumar_worker"
+      bash -c "celery multi start w1 w2 -l INFO -A tumar -Q:w1 imagery_requests.handle_process_request -c:w1 8 -n:w1 tumar_worker -Q:w2 tumar_celerybeat -c:w2 2 -n:w2 tumar_celerybeat_worker"
 
   celerybeat:
     image: "hub.egistic.kz/tumar:latest"
