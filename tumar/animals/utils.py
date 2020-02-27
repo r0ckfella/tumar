@@ -18,7 +18,7 @@ def get_linestring_from_geolocations(geolocations_qs):
 
 
 def download_geolocations(farm_pk, farm_api_key):
-    url = 'http://www.xiaomutong.vip/farm/api/v2/gpsData'
+    url = 'http://42.123.123.254/farm/api/v2/gpsData'
     # url = 'http://185.125.44.211/farm/api/v2/gpsData'
     headers = {'Content-type': 'application/json', 'Accept': 'application/json'}
     payload = {
