@@ -15,7 +15,8 @@ from .managers import GeolocationQuerySet
 
 class Farm(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE, related_name="farm")
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, null=True,
+                                on_delete=models.CASCADE, related_name="farm")
     iin = models.CharField(max_length=32, unique=True, verbose_name=_('IIN/BIN'))
     legal_person = models.CharField(max_length=50, blank=True, verbose_name=_('Legal person'))
     iik = models.CharField(max_length=80, blank=True, verbose_name=_('IIK'))
@@ -26,7 +27,7 @@ class Farm(models.Model):
 
     @property
     def calves_number(self):
-        return self.animals.count()
+        return self.calf_set.count()
 
     class Meta:
         verbose_name = _('Farm')
@@ -54,23 +55,17 @@ class Machinery(models.Model):
         return str(self.id)
 
 
-class Animal(models.Model):
+class BaseAnimal(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    farm = models.ForeignKey(Farm, on_delete=models.CASCADE, related_name="animals", verbose_name=_('Farm'))
-    imei_regex = RegexValidator(regex=r'^\d{15}$',
-                                message=("Imei must be entered in the format: '123456789012345'. "
-                                         "Up to 15 digits allowed."))
-    imei = models.CharField(validators=[imei_regex], max_length=15, blank=True, unique=True)
+    farm = models.ForeignKey(Farm, on_delete=models.CASCADE, verbose_name=_('Farm'))
     tag_number = models.CharField(max_length=25, null=True, verbose_name=_('Animal tag number'), unique=True)
     name = models.CharField(max_length=30, blank=True, verbose_name=_('Animal name'))
-    updated = models.DateTimeField(default=timezone.now)
-    imsi = models.CharField(max_length=30, blank=True, verbose_name=_('IMSI number'))
-    battery_charge = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name=_('Battery charge'))
-    image = models.ImageField(upload_to='animalimages', max_length=150, null=True, blank=True)
+    birth_date = models.DateField(null=True, verbose_name=_('Date of birth'))
+    image = models.ImageField(upload_to='animalimages', max_length=150, null=True,
+                              blank=True, verbose_name=_('Photo of the animal'))
 
     class Meta:
-        verbose_name = _('Animal')
-        verbose_name_plural = _('Animals')
+        abstract = True
 
     def __str__(self):
         if self.name:
@@ -80,13 +75,101 @@ class Animal(models.Model):
 
         return self.imei
 
+
+class Animal(BaseAnimal):
+    imei_regex = RegexValidator(regex=r'^\d{15}$',
+                                message=("Imei must be entered in the format: '123456789012345'. "
+                                         "Up to 15 digits allowed."))
+    imei = models.CharField(validators=[imei_regex], max_length=15, blank=True,
+                            unique=True, verbose_name=_('IMEI of the tracker'))
+    imsi = models.CharField(max_length=30, blank=True, verbose_name=_('IMSI number'))
+    battery_charge = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name=_('Battery charge'))
+    updated = models.DateTimeField(default=timezone.now, verbose_name=_('Last updated'))
+
+    class Meta:
+        verbose_name = _('Animal')
+        verbose_name_plural = _('Animals')
+
     @property
     def status(self):
         return self.updated > timezone.now() - timezone.timedelta(days=1)
 
 
+KAZ_LH = 'KL'
+GEREFORD = 'GF'
+ANGUS = 'AG'
+KALMYK = 'KM'
+AULIYEKOL = 'AK'
+SIMMENTAL = 'SM'
+MILK_BREED = 'MB'
+NO_BREED = 'NB'
+CROSS = 'CR'
+OTHER = 'OT'
+
+BREED_CHOICES = [
+    (KAZ_LH, _('Казахская белоголовая')),
+    (GEREFORD, _('Герефорд')),
+    (ANGUS, _('Ангус')),
+    (KALMYK, _('Калмыцкая')),
+    (AULIYEKOL, _('Аулиекольская')),
+    (SIMMENTAL, _('Симментал')),
+    (MILK_BREED, _('Молочные породы')),
+    (NO_BREED, _('Беспородная')),
+    (CROSS, _('Кросс')),
+    (OTHER, _('Другое')),
+]
+
+class BreedingStock(BaseAnimal):  # Маточное поголовье
+    breed = models.CharField(max_length=2, choices=BREED_CHOICES,
+                             default=NO_BREED, verbose_name=_('Breed of the animal'))
+
+    class Meta:
+        verbose_name = _('Breeding Stock')
+        verbose_name_plural = _('Breeding Stock')
+
+
+MALE = 'ML'
+FEMALE = 'FM'
+
+GENDER_CHOICES = [
+    (MALE, _('Male')),
+    (FEMALE, _('Female'))
+]
+
+class Calf(BaseAnimal):  # Телята
+    wean_date = models.DateTimeField(default=timezone.now, verbose_name=_('Date of weaning'))
+    gender = models.CharField(max_length=2, choices=GENDER_CHOICES, default=FEMALE, verbose_name=_('Gender'))
+    breed = models.CharField(max_length=2, choices=BREED_CHOICES,
+                             default=NO_BREED, verbose_name=_('Breed of the animal'))
+    mother = models.ForeignKey(BreedingStock, on_delete=models.CASCADE,
+                               related_name="calves", verbose_name=_('Mother'))
+
+    class Meta:
+        verbose_name = _('Calf')
+        verbose_name_plural = _('Calves')
+
+
+class BreedingBull(BaseAnimal):  # Племенной бык
+    birth_place = models.CharField(max_length=100, blank=True, verbose_name=_('Birth Place'))
+    breed = models.CharField(max_length=2, choices=BREED_CHOICES,
+                             default=NO_BREED, verbose_name=_('Breed of the animal'))
+
+    class Meta:
+        verbose_name = _('Breeding Bull')
+        verbose_name_plural = _('Breeding Bulls')
+
+
+class StoreCattle(BaseAnimal):  # Скот на откорме
+    wean_date = models.DateTimeField(default=timezone.now, verbose_name=_('Date of weaning'))
+
+    class Meta:
+        verbose_name = _('Store Cattle')
+        verbose_name_plural = _('Store Cattle')
+
+
 class Geolocation(models.Model):
-    animal = models.ForeignKey(Animal, on_delete=models.CASCADE, related_name="geolocations", verbose_name=_('Animal'))
+    animal = models.ForeignKey(Animal, on_delete=models.CASCADE,
+                               related_name="geolocations", verbose_name=_('Animal'))
     position = models.PointField(srid=3857, verbose_name=_('Position'))
     time = models.DateTimeField(verbose_name=_('Time'))
 
@@ -102,7 +185,8 @@ class Geolocation(models.Model):
 
 
 class Event(models.Model):
-    animal = models.ForeignKey(Animal, on_delete=models.CASCADE, related_name="events", verbose_name=_('Animal'))
+    animal = models.ForeignKey(Animal, on_delete=models.CASCADE,
+                               related_name="events", verbose_name=_('Animal'))
     title = models.CharField(max_length=80, verbose_name=_('Title'))
     time = models.DateTimeField(default=timezone.now, verbose_name=_('Time of the event'))
     description = models.TextField(blank=True, verbose_name=_('Description'))
@@ -138,12 +222,15 @@ class Cadastre(models.Model):
 
     def save(self, *args, **kwargs):
         if self.cad_number and not self.geom:
-            with connections['egistic_2'].cursor() as cursor:
-                cursor.execute(
-                    "SELECT ST_AsText(ST_Transform(geom, 3857)) FROM cadastres_cadastre WHERE kad_nomer = %s",
-                    [self.cad_number])
-                row = cursor.fetchone()
-                self.geom = row[0]
+            try:
+                with connections['egistic_2'].cursor() as cursor:
+                    cursor.execute(
+                        "SELECT ST_AsText(ST_Transform(geom, 3857)) FROM cadastres_cadastre WHERE kad_nomer = %s",
+                        [self.cad_number])
+                    row = cursor.fetchone()
+                    self.geom = row[0]
+            except TypeError as err:
+                raise ValidationError("cadastre number was not specified or not found in the database")
         elif not self.cad_number and not self.geom:
             raise ValidationError('Either cad_number or geometry must be sent')
         elif self.cad_number and self.geom:
