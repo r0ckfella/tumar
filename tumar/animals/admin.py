@@ -7,7 +7,7 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 
 # Register your models here.
-from .models import Farm, Animal, Geolocation, Machinery, Event, Cadastre
+from .models import Farm, Animal, Geolocation, Machinery, Event, Cadastre, BreedingStock, BreedingBull, Calf, StoreCattle
 from .utils import download_geolocations
 
 
@@ -75,6 +75,22 @@ class EventAdmin(admin.ModelAdmin):
     list_filter = ('time', 'completed', 'animal',)
     date_hierarchy = 'time'
 
+
+@admin.register(BreedingStock)
+class BreedingStockAdmin(admin.ModelAdmin):
+    pass
+
+@admin.register(BreedingBull)
+class BreedingBullAdmin(admin.ModelAdmin):
+    pass
+
+@admin.register(Calf)
+class CalfAdmin(admin.ModelAdmin):
+    pass
+
+@admin.register(StoreCattle)
+class StoreCattleAdmin(admin.ModelAdmin):
+    pass
 
 @admin.register(Cadastre)
 class CadastreAdmin(admin.ModelAdmin):

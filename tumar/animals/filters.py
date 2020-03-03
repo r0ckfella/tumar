@@ -1,7 +1,7 @@
 from django.db.models import Q
 from django_filters import rest_framework as rest_filters
 
-from .models import Geolocation, Animal
+from .models import Geolocation, Animal, BaseAnimal
 
 
 class AnimalPathFilter(rest_filters.FilterSet):
@@ -13,7 +13,7 @@ class AnimalPathFilter(rest_filters.FilterSet):
         fields = ['imei', 'time', ]
 
 
-class AnimalNameOrTagNumberFilter(rest_filters.FilterSet):
+class AnimalNameTagNumberImeiFilter(rest_filters.FilterSet):
     search = rest_filters.CharFilter(method='filter_name_or_tag_number')
 
     class Meta:
@@ -25,4 +25,18 @@ class AnimalNameOrTagNumberFilter(rest_filters.FilterSet):
     def filter_name_or_tag_number(self, queryset, name, value):
         return queryset.filter(
             Q(name__icontains=value) | Q(tag_number__icontains=value) | Q(imei__icontains=value)
+        )
+
+class AnimalNameOrTagNumberFilter(rest_filters.FilterSet):
+    search = rest_filters.CharFilter(method='filter_name_or_tag_number')
+
+    class Meta:
+        model = BaseAnimal
+        fields = {
+            'search',
+        }
+
+    def filter_name_or_tag_number(self, queryset, name, value):
+        return queryset.filter(
+            Q(name__icontains=value) | Q(tag_number__icontains=value)
         )

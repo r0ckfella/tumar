@@ -16,10 +16,11 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from . import utils
-from .filters import AnimalPathFilter, AnimalNameOrTagNumberFilter
-from .models import Farm, Animal, Geolocation, Machinery, Event, Cadastre
+from .filters import AnimalPathFilter, AnimalNameOrTagNumberFilter, AnimalNameTagNumberImeiFilter
+from .models import Farm, Animal, Geolocation, Machinery, Event, Cadastre, BreedingBull, BreedingStock, Calf, StoreCattle
 from .serializers import FarmSerializer, GeolocationAnimalSerializer, EventAnimalSerializer, AnimalSerializer, \
-    MachinerySerializer, CadastreSerializer, FarmCadastresSerializer, CreateFarmSerializer
+    MachinerySerializer, CadastreSerializer, FarmCadastresSerializer, CreateFarmSerializer, BreedingBullSerializer, \
+    BreedingStockSerializer, CalfSerializer, StoreCattleSerializer
 
 User = get_user_model()
 
@@ -63,12 +64,72 @@ class AnimalFarmViewSet(viewsets.ModelViewSet):
     # queryset = Animal.objects.all().order_by('imei')
     serializer_class = AnimalSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_class = AnimalNameOrTagNumberFilter
+    filter_class = AnimalNameTagNumberImeiFilter
 
     def get_queryset(self):
         if self.request.user.is_superuser:
             return Animal.objects.all().order_by('imei')
         return Animal.objects.filter(farm__user=self.request.user).order_by('imei')
+
+
+class BreedingStockFarmViewSet(viewsets.ModelViewSet):
+    """
+    Lists, retrieves, creates, and deletes breeding stock and their farm
+    """
+    # queryset = Animal.objects.all().order_by('imei')
+    serializer_class = BreedingStockSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_class = AnimalNameOrTagNumberFilter
+
+    def get_queryset(self):
+        if self.request.user.is_superuser:
+            return BreedingStock.objects.all().order_by('id')
+        return BreedingStock.objects.filter(farm__user=self.request.user).order_by('id')
+
+
+class BreedingBullFarmViewSet(viewsets.ModelViewSet):
+    """
+    Lists, retrieves, creates, and deletes breeding bulls and their farm
+    """
+    # queryset = Animal.objects.all().order_by('imei')
+    serializer_class = BreedingBullSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_class = AnimalNameOrTagNumberFilter
+
+    def get_queryset(self):
+        if self.request.user.is_superuser:
+            return BreedingBull.objects.all().order_by('id')
+        return BreedingBull.objects.filter(farm__user=self.request.user).order_by('id')
+
+
+class CalfFarmViewSet(viewsets.ModelViewSet):
+    """
+    Lists, retrieves, creates, and deletes calves and their farm
+    """
+    # queryset = Animal.objects.all().order_by('imei')
+    serializer_class = CalfSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_class = AnimalNameOrTagNumberFilter
+
+    def get_queryset(self):
+        if self.request.user.is_superuser:
+            return Calf.objects.all().order_by('id')
+        return Calf.objects.filter(farm__user=self.request.user).order_by('id')
+
+
+class StoreCattleFarmViewSet(viewsets.ModelViewSet):
+    """
+    Lists, retrieves, creates, and deletes store cattle and their farm
+    """
+    # queryset = Animal.objects.all().order_by('imei')
+    serializer_class = StoreCattleSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_class = AnimalNameOrTagNumberFilter
+
+    def get_queryset(self):
+        if self.request.user.is_superuser:
+            return StoreCattle.objects.all().order_by('id')
+        return StoreCattle.objects.filter(farm__user=self.request.user).order_by('id')
 
 
 class MachineryFarmViewSet(viewsets.ReadOnlyModelViewSet):
@@ -258,7 +319,7 @@ class LatestGroupedGeolocationsView(APIView):
             return Response({"valid query params": self.valid_query_params}, status=status.HTTP_404_NOT_FOUND)
 
         the_farm = get_object_or_404(Farm, user=request.user)
-        animal_pks = the_farm.animals.values_list('pk', flat=True)
+        animal_pks = the_farm.animal_set.values_list('pk', flat=True)
         response_json = {"animals": [], "groups": []}
 
         if not request.GET:

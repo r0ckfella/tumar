@@ -3,18 +3,47 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework_gis import serializers as geo_serializers
 
-from .models import Farm, Animal, Geolocation, Machinery, Event, Cadastre
+from .models import Farm, Animal, Geolocation, Machinery, Event, Cadastre, BreedingStock, BreedingBull, Calf, StoreCattle
 
 
 class AnimalSerializer(serializers.ModelSerializer):
     class Meta:
         model = Animal
-        fields = ('id', 'farm', 'imei', 'tag_number', 'name', 'updated', 'imsi', 'battery_charge', 'status', 'image',)
+        fields = ('id', 'farm', 'imei', 'tag_number', 'name', 'updated',
+                  'imsi', 'battery_charge', 'status', 'image',)
         read_only_fields = ('id', 'updated', 'status', 'battery_charge',)
+
+class BreedingStockSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BreedingStock
+        fields = ('id', 'farm', 'tag_number', 'name', 'birth_date', 'image', 'breed',)
+        read_only_fields = ('id',)
+
+class CalfSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Calf
+        fields = ('id', 'farm', 'tag_number', 'name', 'birth_date',
+                  'image', 'breed', 'wean_date', 'gender', 'mother')
+        read_only_fields = ('id',)
+
+class BreedingBullSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BreedingBull
+        fields = ('id', 'farm', 'tag_number', 'name', 'birth_date',
+                  'image', 'breed', 'birth_place',)
+        read_only_fields = ('id',)
+
+class StoreCattleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StoreCattle
+        fields = ('id', 'farm', 'tag_number', 'name', 'birth_date',
+                  'image', 'wean_date',)
+        read_only_fields = ('id',)
 
 
 class CadastreSerializer(serializers.ModelSerializer):
-    geometry = geo_serializers.GeometryField(source='geom', required=False)  # since drf has a bug with required=True
+    # since drf has a bug with required=True
+    geometry = geo_serializers.GeometryField(source='geom', required=False)
 
     class Meta:
         model = Cadastre
