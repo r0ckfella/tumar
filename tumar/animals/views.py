@@ -49,7 +49,7 @@ class CadastreFarmViewSet(viewsets.ModelViewSet):
     # queryset = Cadastre.objects.all().order_by('id')
     serializer_class = CadastreSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filterset_fields = ('cad_number', '')
+    filterset_fields = ('cad_number',)
 
     def get_queryset(self):
         if self.request.user.is_superuser:
