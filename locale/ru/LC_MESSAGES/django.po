@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-12-12 00:46+0600\n"
+"POT-Creation-Date: 2020-03-03 18:04+0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: YERMEK MENZHESSAROV <epmek96@gmail.com>\n"
 "Language-Team: RUSSIAN <RU@egistic.kz>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: tumar/animals/admin.py:19
+#: tumar/animals/admin.py:100
 msgid "Tumar Control Panel"
 msgstr "Tumar Панель Управления"
 
@@ -25,62 +25,368 @@ msgstr "Tumar Панель Управления"
 msgid "Farms, Animals"
 msgstr "Фермы, КРС"
 
-#: tumar/animals/models.py:13
-msgid "name"
-msgstr "имя"
+#: tumar/animals/models.py:20
+msgid "IIN/BIN"
+msgstr "ИИН/БИН"
 
-#: tumar/animals/models.py:16
+#: tumar/animals/models.py:21
+msgid "Legal person"
+msgstr "Юридическое Лицо"
+
+#: tumar/animals/models.py:22
+msgid "IIK"
+msgstr "ИИК"
+
+#: tumar/animals/models.py:23
+msgid "BANK"
+msgstr "БАНК"
+
+#: tumar/animals/models.py:24
+msgid "BIN"
+msgstr "БИН"
+
+#: tumar/animals/models.py:25
+msgid "Address"
+msgstr "Адрес"
+
+#: tumar/animals/models.py:26
+msgid "Chinese API key"
+msgstr ""
+
+#: tumar/animals/models.py:33 tumar/animals/models.py:44
+#: tumar/animals/models.py:60 tumar/animals/models.py:204
+#: tumar/indicators/models.py:23
 msgid "Farm"
 msgstr "Ферма"
 
-#: tumar/animals/models.py:17
+#: tumar/animals/models.py:34
 msgid "Farms"
 msgstr "Фермы"
 
-#: tumar/animals/models.py:25
-msgid "farm"
-msgstr "Ферма"
+#: tumar/animals/models.py:45
+msgid "Type of machinery"
+msgstr "Тип машины"
 
-#: tumar/animals/models.py:30
-msgid "Animal ID"
-msgstr "ИН животного"
+#: tumar/animals/models.py:46
+msgid "Identification code of the machinery"
+msgstr "ИК машины"
 
-#: tumar/animals/models.py:33 tumar/animals/models.py:41
+#: tumar/animals/models.py:49 tumar/animals/models.py:50
+msgid "Machinery"
+msgstr "Машины"
+
+#: tumar/animals/models.py:61
+msgid "Animal tag number"
+msgstr "Номер бирки"
+
+#: tumar/animals/models.py:62
+#, fuzzy
+#| msgid "Animal"
+msgid "Animal name"
+msgstr "Животное"
+
+#: tumar/animals/models.py:63
+msgid "Date of birth"
+msgstr "День рождения"
+
+#: tumar/animals/models.py:65
+msgid "Photo of the animal"
+msgstr "Фото животного"
+
+#: tumar/animals/models.py:84
+msgid "IMEI of the tracker"
+msgstr "ID устройства (IMEI)"
+
+#: tumar/animals/models.py:85
+msgid "IMSI number"
+msgstr "Номер IMSI"
+
+#: tumar/animals/models.py:86
+msgid "Battery charge"
+msgstr "Заряд батареи"
+
+#: tumar/animals/models.py:87
+msgid "Last updated"
+msgstr "Последнее обновление"
+
+#: tumar/animals/models.py:90 tumar/animals/models.py:172
+#: tumar/animals/models.py:189
 msgid "Animal"
 msgstr "Животное"
 
-#: tumar/animals/models.py:34
+#: tumar/animals/models.py:91
 msgid "Animals"
 msgstr "Животные"
 
-#: tumar/animals/models.py:42
-msgid "position"
-msgstr "локация"
+#: tumar/animals/models.py:110
+msgid "Казахская белоголовая"
+msgstr ""
 
-#: tumar/animals/models.py:43
-msgid "time"
-msgstr "время"
+#: tumar/animals/models.py:111
+msgid "Герефорд"
+msgstr ""
 
-#: tumar/animals/models.py:47
+#: tumar/animals/models.py:112
+msgid "Ангус"
+msgstr ""
+
+#: tumar/animals/models.py:113
+msgid "Калмыцкая"
+msgstr ""
+
+#: tumar/animals/models.py:114
+msgid "Аулиекольская"
+msgstr ""
+
+#: tumar/animals/models.py:115
+msgid "Симментал"
+msgstr ""
+
+#: tumar/animals/models.py:116
+msgid "Молочные породы"
+msgstr ""
+
+#: tumar/animals/models.py:117
+msgid "Беспородная"
+msgstr ""
+
+#: tumar/animals/models.py:118
+msgid "Кросс"
+msgstr ""
+
+#: tumar/animals/models.py:119
+msgid "Другое"
+msgstr ""
+
+#: tumar/animals/models.py:124 tumar/animals/models.py:143
+#: tumar/animals/models.py:155
+msgid "Breed of the animal"
+msgstr "Порода животного"
+
+#: tumar/animals/models.py:127 tumar/animals/models.py:128
+msgid "Breeding Stock"
+msgstr "Маточное поголовье"
+
+#: tumar/animals/models.py:135
+msgid "Male"
+msgstr "Бычок"
+
+#: tumar/animals/models.py:136
+msgid "Female"
+msgstr "Телочка"
+
+#: tumar/animals/models.py:140 tumar/animals/models.py:163
+msgid "Date of weaning"
+msgstr "Дата отъема"
+
+#: tumar/animals/models.py:141
+msgid "Gender"
+msgstr "Пол"
+
+#: tumar/animals/models.py:145
+msgid "Mother"
+msgstr "Мать"
+
+#: tumar/animals/models.py:148
+msgid "Calf"
+msgstr "Телёнок"
+
+#: tumar/animals/models.py:149
+msgid "Calves"
+msgstr "Телята"
+
+#: tumar/animals/models.py:153
+msgid "Birth Place"
+msgstr "Место рождения"
+
+#: tumar/animals/models.py:158
+msgid "Breeding Bull"
+msgstr "Племенной бык"
+
+#: tumar/animals/models.py:159
+msgid "Breeding Bulls"
+msgstr "Племенные быки"
+
+#: tumar/animals/models.py:166 tumar/animals/models.py:167
+msgid "Store Cattle"
+msgstr "Скот на откорме"
+
+#: tumar/animals/models.py:173
+#, fuzzy
+#| msgid "position"
+msgid "Position"
+msgstr "Локация"
+
+#: tumar/animals/models.py:174
+msgid "Time"
+msgstr "Время"
+
+#: tumar/animals/models.py:180
 msgid "Geo-location"
 msgstr "Геолокация"
 
-#: tumar/animals/models.py:48
+#: tumar/animals/models.py:181
 msgid "Geo-locations"
 msgstr "Геолокации"
 
-#: tumar/config/common.py:72
+#: tumar/animals/models.py:190 tumar/animals/models.py:210
+msgid "Title"
+msgstr "Название"
+
+#: tumar/animals/models.py:191
+msgid "Time of the event"
+msgstr "Время мероприятия"
+
+#: tumar/animals/models.py:192
+#, fuzzy
+#| msgid "position"
+msgid "Description"
+msgstr "Описание"
+
+#: tumar/animals/models.py:193
+msgid "Completed?"
+msgstr "Завершено?"
+
+#: tumar/animals/models.py:196
+msgid "Event"
+msgstr "Мероприятие"
+
+#: tumar/animals/models.py:197
+msgid "Events"
+msgstr "Мероприятия"
+
+#: tumar/animals/models.py:208
+msgid "Cadastre Number"
+msgstr "Кадастровый номер"
+
+#: tumar/animals/models.py:209
+msgid "Geometry"
+msgstr "Геометрия"
+
+#: tumar/animals/models.py:213 tumar/indicators/models.py:25
+msgid "Cadastre"
+msgstr "Кадастр"
+
+#: tumar/animals/models.py:214
+msgid "Cadastres"
+msgstr "Кадастры"
+
+#: tumar/animals/templates/admin/animals/geolocation/change_list.html:4
+#, fuzzy
+#| msgid "Geo-locations"
+msgid "Download Geo-locations"
+msgstr "Скачать Геолокации"
+
+#: tumar/animals/views.py:239
+msgid "Not enough geolocations to construct LineString"
+msgstr "Не достаточно геолокаций чтобы составить LineString (путь)"
+
+#: tumar/config/common.py:89
 msgid "English"
 msgstr "Английский"
 
-#: tumar/config/common.py:73
+#: tumar/config/common.py:90
 msgid "Russian"
 msgstr "Русский"
 
-#: tumar/users/models.py:23
+#: tumar/indicators/models.py:16
+msgid "Pending"
+msgstr "В Обработке"
+
+#: tumar/indicators/models.py:17
+msgid "Failure"
+msgstr "Сбой"
+
+#: tumar/indicators/models.py:18
+msgid "Finished"
+msgstr "Завершено"
+
+#: tumar/indicators/models.py:28
+msgid "Current request status"
+msgstr "Текущее состояние запроса"
+
+#: tumar/indicators/models.py:29
+msgid "Entry Creation Date"
+msgstr "Дата создания записи"
+
+#: tumar/indicators/models.py:30
+msgid "Requested date"
+msgstr "Запрошенная дата"
+
+#: tumar/indicators/models.py:31
+msgid "Actual Date"
+msgstr "Настоящая дата"
+
+#: tumar/indicators/models.py:32
+msgid "Directory with results"
+msgstr "Папка со конечными снимками"
+
+#: tumar/indicators/models.py:35
+msgid "Imagery Request"
+msgstr "Запрос Снимка"
+
+#: tumar/indicators/models.py:36
+msgid "Imagery Requests"
+msgstr "Запросы Снимков"
+
+#: tumar/users/apps.py:7 tumar/users/models.py:42
+msgid "Users"
+msgstr "Пользователи"
+
+#: tumar/users/models.py:26
+msgid "phone number"
+msgstr "номер телефона"
+
+#: tumar/users/models.py:30
+msgid ""
+"Required. Phone number must be entered in the format: '+77076143537'. Up to "
+"15 digits allowed."
+msgstr "Обязательно. Номер телефона должен быть текущего формата: '+77076143537'. Разрешено до 15 чисел."
+
+#: tumar/users/models.py:35
+msgid "A user with that phone number already exists."
+msgstr "Пользователь с таким номером телефона уже существует."
+
+#: tumar/users/models.py:41
 msgid "User"
 msgstr "Пользователь"
 
-#: tumar/users/models.py:24
-msgid "Users"
-msgstr "Пользователи"
+#: tumar/users/models.py:52
+msgid "Social Account"
+msgstr "Социальный Аккаунт"
+
+#: tumar/users/models.py:53
+msgid "Has Phone Number?"
+msgstr "Есть номер телефона?"
+
+#: tumar/users/models.py:56
+msgid "Social Account Extra"
+msgstr "Социальный Аккаунт Дополнительное"
+
+#: tumar/users/models.py:57
+msgid "Social Accounts Extra"
+msgstr "Социальные Аккаунты Допольнительное"
+
+#: tumar/users/views.py:121
+msgid "User {} was successfully created."
+msgstr "Пользователь {} успешно создан."
+
+#: tumar/users/views.py:139
+msgid "Password has been reset with the new password."
+msgstr "Текущий пароль был изменен на новый пароль."
+
+#: tumar/users/views.py:160
+msgid "New phone number has been saved."
+msgstr "Новый номер телефона был сохранен."
+
+#~ msgid "name"
+#~ msgstr "имя"
+
+#~ msgid "farm"
+#~ msgstr "Ферма"
+
+#~ msgid "Animal ID"
+#~ msgstr "ИН животного"
+
+#~ msgid "time"
+#~ msgstr "время"
