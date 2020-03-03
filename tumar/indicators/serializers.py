@@ -14,6 +14,7 @@ class ImageryRequestSerializer(serializers.ModelSerializer):
             'process_status': {'read_only': True},
             'created_date': {'read_only': True},
             'actual_date': {'read_only': True},
-            'requested_date': {'required': True},
+            # 'requested_date': {'required': True},
+            'requested_date': {'read_only': True},
             'results_dir': {'read_only': True},
         }

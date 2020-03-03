@@ -45,10 +45,15 @@ class CadastreFarmViewSet(viewsets.ModelViewSet):
     """
     Lists, retrieves, creates, and deletes cadastres and their farm
     """
-    queryset = Cadastre.objects.all().order_by('id')
+    # queryset = Cadastre.objects.all().order_by('id')
     serializer_class = CadastreSerializer
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_fields = ('cad_number', '')
+
+    def get_queryset(self):
+        if self.request.user.is_superuser:
+            return Cadastre.objects.all().order_by('id')
+        return Cadastre.objects.filter(farm__user=self.request.user).order_by('id')
 
 
 class AnimalFarmViewSet(viewsets.ModelViewSet):
@@ -62,8 +67,8 @@ class AnimalFarmViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         if self.request.user.is_superuser:
-            return Animal.objects.all()
-        return Animal.objects.filter(farm__user=self.request.user)
+            return Animal.objects.all().order_by('imei')
+        return Animal.objects.filter(farm__user=self.request.user).order_by('imei')
 
 
 class MachineryFarmViewSet(viewsets.ReadOnlyModelViewSet):
@@ -82,6 +87,11 @@ class GeolocationAnimalViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = GeolocationAnimalSerializer
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_fields = ('animal__imei', 'time',)
+
+    def get_queryset(self):
+        if self.request.user.is_superuser:
+            return Geolocation.geolocations.all().order_by('animal__imei', '-time')
+        return Geolocation.geolocations.filter(animal__farm__user=self.request.user).order_by('animal__imei', '-time')
 
 
 class EventAnimalViewSet(viewsets.ReadOnlyModelViewSet):
@@ -115,13 +125,17 @@ class SearchCadastreView(APIView):
         data = {'pk': None, 'cad_number': request.query_params.get('cad_number'), 'geom': None,
                 'nearest_town': None}
 
-        with connections['egistic_2'].cursor() as cursor:
-            cursor.execute(
-                "SELECT id, ST_AsText(ST_Transform(geom, 3857)) FROM cadastres_cadastre WHERE kad_nomer = %s",
-                [data.get('cad_number')])
-            row = cursor.fetchone()
-            data['pk'] = row[0]
-            data['geom'] = row[1]
+        try:
+            with connections['egistic_2'].cursor() as cursor:
+                cursor.execute(
+                    "SELECT id, ST_AsText(ST_Transform(geom, 3857)) FROM cadastres_cadastre WHERE kad_nomer = %s",
+                    [data.get('cad_number')])
+                row = cursor.fetchone()
+                data['pk'] = row[0]
+                data['geom'] = row[1]
+        except TypeError as err:
+            print(err)
+            return Response({"error": "cadastre number was not specified or not found in the database"}, status=status.HTTP_404_NOT_FOUND)
 
         # find nearby town
         cadastre = GEOSGeometry(data['geom'], srid=3857)
@@ -203,18 +217,21 @@ class SimpleGroupedGeolocationsView(APIView):
         qs = Geolocation.geolocations.filter(animal__farm=the_farm).order_by('animal__id', '-time') \
             .distinct('animal__id')  # latest for each group
 
-        if int(zoom_level) >= 14:  # list(self.zoom_distance.keys())[-1]:  closest zoom returns all geolocations
+        # list(self.zoom_distance.keys())[-1]:  closest zoom returns all geolocations
+        if int(zoom_level) >= 14:
             serializer = GeolocationAnimalSerializer(qs, many=True)
             response_json["animals"] = serializer.data
         else:
-            groups = utils.cluster_geolocations(qs.values_list('pk', flat=True), self.zoom_distance, zoom_level)
+            groups = utils.cluster_geolocations(qs.values_list(
+                'pk', flat=True), self.zoom_distance, zoom_level)
 
             for group in groups:
                 if len(group) != 1:
                     temp_group_qs = Geolocation.geolocations.filter(pk__in=group)
                     latest_geoloc_time = temp_group_qs.filter(time__isnull=False).latest('time').time
                     group_center_point_bbox = temp_group_qs.aggregate(Extent('position'))
-                    group_center_point = Polygon.from_bbox(group_center_point_bbox['position__extent']).centroid
+                    group_center_point = Polygon.from_bbox(
+                        group_center_point_bbox['position__extent']).centroid
                     temp_group_data = {"position": group_center_point.json, 'time': latest_geoloc_time,
                                        'animals_num': len(group)}
                     response_json["groups"].append(temp_group_data)
