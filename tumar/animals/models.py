@@ -29,6 +29,18 @@ class Farm(models.Model):
     def calves_number(self):
         return self.calf_set.count()
 
+    @property
+    def breedingstock_number(self):
+        return self.breedingstock_set.count()
+    
+    @property
+    def breedingbull_number(self):
+        return self.breedingbull_set.count()
+
+    @property
+    def storecattle_number(self):
+        return self.storecattle_set.count()
+
     class Meta:
         verbose_name = _('Farm')
         verbose_name_plural = _('Farms')
