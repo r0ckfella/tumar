@@ -60,8 +60,8 @@ class FarmSerializer(serializers.ModelSerializer):
     class Meta:
         model = Farm
         fields = ('id', 'user', 'iin', 'legal_person', 'iik', 'bank', 'bin', 'address',
-                  'calves_number',)
-        read_only_fields = ('calves_number',)
+                  'calves_number', 'breedingstock_number', 'breedingbull_number', 'storecattle_number', )
+        read_only_fields = ('calves_number', 'breedingstock_number', 'breedingbull_number', 'storecattle_number',)
 
 
 class CreateFarmSerializer(serializers.ModelSerializer):
