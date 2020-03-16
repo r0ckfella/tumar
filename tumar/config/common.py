@@ -42,6 +42,7 @@ class Common(Configuration):
         'tumar.users.apps.UsersConfig',
         'tumar.animals.apps.AnimalsConfig',
         'tumar.indicators.apps.IndicatorsConfig',
+        'tumar.ecalendar.apps.EcalendarConfig',
     )
 
     # https://docs.djangoproject.com/en/2.0/topics/http/middleware/

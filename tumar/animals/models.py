@@ -32,7 +32,7 @@ class Farm(models.Model):
     @property
     def breedingstock_number(self):
         return self.breedingstock_set.count()
-    
+
     @property
     def breedingbull_number(self):
         return self.breedingbull_set.count()
@@ -85,7 +85,7 @@ class BaseAnimal(models.Model):
         if self.tag_number:
             return self.tag_number
 
-        return self.imei
+        return self.id
 
 
 class Animal(BaseAnimal):
@@ -144,8 +144,8 @@ MALE = 'ML'
 FEMALE = 'FM'
 
 GENDER_CHOICES = [
-    (MALE, _('Male')),
-    (FEMALE, _('Female'))
+    (MALE, _('Бычок')),
+    (FEMALE, _('Телочка'))
 ]
 
 class Calf(BaseAnimal):  # Телята
@@ -155,6 +155,7 @@ class Calf(BaseAnimal):  # Телята
                              default=NO_BREED, verbose_name=_('Breed of the animal'))
     mother = models.ForeignKey(BreedingStock, on_delete=models.CASCADE,
                                related_name="calves", verbose_name=_('Mother'))
+    Active = models.BooleanField(default=True, verbose_name=_('Active?'))
 
     class Meta:
         verbose_name = _('Calf')
@@ -196,22 +197,6 @@ class Geolocation(models.Model):
         return str(self.animal.tag_number) + " was at " + str(self.time)
 
 
-class Event(models.Model):
-    animal = models.ForeignKey(Animal, on_delete=models.CASCADE,
-                               related_name="events", verbose_name=_('Animal'))
-    title = models.CharField(max_length=80, verbose_name=_('Title'))
-    time = models.DateTimeField(default=timezone.now, verbose_name=_('Time of the event'))
-    description = models.TextField(blank=True, verbose_name=_('Description'))
-    completed = models.BooleanField(default=False, verbose_name=_('Completed?'))
-
-    class Meta:
-        verbose_name = _('Event')
-        verbose_name_plural = _('Events')
-
-    def __str__(self):
-        return str(self.animal.tag_number) + ":" + str(self.title) + " at " + str(self.time)
-
-
 class Cadastre(models.Model):
     farm = models.ForeignKey(Farm, on_delete=models.CASCADE, related_name="cadastres", verbose_name=_('Farm'))
     cadastre_num_regex = RegexValidator(regex=r'^\d+$',
@@ -242,6 +227,7 @@ class Cadastre(models.Model):
                     row = cursor.fetchone()
                     self.geom = row[0]
             except TypeError as err:
+                print(err)
                 raise ValidationError("cadastre number was not specified or not found in the database")
         elif not self.cad_number and not self.geom:
             raise ValidationError('Either cad_number or geometry must be sent')
