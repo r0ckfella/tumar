@@ -15,7 +15,7 @@ from .animals.views import FarmViewSet, GeolocationAnimalViewSet, AnimalFarmView
 from .users.views import UserViewSet, UserCreateViewSet, CustomAuthToken, FacebookLogin, GoogleLogin, \
     CustomVerificationViewSet, SocialAccountExtraView
 from .indicators.views import LatestIndicatorsView, RequestIndicatorsView
-from .ecalendar.views import CalfEventViewSet, BreedingStockEventViewSet, NextYearBreedingStockEventView
+from .ecalendar.views import CalfEventViewSet, BreedingStockEventViewSet, NextYearBreedingStockEventView, AllBreedingStockEventView, AllCalfEventView, CalendarView
 
 router = DefaultRouter()
 
@@ -29,8 +29,8 @@ router.register(r'breedingbull', BreedingBullFarmViewSet, basename='BreedingBull
 router.register(r'storecattle', StoreCattleFarmViewSet, basename='StoreCattle')
 router.register(r'geolocations', GeolocationAnimalViewSet)
 router.register(r'machinery', MachineryFarmViewSet)
-router.register(r'events/calf', CalfEventViewSet)
-router.register(r'events/breedingstock', BreedingStockEventViewSet)
+router.register(r'events/calf', CalfEventViewSet, basename='CalfEvent')
+router.register(r'events/breedingstock', BreedingStockEventViewSet, basename='BreedingStockEvent')
 router.register(r'cadastres', CadastreFarmViewSet, basename='Cadastre')
 
 sms_router = DefaultRouter(trailing_slash=False)
@@ -48,7 +48,10 @@ urlpatterns = i18n_patterns(
                              path('myfarm/', MyFarmView.as_view()),
                              path('indicators/latest/', LatestIndicatorsView.as_view()),
                              path('indicators/request/', RequestIndicatorsView.as_view()),
-                             path('events/breedingstock/next-year/', NextYearBreedingStockEventView.as_view())
+                             path('events/breedingstock/next-year/', NextYearBreedingStockEventView.as_view()),
+                             path('breedingstock/<uuid:pk>/events/', AllBreedingStockEventView.as_view()),
+                             path('calf/<uuid:pk>/events/', AllCalfEventView.as_view()),
+                             path('events/calendar/<uuid:pk>/', CalendarView.as_view())
                              ] + router.urls + sms_router.urls)),
     path('api-token-auth/', CustomAuthToken.as_view()),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),

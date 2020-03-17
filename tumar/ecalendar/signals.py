@@ -7,7 +7,7 @@ from .models import HANDLING, FEEDING
 
 
 def create_male_calf_events(obj):
-    birth_date = obj.mother.events.filter(title='Отел').latest('scheduled_date').scheduled_date
+    birth_date = obj.mother.events.filter(title__icontains='Отел').latest('scheduled_date').scheduled_date
     obj.events.create(
         title='Рождение',
         scheduled_date=birth_date,
@@ -59,7 +59,7 @@ def create_male_calf_events(obj):
     print('created male calf events')
 
 def create_female_calf_events(obj):
-    birth_date = obj.mother.events.filter(title='Отел').latest('scheduled_date').scheduled_date
+    birth_date = obj.mother.events.filter(title__icontains='Отел').latest('scheduled_date').scheduled_date
     obj.events.create(
         title='Рождение',
         scheduled_date=birth_date,
@@ -166,16 +166,16 @@ def on_change_breedingstock(sender, instance: BreedingStock, **kwargs):
 def on_change_calf(sender, instance: Calf, **kwargs):
     if instance._state.adding is True:
         if  instance.birth_date is not None:  # new object will be created
-            if instance.type == MALE:
+            if instance.gender == MALE:
                 create_male_calf_events(instance)
-            elif instance.type == FEMALE:
+            elif instance.gender == FEMALE:
                 create_female_calf_events(instance)
     else:
         previous = Calf.objects.get(id=instance.id)
         if previous.birth_date is None and instance.birth_date is not None:  # field will be updated
-            if instance.type == MALE:
+            if instance.gender == MALE:
                 create_male_calf_events(instance)
-            elif instance.type == FEMALE:
+            elif instance.gender == FEMALE:
                 create_female_calf_events(instance)
 
 pre_save.connect(receiver=on_change_breedingstock, sender=BreedingStock)

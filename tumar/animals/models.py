@@ -149,7 +149,7 @@ GENDER_CHOICES = [
 ]
 
 class Calf(BaseAnimal):  # Телята
-    wean_date = models.DateTimeField(default=timezone.now, verbose_name=_('Date of weaning'))
+    wean_date = models.DateTimeField(null=True, verbose_name=_('Date of weaning'))
     gender = models.CharField(max_length=2, choices=GENDER_CHOICES, default=FEMALE, verbose_name=_('Gender'))
     breed = models.CharField(max_length=2, choices=BREED_CHOICES,
                              default=NO_BREED, verbose_name=_('Breed of the animal'))
