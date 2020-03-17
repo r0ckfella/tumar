@@ -14,6 +14,7 @@ psycopg2==2.8.4
 django-model-utils==3.1.2
 django_unique_upload==0.2.1
 pillow==7.0.0
+python-dateutil
 
 # Rest apis
 djangorestframework==3.9.1

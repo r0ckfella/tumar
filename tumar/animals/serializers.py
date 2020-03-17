@@ -3,7 +3,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework_gis import serializers as geo_serializers
 
-from .models import Farm, Animal, Geolocation, Machinery, Event, Cadastre, BreedingStock, BreedingBull, Calf, StoreCattle
+from .models import Farm, Animal, Geolocation, Machinery, Cadastre, BreedingStock, BreedingBull, Calf, StoreCattle
 
 
 class AnimalSerializer(serializers.ModelSerializer):
@@ -111,17 +111,3 @@ class GeolocationAnimalSerializer(GeolocationSerializer):
 
     class Meta(GeolocationSerializer.Meta):
         fields = GeolocationSerializer.Meta.fields + ('animal',)
-
-
-class EventSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Event
-        fields = ('id', 'title', 'time', 'description', 'completed', 'animal',)
-
-
-class EventAnimalSerializer(EventSerializer):
-    imei = serializers.CharField(source='animal.imei')
-    tag_number = serializers.CharField(source='animal.tag_number')
-
-    class Meta(EventSerializer.Meta):
-        fields = EventSerializer.Meta.fields + ('tag_number', 'imei',)

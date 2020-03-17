@@ -19,8 +19,8 @@ from rest_framework.views import APIView
 
 from . import utils
 from .filters import AnimalPathFilter, AnimalNameOrTagNumberFilter, AnimalNameTagNumberImeiFilter
-from .models import Farm, Animal, Geolocation, Machinery, Event, Cadastre, BreedingBull, BreedingStock, Calf, StoreCattle
-from .serializers import FarmSerializer, GeolocationAnimalSerializer, EventAnimalSerializer, AnimalSerializer, \
+from .models import Farm, Animal, Geolocation, Machinery, Cadastre, BreedingBull, BreedingStock, Calf, StoreCattle
+from .serializers import FarmSerializer, GeolocationAnimalSerializer, AnimalSerializer, \
     MachinerySerializer, CadastreSerializer, FarmCadastresSerializer, CreateFarmSerializer, BreedingBullSerializer, \
     BreedingStockSerializer, CalfSerializer, StoreCattleSerializer
 
@@ -155,16 +155,6 @@ class GeolocationAnimalViewSet(viewsets.ReadOnlyModelViewSet):
         if self.request.user.is_superuser:
             return Geolocation.geolocations.all().order_by('animal__imei', '-time')
         return Geolocation.geolocations.filter(animal__farm__user=self.request.user).order_by('animal__imei', '-time')
-
-
-class EventAnimalViewSet(viewsets.ReadOnlyModelViewSet):
-    """
-    Lists and retrieves events and their animal
-    """
-    queryset = Event.objects.all().order_by('animal__imei', '-time')
-    serializer_class = EventAnimalSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
-    filterset_fields = ('animal__imei',)
 
 
 class MyFarmView(APIView):
