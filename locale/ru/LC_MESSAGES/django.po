@@ -51,7 +51,7 @@ msgstr "Адрес"
 
 #: tumar/animals/models.py:26
 msgid "Chinese API key"
-msgstr ""
+msgstr "Логин для GPS системы"
 
 #: tumar/animals/models.py:33 tumar/animals/models.py:44
 #: tumar/animals/models.py:60 tumar/animals/models.py:204
