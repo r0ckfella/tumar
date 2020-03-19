@@ -1,4 +1,6 @@
 import uuid
+import requests
+import json
 
 from django.conf import settings
 from django.contrib.gis.db import models
@@ -23,7 +25,8 @@ class Farm(models.Model):
     bank = models.CharField(max_length=80, blank=True, verbose_name=_('BANK'))
     bin = models.CharField(max_length=80, blank=True, verbose_name=_('BIN'))
     address = models.CharField(max_length=100, blank=True, verbose_name=_('Address'))
-    api_key = models.CharField(max_length=100, blank=True, verbose_name=_('Chinese API key'))
+    api_key = models.CharField(max_length=100, blank=True, verbose_name=_('Chinese API key'), 
+                help_text="Переводит ваш логин в другой формат для быстрого использования (к примеру, kh001 в ff80808170c314600170c393dace234)")
 
     @property
     def calves_number(self):
@@ -49,6 +52,23 @@ class Farm(models.Model):
         if self.iin and self.legal_person:
             return self.iin + ":" + self.legal_person
         return str(self.id)
+
+    def save(self, *args, **kwargs):
+        if self.api_key:
+            url = 'http://42.123.123.254//ucows/login/login'
+            headers = {'Content-type': 'application/json', 'Accept': 'application/json'}
+            payload = {
+                "username": self.api_key,
+                "password": "000000"
+            }
+
+            r = requests.post(url, data=json.dumps(payload), headers=headers)
+
+            if r.status_code != requests.codes.ok:
+                r.raise_for_status()
+            response_data = r.json()
+            self.api_key = response_data['data']['cowfarmList'][0]['id']
+        super(Farm, self).save(*args, **kwargs)  # Call the "real" save() method.
 
 
 class Machinery(models.Model):

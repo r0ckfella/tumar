@@ -6,6 +6,7 @@ import requests
 
 from django.contrib.gis.geos import LineString, Point
 from datetime import datetime as dt
+from dateutil.relativedelta import relativedelta
 
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.measure import Distance as D
@@ -18,13 +19,14 @@ def get_linestring_from_geolocations(geolocations_qs):
 
 
 def download_geolocations(farm_pk, farm_api_key):
+    endtime = dt.now() + relativedelta(months=1)
     url = 'http://42.123.123.254/farm/api/v2/gpsData'
     # url = 'http://185.125.44.211/farm/api/v2/gpsData'
     headers = {'Content-type': 'application/json', 'Accept': 'application/json'}
     payload = {
         "key": farm_api_key,
         "begintime": "2018-01-01 00:00",
-        "endtime": "2020-05-13 23:59",
+        "endtime": endtime.strftime("%Y-%m-%d %H:%M"),
         "imeis": ""
     }
 
