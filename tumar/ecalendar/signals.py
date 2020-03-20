@@ -1,6 +1,6 @@
 from dateutil.relativedelta import relativedelta
 
-from django.db.models.signals import pre_save
+from django.db.models.signals import pre_save, post_save
 
 from tumar.animals.models import BreedingStock, Calf, MALE, FEMALE
 from .models import HANDLING, FEEDING
@@ -175,23 +175,18 @@ def create_mother_cow_events(obj):
     print('created mother cow events')
 
 def on_change_breedingstock(sender, instance: BreedingStock, **kwargs):
-    if instance._state.adding is True:
-        if instance.birth_date is not None:  # new object will be created
-            create_mother_cow_events(instance)
-
-    else:
+    if instance._state.adding is False:
         previous = BreedingStock.objects.get(id=instance.id)
         if previous.birth_date is None and instance.birth_date is not None:  # field will be updated
             create_mother_cow_events(instance)
 
-def on_change_calf(sender, instance: Calf, **kwargs):
-    if instance._state.adding is True:
+def post_save_breedingstock(sender, instance: BreedingStock, created, **kwargs):
+    if created:
         if instance.birth_date is not None:  # new object will be created
-            if instance.gender == MALE:
-                create_male_calf_events(instance)
-            elif instance.gender == FEMALE:
-                create_female_calf_events(instance)
-    else:
+            create_mother_cow_events(instance)
+
+def on_change_calf(sender, instance: Calf, **kwargs):
+    if instance._state.adding is False:
         previous = Calf.objects.get(id=instance.id)
         if previous.birth_date is None and instance.birth_date is not None:  # field will be updated
             if instance.gender == MALE:
@@ -199,6 +194,16 @@ def on_change_calf(sender, instance: Calf, **kwargs):
             elif instance.gender == FEMALE:
                 create_female_calf_events(instance)
 
+def post_save_calf(sender, instance: Calf, created, **kwargs):
+    if created:
+        if instance.birth_date is not None:  # new object will be created
+            if instance.gender == MALE:
+                create_male_calf_events(instance)
+            elif instance.gender == FEMALE:
+                create_female_calf_events(instance)
+
 
 pre_save.connect(receiver=on_change_breedingstock, sender=BreedingStock)
+post_save.connect(receiver=post_save_breedingstock, sender=BreedingStock)
 pre_save.connect(receiver=on_change_calf, sender=Calf)
+post_save.connect(receiver=post_save_calf, sender=Calf)
