@@ -4,14 +4,17 @@ import django.utils.timezone as tz
 import pytz
 import requests
 
-from django.contrib.gis.geos import LineString, Point
 from datetime import datetime as dt
 from dateutil.relativedelta import relativedelta
+from faker import Factory as FakerFactory
 
+from django.contrib.gis.geos import LineString, Point
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.measure import Distance as D
 
 from .models import Animal, Geolocation, Farm
+
+faker = FakerFactory.create()
 
 
 def get_linestring_from_geolocations(geolocations_qs):
@@ -51,6 +54,8 @@ def download_geolocations(farm_pk, farm_api_key):
                 Geolocation.geolocations.create(**arguments)
         except Animal.DoesNotExist:
             the_farm = Farm.objects.get(pk=farm_pk)
+            while Animal.objects.filter(tag_number=location['cow_code']).exists():
+                location['cow_code'] = location['cow_code'] + faker.numerify(text='##')
             temp_animal = Animal.objects.create(farm=the_farm, imei=location['imei'],
                                                 tag_number=location['cow_code'])
             Geolocation.geolocations.create(animal=temp_animal,
