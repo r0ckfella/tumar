@@ -1,59 +1,84 @@
-import datetime
+# import datetime
+# import os
 
-from django.db import models
-from django.utils import timezone
-from django.utils.translation import gettext_lazy as _
+# from django.contrib.postgres.fields import JSONField
+# from django.db import models
+# from django.utils import timezone
+# from django.utils.translation import gettext_lazy as _
 
-from tumar.animals.models import Cadastre, Farm
+# from tumar.animals.models import Cadastre
 
-# Create your models here.
+# # Create your models here.
 
-PENDING = 'PE'
-FAILURE = 'FA'
-FINISHED = 'FI'
 
-STATUS_CHOICES = [
-    (PENDING, _('Pending')),
-    (FAILURE, _('Failure')),
-    (FINISHED, _('Finished')),
-]
+# class DividedContinuousCeleryResponseQuerySet(models.QuerySet):
+#     def delete(self, *args, **kwargs):
+#         for obj in self:
+#             if obj.is_layer_created:
+#                 try:
+#                     layer_delete_tiff(self)
+#                 except Exception as e:
+#                     print(str(e))
+#         super(DividedContinuousCeleryResponseQuerySet, self).delete(*args, **kwargs)
 
-class ImageryRequest(models.Model):
-    farm = models.ForeignKey(Farm, on_delete=models.CASCADE,
-                             related_name="imagery_requests", verbose_name=_('Farm'))
-    cadastre = models.ForeignKey(Cadastre, on_delete=models.CASCADE,
-                                 related_name="imagery_requests", verbose_name=_('Cadastre'))
-    generate_bands = models.BooleanField(default=False)
-    process_status = models.CharField(max_length=2, choices=STATUS_CHOICES,
-                                      default=PENDING, verbose_name=_('Current request status'))
-    created_date = models.DateTimeField(default=timezone.now, verbose_name=_('Entry Creation Date'))
-    requested_date = models.DateField(verbose_name=_('Requested date'))
-    actual_date = models.DateTimeField(blank=True, null=True, verbose_name=_('Actual Date'))
-    results_dir = models.CharField(max_length=100, blank=True, verbose_name=_('Directory with results'))
+# class ImageryRequest(models.Model):
+#     cadastre = models.ForeignKey(Cadastre, on_delete=models.CASCADE,
+#                                  related_name="imagery_requests", verbose_name=_('Cadastre'))
+#     ndvi = JSONField()
+#     gndvi = JSONField()
+#     clgreen = JSONField()
+#     ndmi = JSONField()
+#     ndsi = JSONField()
+#     actual_date = models.DateTimeField()
+#     results_dir = models.TextField()
+#     is_layer_created = models.BooleanField(default=True)
 
-    class Meta:
-        verbose_name = _('Imagery Request')
-        verbose_name_plural = _('Imagery Requests')
+#     class Meta:
+#         verbose_name = _('Imagery Request')
+#         verbose_name_plural = _('Imagery Requests')
+#         unique_together = (("actual_date", "divided_cadastre_user"),)
 
-    def save(self, *args, **kwargs):
-        # !!! requested_date is timezone.now()
-        self.requested_date = datetime.date.today()
-        super(ImageryRequest, self).save(*args, **kwargs)
-        if self.results_dir == '':
-            from .tasks import main_request_fetch
-            main_request_fetch(imagery_request=self, requested_date=self.requested_date,
-                            generate_bands=self.generate_bands)
+#     objects = DividedContinuousCeleryResponseQuerySet.as_manager()
 
-    def success(self, results_dir, image_date, *args, **kwargs):
-        if self.process_status == PENDING:
-            self.actual_date = image_date
-            self.results_dir = results_dir
-            self.process_status = FINISHED
-            self.save()
-        else:
-            print("ImageryRequest's success() method shouldn't have been called with any process_status other than PENDING")
-            self.failure()
 
-    def failure(self, *args, **kwargs):
-        self.process_status = FAILURE
-        self.save()
+
+# class ImageryPNGs(models.Model):
+#     imagery_request = models.OneToOneField(ImageryRequest, on_delete=models.CASCADE,
+#                                          related_name="imagery_pngs", verbose_name=_('Imagery Request'))
+#     clgreen = models.ImageField(upload_to='clgreen', max_length = 300, null = True)
+#     ndvi = models.ImageField(upload_to='ndvi', max_length = 300, null = True)
+#     gndvi = models.ImageField(upload_to='gndvi', max_length = 300, null = True)
+#     ndmi = models.ImageField(upload_to='ndmi', max_length = 300, null = True)
+#     rgb = models.ImageField(upload_to='rgb', max_length = 300, null = True)
+
+#     class Meta:
+#         verbose_name = _('Imagery Request')
+#         verbose_name_plural = _('Imagery Requests')
+
+
+# from geoserver.catalog import Catalog
+# def layer_delete_tiff(request, name_part='_continuous_'):
+#     geo_url = 'http://geoserver:8080/geoserver/rest/' if os.getenv(
+#         'DEFAULT_DB_HOST') else 'https://geo.egistic.kz/geoserver/rest/'
+#     cat = Catalog(geo_url, 'admin', 'UxeiJ5ree2riVoi')
+#     ndmi = cat.get_layer("ndmi{}{}".format(name_part, str(request.id)))
+#     ndvi =  cat.get_layer("ndvi{}{}".format(name_part, str(request.id)))
+#     gndvi =  cat.get_layer("gndvi{}{}".format(name_part, str(request.id)))
+#     clgreen =  cat.get_layer("clgreen{}{}".format(name_part, str(request.id)))
+#     rgb =  cat.get_layer("rgb{}{}".format(name_part, str(request.id)))
+#     cat.delete(ndmi)
+#     cat.delete(ndvi)
+#     cat.delete(gndvi)
+#     cat.delete(clgreen)
+#     cat.delete(rgb)
+#     cat = Catalog(geo_url, 'admin', 'UxeiJ5ree2riVoi')
+#     ndmi = cat.get_store("ndmi{}{}".format(name_part, str(request.id)))
+#     ndvi =  cat.get_store("ndvi{}{}".format(name_part, str(request.id)))
+#     gndvi =  cat.get_store("gndvi{}{}".format(name_part, str(request.id)))
+#     clgreen =  cat.get_store("clgreen{}{}".format(name_part, str(request.id)))
+#     rgb =  cat.get_store("rgb{}{}".format(name_part, str(request.id)))
+#     cat.delete(ndmi)
+#     cat.delete(ndvi)
+#     cat.delete(gndvi)
+#     cat.delete(clgreen)
+#     cat.delete(rgb)
