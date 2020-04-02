@@ -1,7 +1,11 @@
 from typing import Set
 
-from django.contrib.gis import admin
+from allauth.socialaccount.models import SocialAccount, SocialApp, SocialToken
+
 from django.contrib.auth.admin import UserAdmin
+from django.contrib.gis import admin
+from django.contrib.sites.models import Site
+from django.utils.translation import gettext_lazy as _
 
 from .models import User
 
@@ -16,6 +20,29 @@ class UserAdmin(UserAdmin):
         "last_name",
         "is_staff",
         "is_active",
+    )
+
+    readonly_fields = (
+        "date_joined",
+        "last_login",
+    )
+
+    fieldsets = (
+        (None, {"fields": ("username", "password")}),
+        (_("Personal info"), {"fields": ("first_name", "last_name", "email", "image")}),
+        (
+            _("Permissions"),
+            {
+                "fields": (
+                    "is_active",
+                    "is_staff",
+                    "is_superuser",
+                    "groups",
+                    "user_permissions",
+                )
+            },
+        ),
+        (_("Important dates"), {"fields": ("last_login", "date_joined")}),
     )
 
     fieldsets = UserAdmin.fieldsets + ((None, {"fields": ("image",)}),)
@@ -35,7 +62,9 @@ class UserAdmin(UserAdmin):
         if not is_superuser:
             disabled_fields |= {
                 "username",
+                "is_staff",
                 "is_superuser",
+                "groups",
                 "user_permissions",
             }
 
@@ -53,3 +82,9 @@ class UserAdmin(UserAdmin):
                 form.base_fields[f].disabled = True
 
         return form
+
+
+admin.site.unregister(SocialAccount)
+admin.site.unregister(SocialApp)
+admin.site.unregister(SocialToken)
+admin.site.unregister(Site)
