@@ -5,35 +5,41 @@ from .models import Geolocation, Animal, BaseAnimal
 
 
 class AnimalPathFilter(rest_filters.FilterSet):
-    time = rest_filters.DateTimeFromToRangeFilter(field_name='time')
-    imei = rest_filters.CharFilter(field_name='animal__imei', required=True)
+    time = rest_filters.DateTimeFromToRangeFilter(field_name="time")
+    imei = rest_filters.CharFilter(field_name="animal__imei", required=True)
 
     class Meta:
         model = Geolocation
-        fields = ['imei', 'time', ]
+        fields = [
+            "imei",
+            "time",
+        ]
 
 
 class AnimalNameTagNumberImeiFilter(rest_filters.FilterSet):
-    search = rest_filters.CharFilter(method='filter_name_or_tag_number')
+    search = rest_filters.CharFilter(method="filter_name_or_tag_number")
 
     class Meta:
         model = Animal
         fields = {
-            'search',
+            "search",
         }
 
     def filter_name_or_tag_number(self, queryset, name, value):
         return queryset.filter(
-            Q(name__icontains=value) | Q(tag_number__icontains=value) | Q(imei__icontains=value)
+            Q(name__icontains=value)
+            | Q(tag_number__icontains=value)
+            | Q(imei__icontains=value)
         )
 
+
 class AnimalNameOrTagNumberFilter(rest_filters.FilterSet):
-    search = rest_filters.CharFilter(method='filter_name_or_tag_number')
+    search = rest_filters.CharFilter(method="filter_name_or_tag_number")
 
     class Meta:
         model = BaseAnimal
         fields = {
-            'search',
+            "search",
         }
 
     def filter_name_or_tag_number(self, queryset, name, value):

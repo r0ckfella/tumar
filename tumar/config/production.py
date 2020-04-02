@@ -7,7 +7,7 @@ from .common import Common
 
 class Production(Common):
     INSTALLED_APPS = Common.INSTALLED_APPS
-    SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
+    SECRET_KEY = os.getenv("SECRET_KEY")
     # Site
     # https://docs.djangoproject.com/en/2.0/ref/settings/#allowed-hosts
     ALLOWED_HOSTS = ["*"]
@@ -28,39 +28,41 @@ class Production(Common):
     # MEDIA_URL = f'https://s3.amazonaws.com/{AWS_STORAGE_BUCKET_NAME}/'
 
     # https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/http-caching#cache-control
-    # Response can be cached by browser and any intermediary caches (i.e. it is "public") for up to 1 day
+    # Response can be cached by browser and any intermediary caches
+    #   (i.e. it is "public") for up to 1 day
     # 86400 = (60 seconds x 60 minutes x 24 hours)
     # AWS_HEADERS = {
     #     'Cache-Control': 'max-age=86400, s-maxage=86400, must-revalidate',
     # }
-    STATIC_ROOT = '/static/'
+    STATIC_ROOT = "/static/"
 
     # Postgis
     DATABASES = {
-        'default': dj_database_url.config(
-            default='postgis://docker:docker@db_default:5432/tumar',
-            conn_max_age=int(os.getenv('POSTGRES_CONN_MAX_AGE', 600))
+        "default": dj_database_url.config(
+            default=os.getenv("TUMAR_DB"),
+            conn_max_age=int(os.getenv("POSTGRES_CONN_MAX_AGE", 600)),
         ),
-        'egistic_2': dj_database_url.config(
-            default='postgis://docker:docker@94.247.135.91:8086/egistic_2.0',
-            conn_max_age=int(os.getenv('POSTGRES_CONN_MAX_AGE', 600))
-        )
+        "egistic_2": dj_database_url.config(
+            default=os.getenv("EGISTIC_DB"),
+            conn_max_age=int(os.getenv("POSTGRES_CONN_MAX_AGE", 600)),
+        ),
     }
 
     # CELERY SETTIGS
-    broker_username = os.environ.get('RABBITMQ_DEFAULT_USER', 'guest')
-    broker_password = os.environ.get(
-        'RABBITMQ_DEFAULT_PASS', 'GtzYz4ahBvR3THg6x89E7wpNDCtYGLCZt6LSqZNXWaerEqD3bdkxRqTjZ6DFjL6Z')
+    RABBITMQ_DEFAULT_USER = os.getenv("RABBITMQ_DEFAULT_USER")
+    RABBITMQ_DEFAULT_PASS = os.getenv("RABBITMQ_DEFAULT_PASS")
 
-    CELERY_BROKER_URL = f'amqp://{broker_username}:{broker_password}@rabbitmq:5672//'
-    CELERY_RESULT_BACKEND = 'rpc://'
+    CELERY_BROKER_URL = (
+        f"amqp://{RABBITMQ_DEFAULT_USER}:{RABBITMQ_DEFAULT_PASS}@rabbitmq:5672//"
+    )
+    CELERY_RESULT_BACKEND = "rpc://"
 
     # Celery Data Format
-    CELERY_ACCEPT_CONTENT = ['application/json']
-    CELERY_TASK_SERIALIZER = 'json'
-    CELERY_RESULT_SERIALIZER = 'json'
-    CELERY_TIMEZONE = 'UTC'
-    imports = ('indicators.tasks',)
+    CELERY_ACCEPT_CONTENT = ["application/json"]
+    CELERY_TASK_SERIALIZER = "json"
+    CELERY_RESULT_SERIALIZER = "json"
+    CELERY_TIMEZONE = "UTC"
+    imports = ("indicators.tasks",)
 
     CELERY_TASK_ACKS_LATE = False
     CELERY_TASK_QUEUE_MAX_PRIORITY = 10

@@ -10,22 +10,76 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('animals', '0012_auto_20200217_1743'),
+        ("animals", "0012_auto_20200217_1743"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='ImageryRequest',
+            name="ImageryRequest",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('generate_bands', models.BooleanField(default=False)),
-                ('process_status', models.CharField(choices=[('PE', 'Pending'), ('FA', 'Failure'), ('FI', 'Finished')], default='PE', max_length=2, verbose_name='Current request status')),
-                ('created_date', models.DateTimeField(default=django.utils.timezone.now, verbose_name='Entry Creation Date')),
-                ('requested_date', models.DateField(verbose_name='Requested date')),
-                ('actual_date', models.DateTimeField(blank=True, null=True, verbose_name='Actual Date')),
-                ('results_dir', models.CharField(blank=True, max_length=100, verbose_name='Directory with results')),
-                ('cadastre', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='imagery_requests', to='animals.Cadastre', verbose_name='Cadastre')),
-                ('farm', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='imagery_requests', to='animals.Farm', verbose_name='Farm')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("generate_bands", models.BooleanField(default=False)),
+                (
+                    "process_status",
+                    models.CharField(
+                        choices=[
+                            ("PE", "Pending"),
+                            ("FA", "Failure"),
+                            ("FI", "Finished"),
+                        ],
+                        default="PE",
+                        max_length=2,
+                        verbose_name="Current request status",
+                    ),
+                ),
+                (
+                    "created_date",
+                    models.DateTimeField(
+                        default=django.utils.timezone.now,
+                        verbose_name="Entry Creation Date",
+                    ),
+                ),
+                ("requested_date", models.DateField(verbose_name="Requested date")),
+                (
+                    "actual_date",
+                    models.DateTimeField(
+                        blank=True, null=True, verbose_name="Actual Date"
+                    ),
+                ),
+                (
+                    "results_dir",
+                    models.CharField(
+                        blank=True,
+                        max_length=100,
+                        verbose_name="Directory with results",
+                    ),
+                ),
+                (
+                    "cadastre",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="imagery_requests",
+                        to="animals.Cadastre",
+                        verbose_name="Cadastre",
+                    ),
+                ),
+                (
+                    "farm",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="imagery_requests",
+                        to="animals.Farm",
+                        verbose_name="Farm",
+                    ),
+                ),
             ],
         ),
     ]

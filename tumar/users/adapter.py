@@ -34,11 +34,10 @@ class MyAccountAdapter(DefaultAccountAdapter):
         (unique).
         """
         from allauth.account.utils import user_username, user_email, user_field
-        first_name = user_field(user, 'first_name')
-        last_name = user_field(user, 'last_name')
-        email = user_email(user)
+
+        first_name = user_field(user, "first_name")  # noqa
+        last_name = user_field(user, "last_name")  # noqa
+        email = user_email(user)  # noqa
         username = user_username(user)
         if app_settings.USER_MODEL_USERNAME_FIELD:
-            user_username(
-                user,
-                username or generate_phone_number())
+            user_username(user, username or generate_phone_number())

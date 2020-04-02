@@ -4,8 +4,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from django.db import connections
-from django.http import Http404
-from django.shortcuts import render
+from ..celery import app
 
 # from .models import ImageryRequest
 # from .serializers import ImageryRequestSerializer
@@ -17,27 +16,49 @@ from tumar.animals.models import Cadastre
 class RequestIndicatorsView(APIView):
     def post(self, request):
         if not request.data["cad_number"]:
-            return Response({"error": "Provide cad_number"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"error": "Provide cad_number"}, status=status.HTTP_404_NOT_FOUND
+            )
 
-        if not Cadastre.objects.filter(farm__user=self.request.user, cad_number=request.data["cad_number"]).exists():
-            return Response({"fail": "Cadastre with this cad_number does not belong to you"}, status=status.HTTP_404_NOT_FOUND)
+        if not Cadastre.objects.filter(
+            farm__user=self.request.user, cad_number=request.data["cad_number"]
+        ).exists():
+            return Response(
+                {"fail": "Cadastre with this cad_number does not belong to you"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
 
         egistic_cadastre_id = None
         target_dates = None
 
-
         try:
-            with connections['egistic_2'].cursor() as cursor:
-                cursor.execute("SELECT id FROM cadastres_cadastre WHERE kad_nomer = %s", [request.data["cad_number"]])
+            with connections["egistic_2"].cursor() as cursor:
+                cursor.execute(
+                    "SELECT id FROM cadastres_cadastre WHERE kad_nomer = %s",
+                    [request.data["cad_number"]],
+                )
                 row = cursor.fetchone()
                 egistic_cadastre_id = row[0]
-        except TypeError as err:
-            return Response({"fail": "Cadastre number was not found in the egistic database. Imagery for custom geometries is not supported yet."}, status=status.HTTP_404_NOT_FOUND)
+        except TypeError:
+            return Response(
+                {
+                    "fail": "Cadastre number was not found in the egistic database."
+                    + " Imagery for custom geometries is not supported yet."
+                },
+                status=status.HTTP_404_NOT_FOUND,
+            )
 
         if request.data["requested_date"]:
-            target_dates = [request.data["requested_date"],]
+            target_dates = [
+                request.data["requested_date"],
+            ]
 
-        result = app.signature("process_cadastres", param_values=dict(param='id', values=[egistic_cadastre_id,]), target_dates=target_dates, days_range=14)
+        result = app.signature(
+            "process_cadastres",
+            param_values=dict(param="id", values=[egistic_cadastre_id]),
+            target_dates=target_dates,
+            days_range=14,
+        )
         result.apply_async()
 
         return Response({"success": True}, status=status.HTTP_201_CREATED)
@@ -45,28 +66,47 @@ class RequestIndicatorsView(APIView):
 
 class LatestIndicatorsView(APIView):
     def get(self, request):
-        cad_number = request.query_params.get('cad_number', None)
+        cad_number = request.query_params.get("cad_number", None)
         if cad_number is None:
-            return Response({"error": "cadastre number was not specified: 'baseURL'/indicators/latest/?cad_number=<cad_number:int>"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {
+                    "error": "cadastre number was not specified:"
+                    + " 'baseURL'/indicators/latest/?cad_number=<cad_number:int>"
+                },
+                status=status.HTTP_404_NOT_FOUND,
+            )
 
-        cadastre = get_object_or_404(Cadastre, farm__user=self.request.user, cad_number=cad_number)
+        cadastre = get_object_or_404(
+            Cadastre, farm__user=self.request.user, cad_number=cad_number
+        )
         egistic_cadastre_id = None
         response_data = {"cadastre_response": {}, "cadastre_images": {}}
 
         try:
-            with connections['egistic_2'].cursor() as cursor:
-                cursor.execute("SELECT id FROM cadastres_cadastre WHERE kad_nomer = %s", [cadastre.cad_number])
+            with connections["egistic_2"].cursor() as cursor:
+                cursor.execute(
+                    "SELECT id FROM cadastres_cadastre WHERE kad_nomer = %s",
+                    [cadastre.cad_number],
+                )
                 row = cursor.fetchone()
                 egistic_cadastre_id = row[0]
-        except TypeError as err:
-            return Response({"fail": "Cadastre number was not found in the egistic database. Imagery for custom geometries is not supported yet."}, status=status.HTTP_404_NOT_FOUND)
+        except TypeError:
+            return Response(
+                {
+                    "fail": "Cadastre number was not found in the egistic database."
+                    + " Imagery for custom geometries is not supported yet."
+                },
+                status=status.HTTP_404_NOT_FOUND,
+            )
 
         # Fetch imagery
         try:
-            with connections['egistic_2'].cursor() as cursor:
+            with connections["egistic_2"].cursor() as cursor:
                 cursor.execute(
-                    "SELECT * FROM tumar_cadastreresult WHERE cadastre_id = %s ORDER BY actual_date DESC",
-                    [egistic_cadastre_id])
+                    "SELECT * FROM tumar_cadastreresult WHERE cadastre_id = %s ORDER BY"
+                    + " actual_date DESC",
+                    [egistic_cadastre_id],
+                )
                 row = cursor.fetchone()
                 response_data["cadastre_response"] = {
                     "id": row[0],
@@ -78,17 +118,22 @@ class LatestIndicatorsView(APIView):
                     "actual_date": row[6],
                     "results_dir": row[7],
                     "cadastre_id": row[8],
-                    "is_layer_created": row[9]
+                    "is_layer_created": row[9],
                 }
-        except TypeError as err:
-            return Response({"fail": "Imagery tiffs was not found in the database or not finished"}, status=status.HTTP_404_NOT_FOUND)
+        except TypeError:
+            return Response(
+                {"fail": "Imagery tiffs was not found in the database or not finished"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
 
         # Fetch PNGs
         try:
-            with connections['egistic_2'].cursor() as cursor:
+            with connections["egistic_2"].cursor() as cursor:
                 cursor.execute(
-                    "SELECT * FROM tumar_cadastreresultimage WHERE cadastreresult_id = %s",
-                    [response_data["cadastre_response"][0]])
+                    "SELECT * FROM tumar_cadastreresultimage WHERE"
+                    + " cadastreresult_id = %s",
+                    [response_data["cadastre_response"][0]],
+                )
                 row = cursor.fetchone()
                 response_data["cadastre_images"] = {
                     "id": row[0],
@@ -97,9 +142,12 @@ class LatestIndicatorsView(APIView):
                     "clgreen": row[3],
                     "ndmi": row[4],
                     "rgb": row[5],
-                    "cadastreresult_id": row[6]
+                    "cadastreresult_id": row[6],
                 }
-        except TypeError as err:
-            return Response({"fail": "Imagery PNGs were not found in the database or not finished"}, status=status.HTTP_404_NOT_FOUND)
+        except TypeError:
+            return Response(
+                {"fail": "Imagery PNGs were not found in the database or not finished"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
 
         return Response(response_data)

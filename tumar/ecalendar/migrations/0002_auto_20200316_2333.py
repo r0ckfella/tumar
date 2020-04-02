@@ -7,28 +7,36 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('ecalendar', '0001_initial'),
+        ("ecalendar", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='breedingstockevent',
-            name='completion_date',
-            field=models.DateField(default=datetime.date.today, verbose_name='Date of the event completion'),
+            model_name="breedingstockevent",
+            name="completion_date",
+            field=models.DateField(
+                default=datetime.date.today, verbose_name="Date of the event completion"
+            ),
         ),
         migrations.AlterField(
-            model_name='breedingstockevent',
-            name='scheduled_date',
-            field=models.DateField(default=datetime.date.today, verbose_name='Scheduled date of the event'),
+            model_name="breedingstockevent",
+            name="scheduled_date",
+            field=models.DateField(
+                default=datetime.date.today, verbose_name="Scheduled date of the event"
+            ),
         ),
         migrations.AlterField(
-            model_name='calfevent',
-            name='completion_date',
-            field=models.DateField(default=datetime.date.today, verbose_name='Date of the event completion'),
+            model_name="calfevent",
+            name="completion_date",
+            field=models.DateField(
+                default=datetime.date.today, verbose_name="Date of the event completion"
+            ),
         ),
         migrations.AlterField(
-            model_name='calfevent',
-            name='scheduled_date',
-            field=models.DateField(default=datetime.date.today, verbose_name='Scheduled date of the event'),
+            model_name="calfevent",
+            name="scheduled_date",
+            field=models.DateField(
+                default=datetime.date.today, verbose_name="Scheduled date of the event"
+            ),
         ),
     ]

@@ -8,48 +8,63 @@ import django.db.models.manager
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('animals', '0003_auto_20191213_1317'),
+        ("animals", "0003_auto_20191213_1317"),
     ]
 
     operations = [
         migrations.AlterModelManagers(
-            name='geolocation',
-            managers=[
-                ('geolocations', django.db.models.manager.Manager()),
-            ],
+            name="geolocation",
+            managers=[("geolocations", django.db.models.manager.Manager()),],
         ),
-        migrations.RemoveField(
-            model_name='farm',
-            name='key',
-        ),
-        migrations.RemoveField(
-            model_name='farm',
-            name='name',
+        migrations.RemoveField(model_name="farm", name="key",),
+        migrations.RemoveField(model_name="farm", name="name",),
+        migrations.AddField(
+            model_name="farm",
+            name="cadastre_num",
+            field=models.CharField(
+                blank=True, max_length=25, null=True, verbose_name="Cadastre Number"
+            ),
         ),
         migrations.AddField(
-            model_name='farm',
-            name='cadastre_num',
-            field=models.CharField(blank=True, max_length=25, null=True, verbose_name='Cadastre Number'),
-        ),
-        migrations.AddField(
-            model_name='farm',
-            name='iin',
-            field=models.CharField(default='test1', max_length=32, unique=True, verbose_name='IIN/BIN'),
+            model_name="farm",
+            name="iin",
+            field=models.CharField(
+                default="test1", max_length=32, unique=True, verbose_name="IIN/BIN"
+            ),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='farm',
-            name='legal_person',
-            field=models.CharField(blank=True, max_length=50, null=True, verbose_name='Legal Person'),
+            model_name="farm",
+            name="legal_person",
+            field=models.CharField(
+                blank=True, max_length=50, null=True, verbose_name="Legal Person"
+            ),
         ),
         migrations.AlterField(
-            model_name='animal',
-            name='cow_code',
-            field=models.CharField(blank=True, max_length=25, null=True, unique=True, verbose_name='Animal ID'),
+            model_name="animal",
+            name="cow_code",
+            field=models.CharField(
+                blank=True,
+                max_length=25,
+                null=True,
+                unique=True,
+                verbose_name="Animal ID",
+            ),
         ),
         migrations.AlterField(
-            model_name='animal',
-            name='imei',
-            field=models.CharField(blank=True, max_length=15, null=True, unique=True, validators=[django.core.validators.RegexValidator(message="Imei must be entered in the format: '123456789012345'. Up to 15 digits allowed.", regex='^\\d{15}$')]),
+            model_name="animal",
+            name="imei",
+            field=models.CharField(
+                blank=True,
+                max_length=15,
+                null=True,
+                unique=True,
+                validators=[
+                    django.core.validators.RegexValidator(
+                        message="Imei must be entered in the format: '123456789012345'. Up to 15 digits allowed.",
+                        regex="^\\d{15}$",
+                    )
+                ],
+            ),
         ),
     ]

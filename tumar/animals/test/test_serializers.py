@@ -4,12 +4,10 @@ from nose.tools import eq_, ok_
 
 from .factories import FarmFactory
 from ..serializers import FarmSerializer
-from ...users.models import User
 from ...users.test.factories import UserFactory
 
 
 class TestFarmSerializer(TestCase):
-
     def setUp(self):
         temp_user = UserFactory()
         self.farm_data = model_to_dict(FarmFactory.build(user=temp_user))

@@ -8,34 +8,51 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('animals', '0007_auto_20191225_2311'),
+        ("animals", "0007_auto_20191225_2311"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Cadastre',
+            name="Cadastre",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('cad_number', models.CharField(blank=True, max_length=30, verbose_name='Cadastre Number')),
-                ('geom', django.contrib.gis.db.models.fields.GeometryField(blank=True, null=True, srid=3857, verbose_name='Geometry')),
-                ('title', models.CharField(blank=True, max_length=80, verbose_name='Title')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "cad_number",
+                    models.CharField(
+                        blank=True, max_length=30, verbose_name="Cadastre Number"
+                    ),
+                ),
+                (
+                    "geom",
+                    django.contrib.gis.db.models.fields.GeometryField(
+                        blank=True, null=True, srid=3857, verbose_name="Geometry"
+                    ),
+                ),
+                (
+                    "title",
+                    models.CharField(blank=True, max_length=80, verbose_name="Title"),
+                ),
             ],
-            options={
-                'verbose_name': 'Cadastre',
-                'verbose_name_plural': 'Cadastres',
-            },
+            options={"verbose_name": "Cadastre", "verbose_name_plural": "Cadastres",},
         ),
-        migrations.RemoveField(
-            model_name='farm',
-            name='cadastre_land',
-        ),
-        migrations.RemoveField(
-            model_name='farm',
-            name='cadastres',
-        ),
+        migrations.RemoveField(model_name="farm", name="cadastre_land",),
+        migrations.RemoveField(model_name="farm", name="cadastres",),
         migrations.AddField(
-            model_name='cadastre',
-            name='farm',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='cadastres', to='animals.Farm', verbose_name='Farm'),
+            model_name="cadastre",
+            name="farm",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="cadastres",
+                to="animals.Farm",
+                verbose_name="Farm",
+            ),
         ),
     ]

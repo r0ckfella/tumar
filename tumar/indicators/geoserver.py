@@ -5,11 +5,14 @@ import requests
 from geoserver.catalog import Catalog
 
 
-def layer_create_tiff(request, name_part='_tumar_', root="/root/Rasters"):
-    geo_url = 'http://geoserver:8080/geoserver/rest/' if os.getenv(
-        'DEFAULT_DB_HOST') else 'https://geo.egistic.kz/geoserver/rest/'
-    cat = Catalog(geo_url, 'admin', 'UxeiJ5ree2riVoi')
-    ws = cat.get_workspace('global')
+def layer_create_tiff(request, name_part="_tumar_", root="/root/Rasters"):
+    geo_url = (
+        "http://geoserver:8080/geoserver/rest/"
+        if os.getenv("DEFAULT_DB_HOST")
+        else "https://geo.egistic.kz/geoserver/rest/"
+    )
+    cat = Catalog(geo_url, "admin", "UxeiJ5ree2riVoi")
+    ws = cat.get_workspace("global")
 
     # Indicator layerization
     ndmi = "ndmi{}{}".format(name_part, request.id)
@@ -18,7 +21,7 @@ def layer_create_tiff(request, name_part='_tumar_', root="/root/Rasters"):
     clgreen = "clgreen{}{}".format(name_part, request.id)
     rgb = "rgb{}{}".format(name_part, request.id)
     layer1 = cat.get_layer(rgb)
-    if layer1 == None:
+    if layer1 is None:
         print("------start of creating layer-------")
         url1 = "{}/{}/ndmi.tiff".format(root, request.results_dir)
         url2 = "{}/{}/ndvi.tiff".format(root, request.results_dir)
@@ -26,27 +29,11 @@ def layer_create_tiff(request, name_part='_tumar_', root="/root/Rasters"):
         url4 = "{}/{}/clgreen.tiff".format(root, request.results_dir)
         url5 = "{}/{}/rgb.tiff".format(root, request.results_dir)
         # url5 = "/root/Rasters/include_parents_rgb.tiff"
-        cat.create_coveragestore(name=ndmi,
-                                 data=url1,
-                                 workspace=ws,
-                                 overwrite=True)
-        cat.create_coveragestore(name=ndvi,
-                                 data=url2,
-                                 workspace=ws,
-                                 overwrite=True)
-        cat.create_coveragestore(name=gndvi,
-                                 data=url3,
-                                 workspace=ws,
-                                 overwrite=True)
-        cat.create_coveragestore(name=clgreen,
-                                 data=url4,
-                                 workspace=ws,
-                                 overwrite=True)
-        cat.create_coveragestore(name=rgb,
-                                 data=url5,
-                                 workspace=ws,
-                                 overwrite=True)
-        # "/home/zhandos/backend/Egistic/Results/raster_images/user_id=111/geom_id=341736/image_date=2018-10-12 06:17:59.024000+06:00/ndvi.tiff"
+        cat.create_coveragestore(name=ndmi, data=url1, workspace=ws, overwrite=True)
+        cat.create_coveragestore(name=ndvi, data=url2, workspace=ws, overwrite=True)
+        cat.create_coveragestore(name=gndvi, data=url3, workspace=ws, overwrite=True)
+        cat.create_coveragestore(name=clgreen, data=url4, workspace=ws, overwrite=True)
+        cat.create_coveragestore(name=rgb, data=url5, workspace=ws, overwrite=True)
         check1 = "global:ndmi{}{}".format(name_part, request.id)
         that_layer1 = cat.get_layer(check1)
         that_style1 = cat.get_style("global:ndmi")
@@ -83,7 +70,9 @@ def mapproxy():
     # print(json.dumps(data, indent=4))
 
     url = "https://ci.openlayers.kz/httpAuth/app/rest/buildQueue/"
-    headers = {'Content-Type': 'application/json'}
-    data = json.dumps({'buildTypeId': 'mapproxy_util_upd_conf'})
-    r = requests.post(url, headers=headers, data=data, auth=("admin", "astana2017"), timeout=10)
+    headers = {"Content-Type": "application/json"}
+    data = json.dumps({"buildTypeId": "mapproxy_util_upd_conf"})
+    r = requests.post(
+        url, headers=headers, data=data, auth=("admin", "astana2017"), timeout=10
+    )
     print("r = ", r)

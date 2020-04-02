@@ -1,0 +1,8 @@
+-r common.txt
+
+newrelic==4.12.0.113
+gunicorn==19.9.0
+
+# Static and Media Storage
+django-storages==1.7.1
+boto3==1.9.93

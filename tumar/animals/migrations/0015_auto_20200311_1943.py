@@ -6,20 +6,20 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('animals', '0014_auto_20200303_1730'),
+        ("animals", "0014_auto_20200303_1730"),
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name='event',
-            name='animal',
-        ),
+        migrations.RemoveField(model_name="event", name="animal",),
         migrations.AlterField(
-            model_name='calf',
-            name='gender',
-            field=models.CharField(choices=[('ML', 'Бычок'), ('FM', 'Телочка')], default='FM', max_length=2, verbose_name='Gender'),
+            model_name="calf",
+            name="gender",
+            field=models.CharField(
+                choices=[("ML", "Бычок"), ("FM", "Телочка")],
+                default="FM",
+                max_length=2,
+                verbose_name="Gender",
+            ),
         ),
-        migrations.DeleteModel(
-            name='Event',
-        ),
+        migrations.DeleteModel(name="Event",),
     ]

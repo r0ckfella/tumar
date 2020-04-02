@@ -8,6 +8,7 @@ from tumar.animals.models import BreedingStock, Calf, FEMALE, MALE
 from .models import CalfEvent, BreedingStockEvent
 from .serializers import CalfEventSerializer, BreedingStockEventSerializer
 from .utils import create_mother_cow_events_next_year
+
 # Create your views here.
 
 
@@ -15,31 +16,37 @@ class BreedingStockEventViewSet(viewsets.ModelViewSet):
     """
     Lists and retrieves events and their animal
     """
-    # queryset = BreedingStockEvent.objects.all().order_by('animal__id', '-scheduled_date')
+
     serializer_class = BreedingStockEventSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filterset_fields = ('animal__id',)
+    filterset_fields = ("animal__id",)
 
     def get_queryset(self):
         if self.request.user.is_superuser:
-            return BreedingStockEvent.objects.all().order_by('animal__id', '-scheduled_date')
-        return BreedingStockEvent.objects.filter(animal__farm__user=self.request.user).order_by('animal__id', '-scheduled_date')
-
+            return BreedingStockEvent.objects.all().order_by(
+                "animal__id", "-scheduled_date"
+            )
+        return BreedingStockEvent.objects.filter(
+            animal__farm__user=self.request.user
+        ).order_by("animal__id", "-scheduled_date")
 
 
 class CalfEventViewSet(viewsets.ModelViewSet):
     """
     Lists and retrieves events and their animal
     """
+
     # queryset = CalfEvent.objects.all().order_by('animal__id', '-scheduled_date')
     serializer_class = CalfEventSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filterset_fields = ('animal__id',)
+    filterset_fields = ("animal__id",)
 
     def get_queryset(self):
         if self.request.user.is_superuser:
-            return CalfEvent.objects.all().order_by('animal__id', '-scheduled_date')
-        return CalfEvent.objects.filter(animal__farm__user=self.request.user).order_by('animal__id', '-scheduled_date')
+            return CalfEvent.objects.all().order_by("animal__id", "-scheduled_date")
+        return CalfEvent.objects.filter(animal__farm__user=self.request.user).order_by(
+            "animal__id", "-scheduled_date"
+        )
 
 
 class NextYearBreedingStockEventView(APIView):
@@ -50,10 +57,14 @@ class NextYearBreedingStockEventView(APIView):
             create_mother_cow_events_next_year(cow)
         except Exception as e:
             print(e)
-            return Response({"error": "found the cow, but could not create events for it"},
-                            status=status.HTTP_201_CREATED)
-        return Response({"success": "standard next year events for cow created"},
-                        status=status.HTTP_400_BAD_REQUEST) 
+            return Response(
+                {"error": "found the cow, but could not create events for it"},
+                status=status.HTTP_201_CREATED,
+            )
+        return Response(
+            {"success": "standard next year events for cow created"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
 
 
 class AllBreedingStockEventView(APIView):
@@ -65,6 +76,7 @@ class AllBreedingStockEventView(APIView):
         serializer = BreedingStockEventSerializer(cow.events, many=True)
 
         return Response(serializer.data)
+
 
 class AllCalfEventView(APIView):
     def get(self, request, pk):
@@ -87,18 +99,30 @@ class CalendarView(APIView):
         female_calves = cow.calves.filter(gender=FEMALE)
         male_calves = cow.calves.filter(gender=MALE)
 
-        data = {"cow": {"id": cow.id, "name": cow.name, "events": []}, "male_calves": [], "female_calves": []}
-        
-        cow_serializer = BreedingStockEventSerializer(cow.events.order_by('scheduled_date'), many=True)
+        data = {
+            "cow": {"id": cow.id, "name": cow.name, "events": []},
+            "male_calves": [],
+            "female_calves": [],
+        }
+
+        cow_serializer = BreedingStockEventSerializer(
+            cow.events.order_by("scheduled_date"), many=True
+        )
         data["cow"]["events"] = cow_serializer.data
 
         for calf in female_calves:
-            calf_serializer = CalfEventSerializer(calf.events.order_by('scheduled_date'), many=True)
-            data["female_calves"].append({"id": calf.id, "name": calf.name, "events": []})
+            calf_serializer = CalfEventSerializer(
+                calf.events.order_by("scheduled_date"), many=True
+            )
+            data["female_calves"].append(
+                {"id": calf.id, "name": calf.name, "events": []}
+            )
             data["female_calves"][-1]["events"] = calf_serializer.data
 
         for calf in male_calves:
-            calf_serializer = CalfEventSerializer(calf.events.order_by('scheduled_date'), many=True)
+            calf_serializer = CalfEventSerializer(
+                calf.events.order_by("scheduled_date"), many=True
+            )
             data["male_calves"].append({"id": calf.id, "name": calf.name, "events": []})
             data["male_calves"][-1]["events"] = calf_serializer.data
 

@@ -2,11 +2,21 @@ from rest_framework import serializers
 
 from .models import BreedingStockEvent, CalfEvent
 
+
 class BreedingStockEventSerializer(serializers.ModelSerializer):
     class Meta:
         model = BreedingStockEvent
-        fields = ('id', 'title', 'scheduled_date', 'completion_date', 'report', 'type', 'completed', 'animal',)
-        read_only_fields = ('id',)
+        fields = (
+            "id",
+            "title",
+            "scheduled_date",
+            "completion_date",
+            "report",
+            "type",
+            "completed",
+            "animal",
+        )
+        read_only_fields = ("id",)
 
 
 # class BreedingStockEventAnimalSerializer(EventSerializer):
@@ -19,5 +29,14 @@ class BreedingStockEventSerializer(serializers.ModelSerializer):
 class CalfEventSerializer(serializers.ModelSerializer):
     class Meta:
         model = CalfEvent
-        fields = ('id', 'title', 'scheduled_date', 'completion_date', 'report', 'type', 'completed', 'animal',)
-        read_only_fields = ('id',)
+        fields = (
+            "id",
+            "title",
+            "scheduled_date",
+            "completion_date",
+            "report",
+            "type",
+            "completed",
+            "animal",
+        )
+        read_only_fields = ("id",)

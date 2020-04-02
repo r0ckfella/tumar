@@ -1,4 +1,4 @@
-from django.contrib import admin
+# from django.contrib import admin
 
 # from .models import ImageryRequest
 
@@ -11,4 +11,5 @@ from django.contrib import admin
 #     list_filter = ('process_status', 'created_date', 'requested_date', 'actual_date')
 #     date_hierarchy = 'created_date'
 #     search_fields = ['id', '=cadastre__cad_number',]
-#     exclude = ('process_status', 'generate_bands', 'created_date', 'requested_date', 'actual_date', 'results_dir',)
+#     exclude = ('process_status', 'generate_bands', 'created_date', 'requested_date',
+# 'actual_date', 'results_dir',)

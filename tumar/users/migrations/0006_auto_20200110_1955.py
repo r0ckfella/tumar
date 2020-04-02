@@ -7,13 +7,27 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('users', '0005_remove_user_phone_num'),
+        ("users", "0005_remove_user_phone_num"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='user',
-            name='username',
-            field=models.CharField(error_messages={'unique': 'A user with that phone number already exists.'}, help_text="Required. Phone number must be entered in the format: '+77076143537'. Up to 15 digits allowed.", max_length=16, unique=True, validators=[django.core.validators.RegexValidator(message="Phone number must be entered in the format: '+77076143537'. Up to 15 digits allowed.", regex='^\\+?\\d?\\d{11,15}$')], verbose_name='phone number'),
+            model_name="user",
+            name="username",
+            field=models.CharField(
+                error_messages={
+                    "unique": "A user with that phone number already exists."
+                },
+                help_text="Required. Phone number must be entered in the format: '+77076143537'. Up to 15 digits allowed.",
+                max_length=16,
+                unique=True,
+                validators=[
+                    django.core.validators.RegexValidator(
+                        message="Phone number must be entered in the format: '+77076143537'. Up to 15 digits allowed.",
+                        regex="^\\+?\\d?\\d{11,15}$",
+                    )
+                ],
+                verbose_name="phone number",
+            ),
         ),
     ]
