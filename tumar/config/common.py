@@ -27,13 +27,13 @@ class Common(Configuration):
         # Registration related
         "django.contrib.sites",
         "allauth",
-        "allauth.account",
-        "rest_auth.registration",
-        "phone_verify",
+        # "allauth.account",
+        # "rest_auth.registration",
+        # "phone_verify",
         # Social Auth
         "allauth.socialaccount",
-        "allauth.socialaccount.providers.facebook",
-        "allauth.socialaccount.providers.google",
+        # "allauth.socialaccount.providers.facebook",
+        # "allauth.socialaccount.providers.google",
         # Your apps
         "tumar.users.apps.UsersConfig",
         "tumar.animals.apps.AnimalsConfig",

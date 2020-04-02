@@ -7,7 +7,7 @@ from django.conf import settings  # noqa
 # set the default Django settings module for the 'celery' program.
 # os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tumar.config")
 # os.environ.setdefault("DJANGO_CONFIGURATION", "Local")
-configurations.setup()  # noqa
+# configurations.setup()  # noqa
 
 app = Celery("tumar-tasks")
 
