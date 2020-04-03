@@ -35,3 +35,6 @@ gsconfig-py3==1.0.7
 django-rest-auth==0.9.5
 django-allauth==0.41.0
 django-phone-verify==1.0.0
+
+# TESTING??
+factory-boy==2.11.1
