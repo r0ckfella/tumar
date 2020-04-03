@@ -53,13 +53,23 @@ class Company(models.Model):
         City, related_name="companies", verbose_name=_("Cities of the Company"),
     )
     title = models.CharField(max_length=100, verbose_name=_("Title of the Company"))
-    product_description = models.TextField(verbose_name=_("Product Description"))
-    company_description = models.TextField(verbose_name=_("Short Company Description"))
-    phone_numbers = models.CharField(max_length=100, verbose_name=_("Phone Numbers"))
-    emails = models.CharField(max_length=100, verbose_name=_("Emails"))
-    web_sites = models.CharField(max_length=100, verbose_name=_("Websites"))
-    instagram_url = models.CharField(max_length=100, verbose_name=_("Instagram"))
-    facebook_url = models.CharField(max_length=100, verbose_name=_("Facebook"))
+    product_description = models.TextField(
+        blank=True, verbose_name=_("Product Description")
+    )
+    company_description = models.TextField(
+        blank=True, verbose_name=_("Short Company Description")
+    )
+    phone_numbers = models.CharField(
+        max_length=100, blank=True, verbose_name=_("Phone Numbers")
+    )
+    emails = models.CharField(max_length=100, blank=True, verbose_name=_("Emails"))
+    web_sites = models.CharField(max_length=100, blank=True, verbose_name=_("Websites"))
+    instagram_url = models.CharField(
+        max_length=100, blank=True, verbose_name=_("Instagram")
+    )
+    facebook_url = models.CharField(
+        max_length=100, blank=True, verbose_name=_("Facebook")
+    )
 
     class Meta:
         verbose_name = _("Company")

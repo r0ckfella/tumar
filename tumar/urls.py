@@ -44,6 +44,7 @@ from .ecalendar.views import (
     AllCalfEventView,
     CalendarView,
 )
+from .catalog.views import CompanyDirectionListView, CompanyViewSet
 
 router = DefaultRouter()
 
@@ -62,6 +63,7 @@ router.register(
     r"events/breedingstock", BreedingStockEventViewSet, basename="BreedingStockEvent"
 )
 router.register(r"cadastres", CadastreFarmViewSet, basename="Cadastre")
+router.register(r"catalog", CompanyViewSet, basename="Catalog")
 
 # sms_router = DefaultRouter(trailing_slash=False)
 
@@ -97,6 +99,7 @@ urlpatterns = i18n_patterns(
                 ),
                 path("calf/<uuid:pk>/events/", AllCalfEventView.as_view()),
                 path("events/calendar/<uuid:pk>/", CalendarView.as_view()),
+                path("catalog/directions/", CompanyDirectionListView.as_view()),
             ]
             + router.urls
             # + sms_router.urls
