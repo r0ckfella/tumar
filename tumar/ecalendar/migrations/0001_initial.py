@@ -10,42 +10,127 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('animals', '0015_auto_20200311_1943'),
+        ("animals", "0015_auto_20200311_1943"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='BreedingStockEvent',
+            name="BreedingStockEvent",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=80, verbose_name='Title')),
-                ('scheduled_date', models.DateTimeField(default=django.utils.timezone.now, verbose_name='Scheduled date of the event')),
-                ('completion_date', models.DateTimeField(default=django.utils.timezone.now, verbose_name='Date of the event completion')),
-                ('type', models.CharField(choices=[('HL', 'Управление'), ('HT', 'Здоровье'), ('FD', 'Кормление'), ('OT', 'Остальное')], default='OT', max_length=2, verbose_name='Type of the event')),
-                ('report', models.TextField(blank=True, verbose_name='Report')),
-                ('completed', models.BooleanField(default=False, verbose_name='Completed?')),
-                ('animal', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='events', to='animals.BreedingStock', verbose_name='Cow Animal of the event')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("title", models.CharField(max_length=80, verbose_name="Title")),
+                (
+                    "scheduled_date",
+                    models.DateTimeField(
+                        default=django.utils.timezone.now,
+                        verbose_name="Scheduled date of the event",
+                    ),
+                ),
+                (
+                    "completion_date",
+                    models.DateTimeField(
+                        default=django.utils.timezone.now,
+                        verbose_name="Date of the event completion",
+                    ),
+                ),
+                (
+                    "type",
+                    models.CharField(
+                        choices=[
+                            ("HL", "Управление"),
+                            ("HT", "Здоровье"),
+                            ("FD", "Кормление"),
+                            ("OT", "Остальное"),
+                        ],
+                        default="OT",
+                        max_length=2,
+                        verbose_name="Type of the event",
+                    ),
+                ),
+                ("report", models.TextField(blank=True, verbose_name="Report")),
+                (
+                    "completed",
+                    models.BooleanField(default=False, verbose_name="Completed?"),
+                ),
+                (
+                    "animal",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="events",
+                        to="animals.BreedingStock",
+                        verbose_name="Cow Animal of the event",
+                    ),
+                ),
             ],
-            options={
-                'verbose_name': 'Cow Event',
-                'verbose_name_plural': 'Cow Events',
-            },
+            options={"verbose_name": "Cow Event", "verbose_name_plural": "Cow Events",},
         ),
         migrations.CreateModel(
-            name='CalfEvent',
+            name="CalfEvent",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=80, verbose_name='Title')),
-                ('scheduled_date', models.DateTimeField(default=django.utils.timezone.now, verbose_name='Scheduled date of the event')),
-                ('completion_date', models.DateTimeField(default=django.utils.timezone.now, verbose_name='Date of the event completion')),
-                ('type', models.CharField(choices=[('HL', 'Управление'), ('HT', 'Здоровье'), ('FD', 'Кормление'), ('OT', 'Остальное')], default='OT', max_length=2, verbose_name='Type of the event')),
-                ('report', models.TextField(blank=True, verbose_name='Report')),
-                ('completed', models.BooleanField(default=False, verbose_name='Completed?')),
-                ('animal', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='events', to='animals.Calf', verbose_name='Calf Animal of the event')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("title", models.CharField(max_length=80, verbose_name="Title")),
+                (
+                    "scheduled_date",
+                    models.DateTimeField(
+                        default=django.utils.timezone.now,
+                        verbose_name="Scheduled date of the event",
+                    ),
+                ),
+                (
+                    "completion_date",
+                    models.DateTimeField(
+                        default=django.utils.timezone.now,
+                        verbose_name="Date of the event completion",
+                    ),
+                ),
+                (
+                    "type",
+                    models.CharField(
+                        choices=[
+                            ("HL", "Управление"),
+                            ("HT", "Здоровье"),
+                            ("FD", "Кормление"),
+                            ("OT", "Остальное"),
+                        ],
+                        default="OT",
+                        max_length=2,
+                        verbose_name="Type of the event",
+                    ),
+                ),
+                ("report", models.TextField(blank=True, verbose_name="Report")),
+                (
+                    "completed",
+                    models.BooleanField(default=False, verbose_name="Completed?"),
+                ),
+                (
+                    "animal",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="events",
+                        to="animals.Calf",
+                        verbose_name="Calf Animal of the event",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Calf Event',
-                'verbose_name_plural': 'Calf Events',
+                "verbose_name": "Calf Event",
+                "verbose_name_plural": "Calf Events",
             },
         ),
     ]

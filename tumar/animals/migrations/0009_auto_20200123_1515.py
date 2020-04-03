@@ -7,73 +7,91 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('animals', '0008_auto_20200118_0304'),
+        ("animals", "0008_auto_20200118_0304"),
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name='farm',
-            name='requisites',
+        migrations.RemoveField(model_name="farm", name="requisites",),
+        migrations.AddField(
+            model_name="farm",
+            name="address",
+            field=models.CharField(blank=True, max_length=100, verbose_name="Address"),
         ),
         migrations.AddField(
-            model_name='farm',
-            name='address',
-            field=models.CharField(blank=True, max_length=100, verbose_name='Address'),
+            model_name="farm",
+            name="api_key",
+            field=models.CharField(
+                blank=True, max_length=100, verbose_name="Chinese API key"
+            ),
         ),
         migrations.AddField(
-            model_name='farm',
-            name='api_key',
-            field=models.CharField(blank=True, max_length=100, verbose_name='Chinese API key'),
+            model_name="farm",
+            name="bank",
+            field=models.CharField(blank=True, max_length=80, verbose_name="BANK"),
         ),
         migrations.AddField(
-            model_name='farm',
-            name='bank',
-            field=models.CharField(blank=True, max_length=80, verbose_name='BANK'),
+            model_name="farm",
+            name="bin",
+            field=models.CharField(blank=True, max_length=80, verbose_name="BIN"),
         ),
         migrations.AddField(
-            model_name='farm',
-            name='bin',
-            field=models.CharField(blank=True, max_length=80, verbose_name='BIN'),
-        ),
-        migrations.AddField(
-            model_name='farm',
-            name='iik',
-            field=models.CharField(blank=True, max_length=80, verbose_name='IIK'),
+            model_name="farm",
+            name="iik",
+            field=models.CharField(blank=True, max_length=80, verbose_name="IIK"),
         ),
         migrations.AlterField(
-            model_name='animal',
-            name='imei',
-            field=models.CharField(blank=True, default=' ', max_length=15, unique=True, validators=[django.core.validators.RegexValidator(message="Imei must be entered in the format: '123456789012345'. Up to 15 digits allowed.", regex='^\\d{15}$')]),
+            model_name="animal",
+            name="imei",
+            field=models.CharField(
+                blank=True,
+                default=" ",
+                max_length=15,
+                unique=True,
+                validators=[
+                    django.core.validators.RegexValidator(
+                        message="Imei must be entered in the format: '123456789012345'. Up to 15 digits allowed.",
+                        regex="^\\d{15}$",
+                    )
+                ],
+            ),
             preserve_default=False,
         ),
         migrations.AlterField(
-            model_name='animal',
-            name='imsi',
-            field=models.CharField(blank=True, default=' ', max_length=30, verbose_name='IMSI number'),
+            model_name="animal",
+            name="imsi",
+            field=models.CharField(
+                blank=True, default=" ", max_length=30, verbose_name="IMSI number"
+            ),
             preserve_default=False,
         ),
         migrations.AlterField(
-            model_name='animal',
-            name='name',
-            field=models.CharField(blank=True, default=' ', max_length=30, verbose_name='Animal name'),
+            model_name="animal",
+            name="name",
+            field=models.CharField(
+                blank=True, default=" ", max_length=30, verbose_name="Animal name"
+            ),
             preserve_default=False,
         ),
         migrations.AlterField(
-            model_name='event',
-            name='description',
-            field=models.TextField(blank=True, default=' ', verbose_name='Description'),
+            model_name="event",
+            name="description",
+            field=models.TextField(blank=True, default=" ", verbose_name="Description"),
             preserve_default=False,
         ),
         migrations.AlterField(
-            model_name='farm',
-            name='legal_person',
-            field=models.CharField(blank=True, default=' ', max_length=50, verbose_name='Legal person'),
+            model_name="farm",
+            name="legal_person",
+            field=models.CharField(
+                blank=True, default=" ", max_length=50, verbose_name="Legal person"
+            ),
             preserve_default=False,
         ),
         migrations.AlterField(
-            model_name='machinery',
-            name='type',
-            field=models.CharField(blank=True, default=' ', max_length=50, verbose_name='Type of machinery'),
+            model_name="machinery",
+            name="type",
+            field=models.CharField(
+                blank=True, default=" ", max_length=50, verbose_name="Type of machinery"
+            ),
             preserve_default=False,
         ),
     ]

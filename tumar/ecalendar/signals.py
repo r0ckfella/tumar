@@ -10,189 +10,187 @@ def create_male_calf_events(obj):
     if obj.birth_date:
         birth_date = obj.birth_date
         obj.mother.events.create(
-            title='Отел коровы',
+            title="Отел коровы",
             scheduled_date=birth_date,
             completion_date=birth_date,
             type=HANDLING,
-            completed=True
+            completed=True,
         )
     else:
-        birth_date = obj.mother.events.filter(title__icontains='Отел').latest('scheduled_date').scheduled_date
+        birth_date = (
+            obj.mother.events.filter(title__icontains="Отел")
+            .latest("scheduled_date")
+            .scheduled_date
+        )
+    obj.events.create(title="Рождение", scheduled_date=birth_date, type=HANDLING)
+
+    obj.events.create(title="Биркование", scheduled_date=birth_date, type=HANDLING)
+
     obj.events.create(
-        title='Рождение',
-        scheduled_date=birth_date,
-        type=HANDLING
+        title="Взвешивание теленка", scheduled_date=birth_date, type=FEEDING
     )
 
     obj.events.create(
-        title='Биркование',
-        scheduled_date=birth_date,
-        type=HANDLING
-    )
-
-    obj.events.create(
-        title='Взвешивание теленка',
-        scheduled_date=birth_date,
-        type=FEEDING
-    )
-
-    obj.events.create(
-        title='Взвешивание теленка',
+        title="Взвешивание теленка",
         scheduled_date=birth_date + relativedelta(months=7),
-        type=FEEDING
+        type=FEEDING,
     )
 
     for i in range(7):
         obj.events.create(
-            title='Выращивание на подсосе (пастбищное содержание)',
+            title="Выращивание на подсосе (пастбищное содержание)",
             scheduled_date=birth_date + relativedelta(months=i),
-            type=HANDLING
+            type=HANDLING,
         )
 
     obj.events.create(
-        title='Отъем от коровы',
+        title="Отъем от коровы",
         scheduled_date=birth_date + relativedelta(months=7),
-        type=HANDLING
+        type=HANDLING,
     )
 
     obj.events.create(
-        title='Реализация на откормплощадку',
+        title="Реализация на откормплощадку",
         scheduled_date=birth_date + relativedelta(months=7),
-        type=HANDLING
+        type=HANDLING,
     )
 
     obj.events.create(
-        title='Сравнить прогноз и факт. эффективность теленка',
+        title="Сравнить прогноз и факт. эффективность теленка",
         scheduled_date=birth_date + relativedelta(months=7),
-        type=HANDLING
+        type=HANDLING,
     )
-    print('created male calf events')
+    print("created male calf events")
+
 
 def create_female_calf_events(obj):
     if obj.birth_date:
         birth_date = obj.birth_date
         obj.mother.events.create(
-            title='Отел коровы',
+            title="Отел коровы",
             scheduled_date=birth_date,
             completion_date=birth_date,
             type=HANDLING,
-            completed=True
+            completed=True,
         )
     else:
-        birth_date = obj.mother.events.filter(title__icontains='Отел').latest('scheduled_date').scheduled_date
+        birth_date = (
+            obj.mother.events.filter(title__icontains="Отел")
+            .latest("scheduled_date")
+            .scheduled_date
+        )
+    obj.events.create(title="Рождение", scheduled_date=birth_date, type=HANDLING)
+
+    obj.events.create(title="Биркование", scheduled_date=birth_date, type=HANDLING)
+
     obj.events.create(
-        title='Рождение',
-        scheduled_date=birth_date,
-        type=HANDLING
+        title="Взвешивание теленка", scheduled_date=birth_date, type=FEEDING
     )
 
     obj.events.create(
-        title='Биркование',
-        scheduled_date=birth_date,
-        type=HANDLING
-    )
-
-    obj.events.create(
-        title='Взвешивание теленка',
-        scheduled_date=birth_date,
-        type=FEEDING
-    )
-
-    obj.events.create(
-        title='Взвешивание теленка',
+        title="Взвешивание теленка",
         scheduled_date=birth_date + relativedelta(months=7),
-        type=FEEDING
+        type=FEEDING,
     )
 
     for i in range(7):
         obj.events.create(
-            title='Выращивание на подсосе (пастбищное содержание)',
+            title="Выращивание на подсосе (пастбищное содержание)",
             scheduled_date=birth_date + relativedelta(months=i),
-            type=HANDLING
+            type=HANDLING,
         )
 
     obj.events.create(
-        title='Отъем от коровы',
+        title="Отъем от коровы",
         scheduled_date=birth_date + relativedelta(months=7),
-        type=HANDLING
+        type=HANDLING,
     )
 
     for i in range(7, 12):
         obj.events.create(
-            title='Доращивание (стойловое содержание)',
+            title="Доращивание (стойловое содержание)",
             scheduled_date=birth_date + relativedelta(months=i),
-            type=HANDLING
+            type=HANDLING,
         )
 
     obj.events.create(
-        title='Реализация или Перевод в Маточное',
+        title="Реализация или Перевод в Маточное",
         scheduled_date=birth_date + relativedelta(months=12),
-        type=HANDLING
+        type=HANDLING,
     )
-    print('created female calf events')
+    print("created female calf events")
+
 
 def create_mother_cow_events(obj):
     for i in range(5, 7):
         obj.events.create(
-            title='Случка коровы',
+            title="Случка коровы",
             scheduled_date=obj.birth_date + relativedelta(months=i),
-            type=HANDLING
+            type=HANDLING,
         )
 
     for i in range(3, 10):
         obj.events.create(
-            title='Пастбищное содержание коров',
+            title="Пастбищное содержание коров",
             scheduled_date=obj.birth_date + relativedelta(months=i),
-            type=HANDLING
+            type=HANDLING,
         )
 
     for i in range(10, 15):
         obj.events.create(
-            title='Стойловое содержание коров',
+            title="Стойловое содержание коров",
             scheduled_date=obj.birth_date + relativedelta(months=i),
-            type=HANDLING
+            type=HANDLING,
         )
 
     for i in range(4, 8, 3):
         obj.events.create(
-            title='Измерение СКТ коровы (визуальное + отправка эксперту)',
+            title="Измерение СКТ коровы (визуальное + отправка эксперту)",
             scheduled_date=obj.birth_date + relativedelta(months=i),
-            type=FEEDING
+            type=FEEDING,
         )
 
     obj.events.create(
-        title='Анализ нагрузки на пастбище',
+        title="Анализ нагрузки на пастбище",
         scheduled_date=obj.birth_date + relativedelta(months=5),
-        type=FEEDING
+        type=FEEDING,
     )
 
     for i in range(5, 8):
         obj.events.create(
-            title='Определение состояния пастбищ (автоматически)',
+            title="Определение состояния пастбищ (автоматически)",
             scheduled_date=obj.birth_date + relativedelta(months=i),
-            type=FEEDING
+            type=FEEDING,
         )
-    print('created mother cow events')
+    print("created mother cow events")
+
 
 def on_change_breedingstock(sender, instance: BreedingStock, **kwargs):
     if instance._state.adding is False:
         previous = BreedingStock.objects.get(id=instance.id)
-        if previous.birth_date is None and instance.birth_date is not None:  # field will be updated
+        if (
+            previous.birth_date is None and instance.birth_date is not None
+        ):  # field will be updated
             create_mother_cow_events(instance)
+
 
 def post_save_breedingstock(sender, instance: BreedingStock, created, **kwargs):
     if created:
         if instance.birth_date is not None:  # new object will be created
             create_mother_cow_events(instance)
 
+
 def on_change_calf(sender, instance: Calf, **kwargs):
     if instance._state.adding is False:
         previous = Calf.objects.get(id=instance.id)
-        if previous.birth_date is None and instance.birth_date is not None:  # field will be updated
+        if (
+            previous.birth_date is None and instance.birth_date is not None
+        ):  # field will be updated
             if instance.gender == MALE:
                 create_male_calf_events(instance)
             elif instance.gender == FEMALE:
                 create_female_calf_events(instance)
+
 
 def post_save_calf(sender, instance: Calf, created, **kwargs):
     if created:

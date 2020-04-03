@@ -40,18 +40,13 @@ services:
       - "DEFAULT_DB_NAME=tumar"
       - "DEFAULT_DB_USER=docker"
       - "DEFAULT_DB_PASSWORD=docker"
-      - DJANGO_SECRET_KEY=production
-      - DJANGO_CONFIGURATION=Production
-      - DJANGO_SETTINGS_MODULE=tumar.config.production
-      - RABBITMQ_DEFAULT_USER=patriot
-      - RABBITMQ_DEFAULT_PASS=GtzYz4ahBvR3THg6x89E7wpNDCtYGLCZt6LSqZNXWaerEqD3bdkxRqTjZ6DFjL6Z
     command: >
       bash -c "./manage.py collectstatic &&
               ./manage.py migrate &&
               ./manage.py compilemessages &&
               ./manage.py runserver 0.0.0.0:80"
 
-  celery-worker1:
+  celerybeat_worker:
     image: "hub.egistic.kz/tumar:latest"
     restart: "always"
     #user: "1000:1000"
@@ -71,39 +66,6 @@ services:
       - "DEFAULT_DB_NAME=tumar"
       - "DEFAULT_DB_USER=docker"
       - "DEFAULT_DB_PASSWORD=docker"
-      - DJANGO_SECRET_KEY=production
-      - DJANGO_CONFIGURATION=Production
-      - DJANGO_SETTINGS_MODULE=tumar.config.production
-      - RABBITMQ_DEFAULT_USER=patriot
-      - RABBITMQ_DEFAULT_PASS=GtzYz4ahBvR3THg6x89E7wpNDCtYGLCZt6LSqZNXWaerEqD3bdkxRqTjZ6DFjL6Z
-    command: >
-      bash -c "celery -A tumar worker -Q imagery_requests.handle_process_request -c 8 -n tumar_worker -l INFO"
-
-  celery-worker2:
-    image: "hub.egistic.kz/tumar:latest"
-    restart: "always"
-    #user: "1000:1000"
-    expose:
-      - "80"
-    networks:
-      - "arys"
-      - "postgis"
-      - "rabbit"
-      - "geoserver"
-    volumes:
-      - "/nfs/storage/imgback_rasters:/imgback_rasters"
-      - ".:/code"
-    environment:
-      - "DEFAULT_DB_HOST=db_default"
-      - "DEFAULT_DB_PORT=5432"
-      - "DEFAULT_DB_NAME=tumar"
-      - "DEFAULT_DB_USER=docker"
-      - "DEFAULT_DB_PASSWORD=docker"
-      - DJANGO_SECRET_KEY=production
-      - DJANGO_CONFIGURATION=Production
-      - DJANGO_SETTINGS_MODULE=tumar.config.production
-      - RABBITMQ_DEFAULT_USER=patriot
-      - RABBITMQ_DEFAULT_PASS=GtzYz4ahBvR3THg6x89E7wpNDCtYGLCZt6LSqZNXWaerEqD3bdkxRqTjZ6DFjL6Z
     command: >
       bash -c "celery -A tumar worker -Q tumar_celerybeat -c 2 -n tumar_celerybeat_worker -l INFO"
 
@@ -127,11 +89,6 @@ services:
       - "DEFAULT_DB_NAME=tumar"
       - "DEFAULT_DB_USER=docker"
       - "DEFAULT_DB_PASSWORD=docker"
-      - DJANGO_SECRET_KEY=production
-      - DJANGO_CONFIGURATION=Production
-      - DJANGO_SETTINGS_MODULE=tumar.config.production
-      - RABBITMQ_DEFAULT_USER=patriot
-      - RABBITMQ_DEFAULT_PASS=GtzYz4ahBvR3THg6x89E7wpNDCtYGLCZt6LSqZNXWaerEqD3bdkxRqTjZ6DFjL6Z
     command: >
       bash -c "celery beat -A tumar -l INFO --pidfile /tmp/celerybeat.pid -s /tmp/celerybeat-schedule"
 

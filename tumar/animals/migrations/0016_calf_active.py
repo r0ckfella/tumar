@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('animals', '0015_auto_20200311_1943'),
+        ("animals", "0015_auto_20200311_1943"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='calf',
-            name='Active',
-            field=models.BooleanField(default=True, verbose_name='Active?'),
+            model_name="calf",
+            name="Active",
+            field=models.BooleanField(default=True, verbose_name="Active?"),
         ),
     ]

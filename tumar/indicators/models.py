@@ -23,7 +23,8 @@
 
 # class ImageryRequest(models.Model):
 #     cadastre = models.ForeignKey(Cadastre, on_delete=models.CASCADE,
-#                                  related_name="imagery_requests", verbose_name=_('Cadastre'))
+#                                  related_name="imagery_requests",
+# verbose_name=_('Cadastre'))
 #     ndvi = JSONField()
 #     gndvi = JSONField()
 #     clgreen = JSONField()
@@ -41,10 +42,10 @@
 #     objects = DividedContinuousCeleryResponseQuerySet.as_manager()
 
 
-
 # class ImageryPNGs(models.Model):
 #     imagery_request = models.OneToOneField(ImageryRequest, on_delete=models.CASCADE,
-#                                          related_name="imagery_pngs", verbose_name=_('Imagery Request'))
+#                                          related_name="imagery_pngs",
+# verbose_name=_('Imagery Request'))
 #     clgreen = models.ImageField(upload_to='clgreen', max_length = 300, null = True)
 #     ndvi = models.ImageField(upload_to='ndvi', max_length = 300, null = True)
 #     gndvi = models.ImageField(upload_to='gndvi', max_length = 300, null = True)

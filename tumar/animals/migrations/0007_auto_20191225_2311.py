@@ -7,13 +7,15 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('animals', '0006_auto_20191225_2204'),
+        ("animals", "0006_auto_20191225_2204"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='farm',
-            name='cadastre_land',
-            field=django.contrib.gis.db.models.fields.GeometryCollectionField(blank=True, null=True, srid=3857, verbose_name='Personal land'),
+            model_name="farm",
+            name="cadastre_land",
+            field=django.contrib.gis.db.models.fields.GeometryCollectionField(
+                blank=True, null=True, srid=3857, verbose_name="Personal land"
+            ),
         ),
     ]

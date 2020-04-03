@@ -6,12 +6,15 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('indicators', '0001_initial'),
+        ("indicators", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='imageryrequest',
-            options={'verbose_name': 'Imagery Request', 'verbose_name_plural': 'Imagery Requests'},
+            name="imageryrequest",
+            options={
+                "verbose_name": "Imagery Request",
+                "verbose_name_plural": "Imagery Requests",
+            },
         ),
     ]

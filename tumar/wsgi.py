@@ -5,7 +5,10 @@ For more information on this file, see
 https://docs.djangoproject.com/en/2.0/howto/deployment/wsgi/gunicorn/
 """
 import os
+from dotenv import load_dotenv
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+load_dotenv(dotenv_path=os.path.join(BASE_DIR, ".env"))
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tumar.config")
 os.environ.setdefault("DJANGO_CONFIGURATION", "Production")
 
