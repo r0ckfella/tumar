@@ -4,11 +4,10 @@ import os
 from celery import Celery
 from celery.schedules import crontab
 from django.conf import settings  # noqa
+from dotenv import load_dotenv
 
-# set the default Django settings module for the 'celery' program.
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tumar.config.production")
-os.environ.setdefault("DJANGO_SECRET_KEY", os.getenv("DJANGO_SECRET_KEY"))
-os.environ.setdefault("DJANGO_CONFIGURATION", "Production")
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+load_dotenv(dotenv_path=os.path.join(BASE_DIR, ".env"))
 
 from configurations import importer  # noqa
 
