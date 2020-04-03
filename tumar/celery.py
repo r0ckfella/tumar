@@ -7,7 +7,7 @@ from django.conf import settings  # noqa
 
 # set the default Django settings module for the 'celery' program.
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tumar.config.production")
-os.environ.setdefault("DJANGO_SECRET_KEY", "production")
+os.environ.setdefault("DJANGO_SECRET_KEY", os.getenv("DJANGO_SECRET_KEY"))
 os.environ.setdefault("DJANGO_CONFIGURATION", "Production")
 
 from configurations import importer  # noqa
