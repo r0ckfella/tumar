@@ -4,8 +4,6 @@ from django.conf import settings
 
 # Create your models here.
 
-# [Лучшее, Новости, Животноводство, Ветеринария, Генетика, Растениеводство, Птицеводство, Сельхозтехника, Корма, Консультации, Общение, Барахолка, Обучение, Работа приложения]
-
 
 class Category(models.Model):
     name = models.CharField(max_length=80, verbose_name=_("Name of the Category"))

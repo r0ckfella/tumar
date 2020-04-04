@@ -1,0 +1,56 @@
+- model: community.category
+  pk: 1
+  fields:
+    name: "\u041B\u0443\u0447\u0448\u0435\u0435"
+- model: community.category
+  pk: 2
+  fields:
+    name: "\u041D\u043E\u0432\u043E\u0441\u0442\u0438"
+- model: community.category
+  pk: 3
+  fields:
+    name: "\u0416\u0438\u0432\u043E\u0442\u043D\u043E\u0432\u043E\u0434\u0441\u0442\u0432\u043E"
+- model: community.category
+  pk: 4
+  fields:
+    name: "\u0412\u0435\u0442\u0435\u0440\u0438\u043D\u0430\u0440\u0438\u044F"
+- model: community.category
+  pk: 5
+  fields:
+    name: "\u0413\u0435\u043D\u0435\u0442\u0438\u043A\u0430"
+- model: community.category
+  pk: 6
+  fields:
+    name: "\u0420\u0430\u0441\u0442\u0435\u043D\u0438\u0435\u0432\u043E\u0434\u0441\u0442\u0432\u043E"
+- model: community.category
+  pk: 7
+  fields:
+    name: "\u041F\u0442\u0438\u0446\u0435\u0432\u043E\u0434\u0441\u0442\u0432\u043E"
+- model: community.category
+  pk: 8
+  fields:
+    name: "\u0421\u0435\u043B\u044C\u0445\u043E\u0437\u0442\u0435\u0445\u043D\u0438\u043A\u0430"
+- model: community.category
+  pk: 9
+  fields:
+    name: "\u041A\u043E\u0440\u043C\u0430"
+- model: community.category
+  pk: 10
+  fields:
+    name: "\u041A\u043E\u043D\u0441\u0443\u043B\u044C\u0442\u0430\u0446\u0438\u0438"
+- model: community.category
+  pk: 11
+  fields:
+    name: "\u041E\u0431\u0449\u0435\u043D\u0438\u0435"
+- model: community.category
+  pk: 12
+  fields:
+    name: "\u0411\u0430\u0440\u0430\u0445\u043E\u043B\u043A\u0430"
+- model: community.category
+  pk: 13
+  fields:
+    name: "\u041E\u0431\u0443\u0447\u0435\u043D\u0438\u0435"
+- model: community.category
+  pk: 14
+  fields:
+    name: "\u0420\u0430\u0431\u043E\u0442\u0430 \u043F\u0440\u0438\u043B\u043E\u0436\u0435\u043D\u0438\u044F"
