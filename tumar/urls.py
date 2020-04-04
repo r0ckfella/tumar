@@ -45,6 +45,14 @@ from .ecalendar.views import (
     CalendarView,
 )
 from .catalog.views import CompanyDirectionListView, CompanyViewSet
+from .community.views import (
+    PostCategoryListView,
+    PostViewSet,
+    CommentListView,
+    CommentCreateView,
+    CommentUpdateDestroyView,
+    DestroyCommentImage,
+)
 
 router = DefaultRouter()
 
@@ -64,6 +72,7 @@ router.register(
 )
 router.register(r"cadastres", CadastreFarmViewSet, basename="Cadastre")
 router.register(r"catalog", CompanyViewSet, basename="Catalog")
+router.register(r"community/posts", PostViewSet, basename="Community")
 
 # sms_router = DefaultRouter(trailing_slash=False)
 
@@ -100,6 +109,20 @@ urlpatterns = i18n_patterns(
                 path("calf/<uuid:pk>/events/", AllCalfEventView.as_view()),
                 path("events/calendar/<uuid:pk>/", CalendarView.as_view()),
                 path("catalog/directions/", CompanyDirectionListView.as_view()),
+                path("community/categories/", PostCategoryListView.as_view()),
+                path(
+                    "community/posts/<int:post_pk>/comments/",
+                    CommentListView.as_view(),
+                ),
+                path("community/comments/", CommentCreateView.as_view(),),
+                path(
+                    "community/comments/<int:comment_pk>/",
+                    CommentUpdateDestroyView.as_view(),
+                ),
+                path(
+                    "community/comment-image/<int:img_pk>/",
+                    DestroyCommentImage.as_view(),
+                ),
             ]
             + router.urls
             # + sms_router.urls

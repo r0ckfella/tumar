@@ -33,6 +33,17 @@ class Post(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     # TODO VideoField optional
 
+    @property
+    def comments_count(self):
+        return self.comments.count()
+
+    @property
+    def votes_count(self):
+        return (
+            self.votes.filter(type="U").count(),
+            self.votes.filter(type="D").count(),
+        )
+
     class Meta:
         verbose_name = _("Post")
         verbose_name_plural = _("Posts")
@@ -50,6 +61,29 @@ class PostImage(models.Model):
     class Meta:
         verbose_name = _("Post Image")
         verbose_name_plural = _("Post Images")
+
+
+class PostVote(models.Model):
+    post = models.ForeignKey(
+        Post, on_delete=models.CASCADE, related_name="votes", verbose_name=_("VPost")
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="post_votes",
+        verbose_name=_("User"),
+    )
+    type = models.CharField(
+        max_length=1,
+        choices=[("U", _("Upvote")), ("D", _("Downvote"))],
+        default="U",
+        verbose_name=_("Type of the Vote"),
+    )
+
+    class Meta:
+        unique_together = ("post", "user")
+        verbose_name = _("Upvote/Downvote")
+        verbose_name_plural = _("Upvotes/Downvotes")
 
 
 class Comment(models.Model):
@@ -77,12 +111,19 @@ class Comment(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     # TODO VideoField optional
 
+    @property
+    def votes_count(self):
+        return (
+            self.votes.filter(type="U").count(),
+            self.votes.filter(type="D").count(),
+        )
+
     class Meta:
         verbose_name = _("Comment")
         verbose_name_plural = _("Comments")
 
     def __str__(self):
-        return str(self.pk) + ": " + self.title
+        return str(self.pk) + " of " + str(self.post)
 
     def delete(self, *args, **kwargs):
 
@@ -106,3 +147,29 @@ class CommentImage(models.Model):
     class Meta:
         verbose_name = _("Comment Image")
         verbose_name_plural = _("Comment Images")
+
+
+class CommentVote(models.Model):
+    comment = models.ForeignKey(
+        Comment,
+        on_delete=models.CASCADE,
+        related_name="votes",
+        verbose_name=_("Comment"),
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="comment_votes",
+        verbose_name=_("User"),
+    )
+    type = models.CharField(
+        max_length=1,
+        choices=[("U", _("Upvote")), ("D", _("Downvote"))],
+        default="U",
+        verbose_name=_("Type of the Vote"),
+    )
+
+    class Meta:
+        unique_together = ("comment", "user")
+        verbose_name = _("Upvote/Downvote")
+        verbose_name_plural = _("Upvotes/Downvotes")

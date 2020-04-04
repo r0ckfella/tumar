@@ -26,7 +26,7 @@ class User(AbstractUser):
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     username = models.CharField(
-        _("phone number"),
+        _("Phone Number"),
         max_length=16,
         unique=True,
         null=True,
@@ -38,7 +38,11 @@ class User(AbstractUser):
         error_messages={"unique": _("A user with that phone number already exists.")},
     )
     image = models.ImageField(
-        upload_to="userimages", max_length=150, null=True, blank=True
+        upload_to="userimages",
+        max_length=150,
+        null=True,
+        blank=True,
+        verbose_name=_("Profile Picture"),
     )
 
     class Meta:

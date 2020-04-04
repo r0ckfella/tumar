@@ -55,6 +55,7 @@ dependencies:
   - hdf4=4.2.13=hf30be14_1003
   - hdf5=1.10.4=nompi_h3c11f04_1106
   - icu=58.2=hf484d3e_1000
+  - idna=2.8=py36_1000
   - importlib-metadata=1.5.2=py36h9f0ad1d_0
   - importlib_metadata=1.5.2=0
   - ipdb=0.11=py36_0
@@ -180,6 +181,7 @@ dependencies:
     - babel==2.8.0
     - black==19.10b0
     - django==2.1.15
+    - django-modeladmin-reorder==0.3.1
     - django-phone-verify==1.0.0
     - django-phonenumber-field==4.0.0
     - django-rest-auth==0.9.5
@@ -188,7 +190,6 @@ dependencies:
     - factory-boy==2.11.1
     - faker==4.0.2
     - gsconfig-py3==1.0.7
-    - idna==2.8
     - markdown==3.0.1
     - more-itertools==8.2.0
     - packaging==20.3

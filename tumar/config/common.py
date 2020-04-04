@@ -24,6 +24,7 @@ class Common(Configuration):
         "rest_framework.authtoken",  # token authentication
         "django_filters",  # for filtering rest endpoints
         "rest_auth",
+        "admin_reorder",
         # Registration related
         "django.contrib.sites",
         "allauth",
@@ -53,6 +54,7 @@ class Common(Configuration):
         "django.contrib.auth.middleware.AuthenticationMiddleware",
         "django.contrib.messages.middleware.MessageMiddleware",
         "django.middleware.clickjacking.XFrameOptionsMiddleware",
+        "admin_reorder.middleware.ModelAdminReorder",
     )
 
     ALLOWED_HOSTS = ["*"]
@@ -224,19 +226,28 @@ class Common(Configuration):
     ACCOUNT_ADAPTER = "tumar.users.adapter.MyAccountAdapter"
 
     # Add settings for phone_verify to work
-    PHONE_VERIFICATION = {
-        "BACKEND": "phone_verify.backends.twilio.TwilioBackend",
-        "OPTIONS": {
-            "SID": "fake",
-            "SECRET": "fake",
-            "FROM": "+14755292729",
-            "SANDBOX_TOKEN": "123456",
-        },
-        "TOKEN_LENGTH": 6,
-        "MESSAGE": "Welcome to {app}! Please use security code {security_code} to "
-        + "proceed.",
-        "APP_NAME": "Tumar",
-        "SECURITY_CODE_EXPIRATION_TIME": 3600,  # In seconds only
-        "VERIFY_SECURITY_CODE_ONLY_ONCE": False,
-        # If False, then a security code can be used multiple times for verification
-    }
+    # PHONE_VERIFICATION = {
+    #     "BACKEND": "phone_verify.backends.twilio.TwilioBackend",
+    #     "OPTIONS": {
+    #         "SID": "fake",
+    #         "SECRET": "fake",
+    #         "FROM": "+14755292729",
+    #         "SANDBOX_TOKEN": "123456",
+    #     },
+    #     "TOKEN_LENGTH": 6,
+    #     "MESSAGE": "Welcome to {app}! Please use security code {security_code} to "
+    #     + "proceed.",
+    #     "APP_NAME": "Tumar",
+    #     "SECURITY_CODE_EXPIRATION_TIME": 3600,  # In seconds only
+    #     "VERIFY_SECURITY_CODE_ONLY_ONCE": False,
+    #     # If False, then a security code can be used multiple times for verification
+    # }
+
+    ADMIN_REORDER = (
+        "animals",
+        "catalog",
+        "community",
+        "ecalendar",
+        "indicators",
+        {"app": "users", "models": ("users.User", "auth.Group", "authtoken.Token")},
+    )
