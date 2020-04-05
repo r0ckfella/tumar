@@ -93,8 +93,8 @@ class CommentSerializer(serializers.ModelSerializer):
 
 class PostSerializer(serializers.ModelSerializer):
     categories = PostCategorySerializer(many=True, read_only=True)
-    images = PostImageSerializer(many=True)
-    user = UserPreviewSerializer()
+    images = PostImageSerializer(required=False, allow_null=True, many=True)
+    user = UserPreviewSerializer(required=False, allow_null=True)
 
     class Meta:
         model = Post
