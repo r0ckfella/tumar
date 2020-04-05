@@ -13,7 +13,12 @@ from .models import (
     PostVote,
     CommentVote,
 )
-from .serializers import CommentSerializer, PostCategorySerializer, PostSerializer
+from .serializers import (
+    CommentSerializer,
+    PostCategorySerializer,
+    PostSerializer,
+    PostCreateUpdateSerializer,
+)
 
 # Create your views here.
 
@@ -51,7 +56,7 @@ class PostCreateView(APIView):
                         status=status.HTTP_403_FORBIDDEN,
                     )
 
-        serializer = PostSerializer(data=request.data)
+        serializer = PostCreateUpdateSerializer(data=request.data)
 
         if serializer.is_valid():
             serializer.save(user=request.user)
@@ -78,7 +83,7 @@ class PostUpdateDestroyView(APIView):
         else:
             post = get_object_or_404(Post, user=request.user, id=post_pk)
 
-        serializer = PostSerializer(post, data=request.data, partial=True)
+        serializer = PostCreateUpdateSerializer(post, data=request.data, partial=True)
 
         if serializer.is_valid():
             serializer.save(user=request.user)

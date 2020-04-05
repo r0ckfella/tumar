@@ -91,7 +91,7 @@ class CommentSerializer(serializers.ModelSerializer):
 
 
 class PostSerializer(serializers.ModelSerializer):
-    categories = PostCategorySerializer(many=True)
+    categories = PostCategorySerializer(many=True, read_only=True)
     images = PostImageSerializer(required=False, allow_null=True, many=True)
     user = UserPreviewSerializer(required=False, allow_null=True)
 
@@ -116,6 +116,37 @@ class PostSerializer(serializers.ModelSerializer):
             "votes_count",
             "comments_count",
             "is_active",
+            "categories",
+        )
+
+
+class PostCreateUpdateSerializer(serializers.ModelSerializer):
+    images = PostImageSerializer(required=False, allow_null=True, many=True)
+    user = UserPreviewSerializer(required=False, allow_null=True)
+    categories = serializers.ListField(write_only=True)
+
+    class Meta:
+        model = Post
+        fields = (
+            "id",
+            "title",
+            "content",
+            "created_at",
+            "updated_at",
+            "comments_count",
+            "votes_count",
+            "is_active",
+            "user",
+            "images",
+            "categories",
+        )
+        read_only_fields = (
+            "created_at",
+            "updated_at",
+            "votes_count",
+            "comments_count",
+            "is_active",
+            "user",
         )
 
     def create(self, validated_data):
@@ -132,10 +163,10 @@ class PostSerializer(serializers.ModelSerializer):
             for image_data in images_data:
                 post.images.create(**image_data)
         if categories_data:
-            for category_data in categories_data:
-                print(category_data)
+            for category_id in categories_data:
+                print(category_id)
                 # if a category needs to be created instantly, it can be done here
-                category = Category.objects.get(pk=category_data["id"])
+                category = Category.objects.get(pk=category_id)
                 post.categories.add(category)
 
         return post
@@ -157,10 +188,9 @@ class PostSerializer(serializers.ModelSerializer):
                 if "id" not in image_data:
                     instance.images.create(**image_data)
         if categories_data:
-            for category_data in categories_data:
-                print(category_data)
+            for category_id in categories_data:
                 # if a category needs to be created instantly, it can be done here
-                category = Category.objects.get(pk=category_data["id"])
+                category = Category.objects.get(pk=category_id)
                 instance.categories.add(category)
 
         return instance
