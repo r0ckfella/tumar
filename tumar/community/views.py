@@ -41,7 +41,7 @@ class PostReadOnlyViewSet(viewsets.ReadOnlyModelViewSet):
 class PostCreateView(APIView):
     def post(self, request):
         # Prohibit if a user assigned Лучшее category to a post
-        if not request.user.is_superuser:
+        if not request.user.is_superuser and "categories" in request.data:
             categories_data = request.data.get("categories")
             hot_category_id = Category.objects.get(name="Лучшее").id
             for category_data in categories_data:
@@ -62,7 +62,7 @@ class PostCreateView(APIView):
 class PostUpdateDestroyView(APIView):
     def patch(self, request, post_pk):
         # Prohibit if a user assigned Лучшее category to a post
-        if not request.user.is_superuser:
+        if not request.user.is_superuser and "categories" in request.data:
             categories_data = request.data.get("categories")
             hot_category_id = Category.objects.get(name="Лучшее").id
             for category_data in categories_data:
