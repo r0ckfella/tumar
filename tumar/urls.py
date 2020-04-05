@@ -47,11 +47,16 @@ from .ecalendar.views import (
 from .catalog.views import CompanyDirectionListView, CompanyViewSet
 from .community.views import (
     PostCategoryListView,
-    PostViewSet,
+    PostReadOnlyViewSet,
+    PostCreateView,
+    PostUpdateDestroyView,
+    PostImageDestroyView,
+    PostVoteView,
     CommentListView,
     CommentCreateView,
     CommentUpdateDestroyView,
-    DestroyCommentImage,
+    CommentImageDestroyView,
+    CommentVoteView,
 )
 
 router = DefaultRouter()
@@ -72,7 +77,7 @@ router.register(
 )
 router.register(r"cadastres", CadastreFarmViewSet, basename="Cadastre")
 router.register(r"catalog", CompanyViewSet, basename="Catalog")
-router.register(r"community/posts", PostViewSet, basename="Community")
+router.register(r"community/posts", PostReadOnlyViewSet, basename="Community")
 
 # sms_router = DefaultRouter(trailing_slash=False)
 
@@ -110,6 +115,16 @@ urlpatterns = i18n_patterns(
                 path("events/calendar/<uuid:pk>/", CalendarView.as_view()),
                 path("catalog/directions/", CompanyDirectionListView.as_view()),
                 path("community/categories/", PostCategoryListView.as_view()),
+                path("community/posts/", PostCreateView.as_view()),
+                path("community/posts/<int:post_pk>/", PostUpdateDestroyView.as_view()),
+                path(
+                    "community/post-image/<int:img_pk>/",
+                    PostImageDestroyView.as_view(),
+                ),
+                path(
+                    "community/posts/<int:post_pk>/vote/<str:vote_type>/",
+                    PostVoteView.as_view(),
+                ),
                 path(
                     "community/posts/<int:post_pk>/comments/",
                     CommentListView.as_view(),
@@ -121,7 +136,11 @@ urlpatterns = i18n_patterns(
                 ),
                 path(
                     "community/comment-image/<int:img_pk>/",
-                    DestroyCommentImage.as_view(),
+                    CommentImageDestroyView.as_view(),
+                ),
+                path(
+                    "community/comments/<int:comment_pk>/vote/<str:vote_type>/",
+                    CommentVoteView.as_view(),
                 ),
             ]
             + router.urls

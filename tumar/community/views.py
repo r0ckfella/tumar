@@ -4,7 +4,15 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import Category, Post, Comment, CommentImage
+from .models import (
+    Category,
+    Post,
+    Comment,
+    CommentImage,
+    PostImage,
+    PostVote,
+    CommentVote,
+)
 from .serializers import CommentSerializer, PostCategorySerializer, PostSerializer
 
 # Create your views here.
@@ -16,6 +24,104 @@ class PostCategoryListView(APIView):
         serializer = PostCategorySerializer(all_categories, many=True)
 
         return Response(serializer.data)
+
+
+class PostReadOnlyViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    Lists and retrieves companies
+    """
+
+    queryset = Post.objects.all().order_by("created_at")
+    model = Post
+    serializer_class = PostSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_fields = ("categories",)
+
+
+class PostCreateView(APIView):
+    def post(self, request):
+        # Prohibit if a user assigned Лучшее category to a post
+        if not request.user.is_superuser:
+            categories_data = request.data.get("categories")
+            hot_category_id = Category.objects.get(name="Лучшее").id
+            for category_data in categories_data:
+                if category_data["id"] == hot_category_id:
+                    return Response(
+                        {"fail": "Only admins can assign Лучшее category"},
+                        status=status.HTTP_403_FORBIDDEN,
+                    )
+
+        serializer = PostSerializer(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save(user=request.user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class PostUpdateDestroyView(APIView):
+    def patch(self, request, post_pk):
+        # Prohibit if a user assigned Лучшее category to a post
+        if not request.user.is_superuser:
+            categories_data = request.data.get("categories")
+            hot_category_id = Category.objects.get(name="Лучшее").id
+            for category_data in categories_data:
+                if category_data["id"] == hot_category_id:
+                    return Response(
+                        {"fail": "Only admins can assign Лучшее category"},
+                        status=status.HTTP_403_FORBIDDEN,
+                    )
+
+        post = None
+        if request.user.is_superuser:
+            post = get_object_or_404(Post, id=post_pk)
+        else:
+            post = get_object_or_404(Post, user=request.user, id=post_pk)
+
+        serializer = PostSerializer(post, data=request.data, partial=True)
+
+        if serializer.is_valid():
+            serializer.save(user=request.user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, post_pk):
+        post = None
+        if request.user.is_superuser:
+            post = get_object_or_404(Post, id=post_pk)
+        else:
+            post = get_object_or_404(Post, user=request.user, id=post_pk)
+        post.delete()
+        return Response({"success": True}, status=status.HTTP_204_NO_CONTENT)
+
+
+class PostImageDestroyView(APIView):
+    def delete(self, request, img_pk):
+        img = None
+        if request.user.is_superuser:
+            img = get_object_or_404(PostImage, id=img_pk)
+        else:
+            img = get_object_or_404(PostImage, post__user=request.user, id=img_pk)
+        img.delete()
+        return Response({"deleted": img_pk}, status=status.HTTP_204_NO_CONTENT)
+
+
+class PostVoteView(APIView):
+    def get(self, request, post_pk, vote_type):
+        post = get_object_or_404(Post, pk=post_pk)
+        vote, created = PostVote.objects.get_or_create(post=post, user=request.user)
+
+        if created:
+            vote.type = vote_type
+            vote.save()
+        else:
+            if vote.type == vote_type:
+                vote.delete()
+            else:
+                vote.type = vote_type
+                vote.save()
+
+        return Response({"success": True}, status=status.HTTP_200_OK)
 
 
 class CommentListView(APIView):
@@ -67,7 +173,7 @@ class CommentUpdateDestroyView(APIView):
         return Response({"success": True}, status=status.HTTP_204_NO_CONTENT)
 
 
-class DestroyCommentImage(APIView):
+class CommentImageDestroyView(APIView):
     def delete(self, request, img_pk):
         img = None
         if request.user.is_superuser:
@@ -78,13 +184,21 @@ class DestroyCommentImage(APIView):
         return Response({"deleted": img_pk}, status=status.HTTP_204_NO_CONTENT)
 
 
-class PostViewSet(viewsets.ReadOnlyModelViewSet):
-    """
-    Lists and retrieves companies
-    """
+class CommentVoteView(APIView):
+    def get(self, request, comment_pk, vote_type):
+        comment = get_object_or_404(CommentVote, pk=comment_pk)
+        vote, created = CommentVote.objects.get_or_create(
+            comment=comment, user=request.user
+        )
 
-    queryset = Post.objects.all().order_by("created_at")
-    model = Post
-    serializer_class = PostSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
-    filterset_fields = ("categories",)
+        if created:
+            vote.type = vote_type
+            vote.save()
+        else:
+            if vote.type == vote_type:
+                vote.delete()
+            else:
+                vote.type = vote_type
+                vote.save()
+
+        return Response({"success": True}, status=status.HTTP_200_OK)
