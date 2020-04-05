@@ -44,8 +44,11 @@ class CommentUpdateDestroyView(APIView):
                 {"error": "Cannot change reply object"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
-        comment = get_object_or_404(Comment, id=comment_pk)
+        comment = None
+        if request.user.is_superuser:
+            comment = get_object_or_404(Comment, id=comment_pk)
+        else:
+            comment = get_object_or_404(Comment, user=request.user, id=comment_pk)
 
         serializer = CommentSerializer(comment, data=request.data, partial=True)
 
@@ -55,16 +58,24 @@ class CommentUpdateDestroyView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, comment_pk):
-        comment = get_object_or_404(Comment, id=comment_pk)
+        comment = None
+        if request.user.is_superuser:
+            comment = get_object_or_404(Comment, id=comment_pk)
+        else:
+            comment = get_object_or_404(Comment, user=request.user, id=comment_pk)
         comment.delete()
         return Response({"success": True}, status=status.HTTP_204_NO_CONTENT)
 
 
 class DestroyCommentImage(APIView):
     def delete(self, request, img_pk):
-        img = get_object_or_404(CommentImage, id=img_pk)
+        img = None
+        if request.user.is_superuser:
+            img = get_object_or_404(CommentImage, id=img_pk)
+        else:
+            img = get_object_or_404(CommentImage, comment__user=request.user, id=img_pk)
         img.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response({"deleted": img_pk}, status=status.HTTP_204_NO_CONTENT)
 
 
 class PostViewSet(viewsets.ReadOnlyModelViewSet):
@@ -77,11 +88,3 @@ class PostViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = PostSerializer
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_fields = ("categories",)
-
-    # def get_serializer_class(self):
-    #     serializers_class_map = {
-    #         "retrieve": SinglePostSerializer,
-    #         "list": PostSerializer,
-    #     }
-
-    #     return serializers_class_map.get(self.action)

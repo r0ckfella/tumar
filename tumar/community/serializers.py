@@ -11,6 +11,7 @@ class PostCategorySerializer(serializers.ModelSerializer):
             "id",
             "name",
         )
+        read_only_fields = ("name",)
 
 
 class PostImageSerializer(serializers.ModelSerializer):
@@ -68,7 +69,6 @@ class CommentSerializer(serializers.ModelSerializer):
             images_data = validated_data.pop("images")
 
         comment = Comment.objects.create(**validated_data)
-
         if images_data:
             for image_data in images_data:
                 comment.images.create(**image_data)
@@ -102,8 +102,8 @@ class PostSerializer(serializers.ModelSerializer):
             "id",
             "title",
             "content",
-            "updated_at",
             "created_at",
+            "updated_at",
             "comments_count",
             "votes_count",
             "is_active",
@@ -111,6 +111,57 @@ class PostSerializer(serializers.ModelSerializer):
             "images",
             "categories",
         )
+        read_only_fields = (
+            "created_at",
+            "updated_at",
+            "votes_count",
+            "comments_count",
+            "is_active",
+            "user",
+        )
+
+        def create(self, validated_data):
+            images_data = None
+            categories_data = None
+            if "images" in validated_data:
+                images_data = validated_data.pop("images")
+            if "categories" in validated_data:
+                categories_data = validated_data.pop("categories")
+
+            post = Post.objects.create(**validated_data)
+
+            if images_data:
+                for image_data in images_data:
+                    post.images.create(**image_data)
+            if categories_data:
+                for category_data in categories_data:
+                    post.categories.create(**category_data)
+
+            return post
+
+        def update(self, instance, validated_data):
+            images_data = None
+            categories_data = None
+            if "images" in validated_data:
+                images_data = validated_data.pop("images")
+            if "categories" in validated_data:
+                categories_data = validated_data.pop("categories")
+
+            if "id" in validated_data:
+                validated_data.pop("id")
+            instance = super(PostSerializer, self).update(instance, validated_data)
+
+            if images_data:
+                for image_data in images_data:
+                    if "id" not in image_data:
+                        instance.images.create(**image_data)
+            if categories_data:
+                for category_data in categories_data:
+                    # if a category needs to be created instantly, it can be done here
+                    category = Category.objects.get(**category_data)
+                    instance.categories.add(category)
+
+            return instance
 
 
 class SinglePostSerializer(PostSerializer):
