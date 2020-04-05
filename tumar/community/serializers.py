@@ -164,7 +164,6 @@ class PostCreateUpdateSerializer(serializers.ModelSerializer):
                 post.images.create(**image_data)
         if categories_data:
             for category_id in categories_data:
-                print(category_id)
                 # if a category needs to be created instantly, it can be done here
                 category = Category.objects.get(pk=category_id)
                 post.categories.add(category)
@@ -181,7 +180,9 @@ class PostCreateUpdateSerializer(serializers.ModelSerializer):
 
         if "id" in validated_data:
             validated_data.pop("id")
-        instance = super(PostSerializer, self).update(instance, validated_data)
+        instance = super(PostCreateUpdateSerializer, self).update(
+            instance, validated_data
+        )
 
         if images_data:
             for image_data in images_data:
