@@ -115,7 +115,7 @@ urlpatterns = i18n_patterns(
                 path("events/calendar/<uuid:pk>/", CalendarView.as_view()),
                 path("catalog/directions/", CompanyDirectionListView.as_view()),
                 path("community/categories/", PostCategoryListView.as_view()),
-                path("community/posts/", PostCreateView.as_view()),
+                path("community/posts/create/", PostCreateView.as_view()),
                 path("community/posts/<int:post_pk>/", PostUpdateDestroyView.as_view()),
                 path(
                     "community/post-image/<int:img_pk>/",
