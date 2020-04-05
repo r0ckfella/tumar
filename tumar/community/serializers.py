@@ -57,7 +57,6 @@ class CommentSerializer(serializers.ModelSerializer):
             "votes_count",
             "is_active",
             "replies",
-            "user",
         )
         extra_kwargs = {
             "post": {"write_only": True},
@@ -92,7 +91,7 @@ class CommentSerializer(serializers.ModelSerializer):
 
 
 class PostSerializer(serializers.ModelSerializer):
-    categories = PostCategorySerializer(many=True, read_only=True)
+    categories = PostCategorySerializer(many=True)
     images = PostImageSerializer(required=False, allow_null=True, many=True)
     user = UserPreviewSerializer(required=False, allow_null=True)
 
@@ -117,7 +116,6 @@ class PostSerializer(serializers.ModelSerializer):
             "votes_count",
             "comments_count",
             "is_active",
-            "user",
         )
 
         def create(self, validated_data):
