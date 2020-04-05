@@ -49,8 +49,8 @@ class PostCreateView(APIView):
         if not request.user.is_superuser and "categories" in request.data:
             categories_data = request.data.get("categories")
             hot_category_id = Category.objects.get(name="Лучшее").id
-            for category_data in categories_data:
-                if category_data["id"] == hot_category_id:
+            for category_id in categories_data:
+                if int(category_id) == hot_category_id:
                     return Response(
                         {"fail": "Only admins can assign Лучшее category"},
                         status=status.HTTP_403_FORBIDDEN,
@@ -70,8 +70,8 @@ class PostUpdateDestroyView(APIView):
         if not request.user.is_superuser and "categories" in request.data:
             categories_data = request.data.get("categories")
             hot_category_id = Category.objects.get(name="Лучшее").id
-            for category_data in categories_data:
-                if category_data["id"] == hot_category_id:
+            for category_id in categories_data:
+                if int(category_id) == hot_category_id:
                     return Response(
                         {"fail": "Only admins can assign Лучшее category"},
                         status=status.HTTP_403_FORBIDDEN,
@@ -191,7 +191,7 @@ class CommentImageDestroyView(APIView):
 
 class CommentVoteView(APIView):
     def get(self, request, comment_pk, vote_type):
-        comment = get_object_or_404(CommentVote, pk=comment_pk)
+        comment = get_object_or_404(Comment, pk=comment_pk)
         vote, created = CommentVote.objects.get_or_create(
             comment=comment, user=request.user
         )

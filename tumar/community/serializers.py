@@ -123,7 +123,9 @@ class PostSerializer(serializers.ModelSerializer):
 class PostCreateUpdateSerializer(serializers.ModelSerializer):
     images = PostImageSerializer(required=False, allow_null=True, many=True)
     user = UserPreviewSerializer(required=False, allow_null=True)
-    categories = serializers.ListField(write_only=True)
+    categories = serializers.PrimaryKeyRelatedField(
+        many=True, read_only=False, queryset=Category.objects.all(),
+    )
 
     class Meta:
         model = Post
@@ -151,32 +153,31 @@ class PostCreateUpdateSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         images_data = None
-        categories_data = None
+        categories = None
         if "images" in validated_data:
             images_data = validated_data.pop("images")
         if "categories" in validated_data:
-            categories_data = validated_data.pop("categories")
+            categories = validated_data.pop("categories")
 
         post = Post.objects.create(**validated_data)
 
         if images_data:
             for image_data in images_data:
                 post.images.create(**image_data)
-        if categories_data:
-            for category_id in categories_data:
+        if categories:
+            for category in categories:
                 # if a category needs to be created instantly, it can be done here
-                category = Category.objects.get(pk=category_id)
                 post.categories.add(category)
 
         return post
 
     def update(self, instance, validated_data):
         images_data = None
-        categories_data = None
+        categories = None
         if "images" in validated_data:
             images_data = validated_data.pop("images")
         if "categories" in validated_data:
-            categories_data = validated_data.pop("categories")
+            categories = validated_data.pop("categories")
 
         if "id" in validated_data:
             validated_data.pop("id")
@@ -188,10 +189,10 @@ class PostCreateUpdateSerializer(serializers.ModelSerializer):
             for image_data in images_data:
                 if "id" not in image_data:
                     instance.images.create(**image_data)
-        if categories_data:
-            for category_id in categories_data:
+        if categories:
+            for category in categories:
                 # if a category needs to be created instantly, it can be done here
-                category = Category.objects.get(pk=category_id)
+                # category = Category.objects.get(pk=category_id)
                 instance.categories.add(category)
 
         return instance
