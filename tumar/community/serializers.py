@@ -133,8 +133,9 @@ class PostSerializer(serializers.ModelSerializer):
                 post.images.create(**image_data)
         if categories_data:
             for category_data in categories_data:
+                print(category_data)
                 # if a category needs to be created instantly, it can be done here
-                category = Category.objects.get(**category_data)
+                category = Category.objects.get(pk=category_data["id"])
                 post.categories.add(category)
 
         return post
@@ -157,8 +158,9 @@ class PostSerializer(serializers.ModelSerializer):
                     instance.images.create(**image_data)
         if categories_data:
             for category_data in categories_data:
+                print(category_data)
                 # if a category needs to be created instantly, it can be done here
-                category = Category.objects.get(**category_data)
+                category = Category.objects.get(pk=category_data["id"])
                 instance.categories.add(category)
 
         return instance
