@@ -84,7 +84,7 @@ class LatestIndicatorsView(APIView):
             Cadastre, farm__user=self.request.user, cad_number=cad_number
         )
         egistic_cadastre_id = None
-        response_data = {"cadastre_response": {}, "cadastre_images": {}}
+        response_data = {"cadastreresult_response": {}, "cadastreresult_images": {}}
 
         try:
             with connections["egistic_2"].cursor() as cursor:
@@ -112,7 +112,7 @@ class LatestIndicatorsView(APIView):
                     [egistic_cadastre_id],
                 )
                 row = cursor.fetchone()
-                response_data["cadastre_response"] = {
+                response_data["cadastreresult_response"] = {
                     "id": row[0],
                     "ndvi": row[1],
                     "gndvi": row[2],
@@ -136,10 +136,10 @@ class LatestIndicatorsView(APIView):
                 cursor.execute(
                     "SELECT * FROM tumar_cadastreresultimage WHERE"
                     + " cadastreresult_id = %s",
-                    [response_data["cadastre_response"][0]],
+                    [response_data["cadastreresult_response"]["id"],
                 )
                 row = cursor.fetchone()
-                response_data["cadastre_images"] = {
+                response_data["cadastreresult_images"] = {
                     "id": row[0],
                     "ndvi": row[1],
                     "gndvi": row[2],
