@@ -15,7 +15,7 @@ from tumar.animals.models import Cadastre
 
 class RequestIndicatorsView(APIView):
     def post(self, request):
-        if not request.data["cad_number"]:
+        if "cad_number" not in request.data:
             return Response(
                 {"error": "Provide cad_number"}, status=status.HTTP_404_NOT_FOUND
             )
@@ -48,7 +48,7 @@ class RequestIndicatorsView(APIView):
                 status=status.HTTP_404_NOT_FOUND,
             )
 
-        if request.data["requested_date"]:
+        if "requested_date" in request.data:
             target_dates = [
                 request.data["requested_date"],
             ]
