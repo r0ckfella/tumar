@@ -55,11 +55,15 @@ class RequestIndicatorsView(APIView):
 
         result = app.signature(
             "process_cadastres",
-            param_values=dict(param="id", values=[egistic_cadastre_id]),
-            target_dates=target_dates,
-            days_range=14,
+            kwargs={
+                "param_values": dict(param="id", values=[egistic_cadastre_id]),
+                "target_dates": target_dates,
+                "days_range": 14,
+            },
+            queue="process_cadastres",
+            priority=5,
         )
-        result.apply_async()
+        result.delay()
 
         return Response({"success": True}, status=status.HTTP_201_CREATED)
 
