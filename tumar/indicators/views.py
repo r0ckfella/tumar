@@ -136,7 +136,7 @@ class LatestIndicatorsView(APIView):
                 cursor.execute(
                     "SELECT * FROM tumar_cadastreresultimage WHERE"
                     + " cadastreresult_id = %s",
-                    [response_data["cadastreresult_response"]["id"],
+                    [response_data["cadastreresult_response"]["id"]],
                 )
                 row = cursor.fetchone()
                 response_data["cadastreresult_images"] = {
