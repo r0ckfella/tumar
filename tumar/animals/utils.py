@@ -1,5 +1,5 @@
 import json
-
+import logging
 import django.utils.timezone as tz
 import pytz
 import requests
@@ -15,6 +15,7 @@ from django.contrib.gis.measure import Distance as D
 from .models import Animal, Geolocation, Farm
 
 faker = FakerFactory.create()
+logger = logging.getLogger(__name__)
 
 
 def get_linestring_from_geolocations(geolocations_qs):
@@ -40,7 +41,7 @@ def download_geolocations(farm_pk, farm_api_key):
     if r.status_code != requests.codes.ok:
         r.raise_for_status()
     geo_history = r.json()
-    print(farm_api_key)
+    logger.warning(farm_api_key)
 
     for location in geo_history["data"]:
         my_tz = pytz.timezone("Asia/Almaty")
@@ -55,7 +56,7 @@ def download_geolocations(farm_pk, farm_api_key):
                 ),
                 time=tz.make_aware(my_date, my_tz),
             )
-            print(location["longitude"], location["latitude"])
+            logger.warning(location["longitude"], location["latitude"])
             if not Geolocation.geolocations.filter(**arguments).exists():
                 Geolocation.geolocations.create(**arguments)
         except Animal.DoesNotExist:
