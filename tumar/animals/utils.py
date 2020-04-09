@@ -1,5 +1,4 @@
 import json
-import logging
 import django.utils.timezone as tz
 import pytz
 import requests
@@ -11,11 +10,11 @@ from faker import Factory as FakerFactory
 from django.contrib.gis.geos import LineString, Point
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.measure import Distance as D
+from django.db.utils import InternalError
 
 from .models import Animal, Geolocation, Farm
 
 faker = FakerFactory.create()
-logger = logging.getLogger(__name__)
 
 
 def get_linestring_from_geolocations(geolocations_qs):
@@ -41,7 +40,6 @@ def download_geolocations(farm_pk, farm_api_key):
     if r.status_code != requests.codes.ok:
         r.raise_for_status()
     geo_history = r.json()
-    logger.warning(farm_api_key)
 
     for location in geo_history["data"]:
         my_tz = pytz.timezone("Asia/Almaty")
@@ -56,7 +54,6 @@ def download_geolocations(farm_pk, farm_api_key):
                 ),
                 time=tz.make_aware(my_date, my_tz),
             )
-            logger.warning(location["longitude"], location["latitude"])
             if not Geolocation.geolocations.filter(**arguments).exists():
                 Geolocation.geolocations.create(**arguments)
         except Animal.DoesNotExist:
@@ -74,6 +71,8 @@ def download_geolocations(farm_pk, farm_api_key):
                 time=tz.make_aware(my_date, my_tz),
             )
             print("New animal is added, and the corresponding location too.")
+        except InternalError:
+            print("Wrong Chinese API attributes")
 
 
 def cluster_geolocations(qs_list, zoom_distance, zoom_level):
