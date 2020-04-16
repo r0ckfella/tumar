@@ -21,7 +21,7 @@ class RequestIndicatorsView(APIView):
             )
 
         if not Cadastre.objects.filter(
-            farm__user=self.request.user, cad_number=request.data["cad_number"]
+            farm__user=request.user, cad_number=request.data["cad_number"]
         ).exists():
             return Response(
                 {"fail": "Cadastre with this cad_number does not belong to you"},
@@ -45,6 +45,34 @@ class RequestIndicatorsView(APIView):
                     "fail": "Cadastre number was not found in the egistic database."
                     + " Imagery for custom geometries is not supported yet."
                 },
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        # Check if there are already 3 requests
+        disable_check = False
+        more_than_3_requests = False
+        if "disable_check" in request.data:
+            disable_check = request.data["diable_check"]
+
+        # query num of rows
+        try:
+            with connections["egistic_2"].cursor() as cursor:
+                cursor.execute(
+                    "SELECT COUNT(*) FROM tumar_cadastreresult WHERE cadastre_id = %s",
+                    [egistic_cadastre_id],
+                )
+                row = cursor.fetchone()
+                if row[0] >= 3:
+                    more_than_3_requests = True
+        except TypeError:
+            return Response(
+                {"fail": "Imagery tiffs was not found in the database or not finished"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        if not disable_check and more_than_3_requests:
+            return Response(
+                {"fail": "You have exceeded the number of free imagery requests."},
                 status=status.HTTP_404_NOT_FOUND,
             )
 

@@ -193,6 +193,7 @@ class PostCreateUpdateSerializer(serializers.ModelSerializer):
             for category in categories:
                 # if a category needs to be created instantly, it can be done here
                 # category = Category.objects.get(pk=category_id)
+                instance.categories.clear()
                 instance.categories.add(category)
 
         return instance

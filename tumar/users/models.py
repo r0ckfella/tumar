@@ -9,7 +9,9 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import gettext_lazy as _
+
 from rest_framework.authtoken.models import Token
+from faker import Factory as FakerFactory
 
 main_validator = RegexValidator(
     regex=r"^\+\d{11}$",
@@ -51,6 +53,33 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.username
+
+
+class SMSVerification(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="sms_codes",
+    )
+    code = models.CharField(max_length=6, blank=True)
+    activated = models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        if self._state.adding is True:
+            faker = FakerFactory.create()
+            self.code = faker.numerify(text="######")
+
+        super().save(*args, **kwargs)
+
+    def activate_user(self, prompt_code: str):
+        if self.code != prompt_code:
+            return False
+
+        self.user.active = True
+        self.user.save()
+
+        self.activated = True
+        self.save()
+        return True
 
 
 # class SocialAccountExtra(models.Model):

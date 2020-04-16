@@ -32,7 +32,6 @@ from .users.views import (
     CustomAuthToken,
     # FacebookLogin,
     # GoogleLogin,
-    # CustomVerificationViewSet,
     # SocialAccountExtraView,
 )
 from .indicators.views import LatestIndicatorsView, RequestIndicatorsView
@@ -79,9 +78,6 @@ router.register(r"cadastres", CadastreFarmViewSet, basename="Cadastre")
 router.register(r"catalog", CompanyViewSet, basename="Catalog")
 router.register(r"community/posts", PostReadOnlyViewSet, basename="Community")
 
-# sms_router = DefaultRouter(trailing_slash=False)
-
-# sms_router.register("phone", CustomVerificationViewSet, basename="phone")
 urlpatterns = i18n_patterns(
     path("admin/", admin.site.urls),
     # Custom API endpoints
@@ -147,7 +143,6 @@ urlpatterns = i18n_patterns(
                 ),
             ]
             + router.urls
-            # + sms_router.urls
         ),
     ),
     path("api-token-auth/", CustomAuthToken.as_view()),

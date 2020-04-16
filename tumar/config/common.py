@@ -30,7 +30,6 @@ class Common(Configuration):
         "allauth",
         # "allauth.account",
         # "rest_auth.registration",
-        # "phone_verify",
         # Social Auth
         "allauth.socialaccount",
         # "allauth.socialaccount.providers.facebook",
@@ -224,24 +223,6 @@ class Common(Configuration):
         "tumar.users.models.main_validator",
     ]
     ACCOUNT_ADAPTER = "tumar.users.adapter.MyAccountAdapter"
-
-    # Add settings for phone_verify to work
-    # PHONE_VERIFICATION = {
-    #     "BACKEND": "phone_verify.backends.twilio.TwilioBackend",
-    #     "OPTIONS": {
-    #         "SID": "fake",
-    #         "SECRET": "fake",
-    #         "FROM": "+14755292729",
-    #         "SANDBOX_TOKEN": "123456",
-    #     },
-    #     "TOKEN_LENGTH": 6,
-    #     "MESSAGE": "Welcome to {app}! Please use security code {security_code} to "
-    #     + "proceed.",
-    #     "APP_NAME": "Tumar",
-    #     "SECURITY_CODE_EXPIRATION_TIME": 3600,  # In seconds only
-    #     "VERIFY_SECURITY_CODE_ONLY_ONCE": False,
-    #     # If False, then a security code can be used multiple times for verification
-    # }
 
     ADMIN_REORDER = (
         "animals",
