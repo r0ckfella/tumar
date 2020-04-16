@@ -56,6 +56,7 @@ from .community.views import (
     CommentUpdateDestroyView,
     CommentImageDestroyView,
     CommentVoteView,
+    MyPostsView,
 )
 
 router = DefaultRouter()
@@ -115,6 +116,7 @@ urlpatterns = i18n_patterns(
                 path("catalog/directions/", CompanyDirectionListView.as_view()),
                 path("community/categories/", PostCategoryListView.as_view()),
                 path("community/posts/create/", PostCreateView.as_view()),
+                path("community/posts/my/", MyPostsView.as_view()),
                 path("community/posts/<int:post_pk>/", PostUpdateDestroyView.as_view()),
                 path(
                     "community/post-image/<int:img_pk>/",

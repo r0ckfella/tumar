@@ -43,6 +43,14 @@ class PostReadOnlyViewSet(viewsets.ReadOnlyModelViewSet):
     filterset_fields = ("categories",)
 
 
+class MyPostsView(APIView):
+    def get(self, request):
+        my_posts = Post.objects.filter(user=request.user).order_by("created_at")
+        serializer = PostSerializer(my_posts, many=True)
+
+        return Response(serializer.data)
+
+
 class PostCreateView(APIView):
     def post(self, request):
         # Prohibit if a user assigned Лучшее category to a post

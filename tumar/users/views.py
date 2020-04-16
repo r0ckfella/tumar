@@ -12,7 +12,7 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.permissions import AllowAny  # , IsAuthenticated
 from rest_framework.response import Response
 
-# from rest_framework.views import APIView
+from rest_framework.views import APIView
 
 # from rest_auth.registration.views import SocialLoginView
 
@@ -85,6 +85,16 @@ class CustomAuthToken(ObtainAuthToken):
                 "phone_num": user.username,
             }
         )
+
+
+class VerifyAccountView(APIView):
+    def post(self, request):
+        pass
+
+
+class ResendSMSView(APIView):
+    def get(self, request):
+        pass
 
 
 # class FacebookLogin(SocialLoginView):
