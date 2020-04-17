@@ -74,7 +74,7 @@ class SMSVerification(models.Model):
         if self.code != prompt_code:
             return False
 
-        self.user.active = True
+        self.user.is_active = True
         self.user.save()
 
         self.activated = True

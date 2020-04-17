@@ -35,6 +35,8 @@ class CommentImageSerializer(serializers.ModelSerializer):
 class CommentSerializer(serializers.ModelSerializer):
     images = CommentImageSerializer(required=False, allow_null=True, many=True)
     user = UserPreviewSerializer(required=False, allow_null=True)
+    my_upvote = serializers.SerializerMethodField()
+    my_downvote = serializers.SerializerMethodField()
 
     class Meta:
         model = Comment
@@ -50,17 +52,28 @@ class CommentSerializer(serializers.ModelSerializer):
             "reply_object",
             "replies",
             "post",
+            "my_upvote",
+            "my_downvote",
         )
         read_only_fields = (
             "created_at",
             "updated_at",
             "votes_count",
             "is_active",
+            "user",
             "replies",
+            "my_upvote",
+            "my_downvote",
         )
         extra_kwargs = {
             "post": {"write_only": True},
         }
+
+    def get_my_upvote(self, obj):
+        return obj.votes.filter(type="U", user=self.user).exists()
+
+    def get_my_downvote(self, obj):
+        return obj.votes.filter(type="D", user=self.user).exists()
 
     def create(self, validated_data):
         images_data = None
@@ -94,6 +107,8 @@ class PostSerializer(serializers.ModelSerializer):
     categories = PostCategorySerializer(many=True, read_only=True)
     images = PostImageSerializer(required=False, allow_null=True, many=True)
     user = UserPreviewSerializer(required=False, allow_null=True)
+    my_upvote = serializers.SerializerMethodField()
+    my_downvote = serializers.SerializerMethodField()
 
     class Meta:
         model = Post
@@ -109,6 +124,8 @@ class PostSerializer(serializers.ModelSerializer):
             "user",
             "images",
             "categories",
+            "my_upvote",
+            "my_downvote",
         )
         read_only_fields = (
             "created_at",
@@ -116,8 +133,17 @@ class PostSerializer(serializers.ModelSerializer):
             "votes_count",
             "comments_count",
             "is_active",
+            "user",
             "categories",
+            "my_upvote",
+            "my_downvote",
         )
+
+    def get_my_upvote(self, obj):
+        return obj.votes.filter(type="U", user=self.user).exists()
+
+    def get_my_downvote(self, obj):
+        return obj.votes.filter(type="D", user=self.user).exists()
 
 
 class PostCreateUpdateSerializer(serializers.ModelSerializer):

@@ -3,7 +3,8 @@ import requests
 from django.conf import settings
 from django.contrib.auth.forms import SetPasswordForm
 from rest_framework import serializers
-from rest_framework.authtoken.models import Token
+
+# from rest_framework.authtoken.models import Token
 from rest_framework.exceptions import ValidationError
 
 from .models import User, SMSVerification
@@ -34,16 +35,16 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class CreateUserSerializer(serializers.ModelSerializer):
-    token = serializers.SerializerMethodField()
+    # token = serializers.SerializerMethodField()
 
     def create(self, validated_data):
         # call create_user on user object. Without this
         # the password will be stored in plain text.
-        user = User.objects.create_user(**validated_data, active=False)
+        user = User.objects.create_user(**validated_data, is_active=False)
 
         # Creating verification SMS code and saving to DB
         verification = SMSVerification.objects.create(user=user)
-
+        print("IN CREATE USER SERIALIZER")
         # Sending the SMS
         url = "https://smsc.kz/sys/send.php"
         payload = {
@@ -51,7 +52,6 @@ class CreateUserSerializer(serializers.ModelSerializer):
             "psw": "moderator1",
             "phones": user.username,
             "mes": "Ваш код: {}".format(verification.code),
-            "sender": "Tumar",
         }
 
         r = requests.get(url, params=payload)
@@ -62,9 +62,9 @@ class CreateUserSerializer(serializers.ModelSerializer):
 
         return user
 
-    def get_token(self, user):
-        token, created = Token.objects.get_or_create(user=user)
-        return token.key
+    # def get_token(self, user):
+    #     token, created = Token.objects.get_or_create(user=user)
+    #     return token.key
 
     class Meta:
         model = User
@@ -75,9 +75,9 @@ class CreateUserSerializer(serializers.ModelSerializer):
             "email",
             "first_name",
             "last_name",
-            "token",
+            # "token",
         )
-        read_only_fields = ("token",)
+        # read_only_fields = ("token",)
         extra_kwargs = {"password": {"write_only": True}}
 
 

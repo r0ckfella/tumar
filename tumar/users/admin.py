@@ -52,6 +52,8 @@ class UserAdmin(UserAdmin):
         When obj is None, the user requested the list view.
         When obj is not None, the user requested the change view of a specific instance.
         """
+        if request.user.is_superuser:
+            return True
         return False
 
     def get_form(self, request, obj=None, **kwargs):
