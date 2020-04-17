@@ -42,16 +42,16 @@ class PostReadOnlyViewSet(viewsets.ReadOnlyModelViewSet):
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_fields = ("categories",)
 
-    def get_serializer_context(self):
-        context = super(PostReadOnlyViewSet, self).get_serializer_context()
-        context.update({"user": self.request.user})
-        return context
+    # def get_serializer_context(self):
+    #     context = super(PostReadOnlyViewSet, self).get_serializer_context()
+    #     context.update({"user": self.request.user})
+    #     return context
 
 
 class MyPostsView(APIView):
     def get(self, request):
         my_posts = Post.objects.filter(user=request.user).order_by("created_at")
-        serializer = PostSerializer(my_posts, many=True)
+        serializer = PostSerializer(my_posts, many=True, context={"request": request})
 
         return Response(serializer.data)
 
