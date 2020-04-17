@@ -42,6 +42,11 @@ class PostReadOnlyViewSet(viewsets.ReadOnlyModelViewSet):
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_fields = ("categories",)
 
+    # def get_serializer_context(self):
+    #     context = super(PostReadOnlyViewSet, self).get_serializer_context()
+    #     context.update({"user": self.request.user})
+    #     return context
+
 
 class MyPostsView(APIView):
     def get(self, request):
@@ -141,7 +146,9 @@ class CommentListView(APIView):
     def get(self, request, post_pk):
         post = get_object_or_404(Post, id=post_pk)
 
-        serializer = CommentSerializer(post.comments, many=True)
+        serializer = CommentSerializer(
+            post.comments, many=True, context={"user": self.request.user}
+        )
 
         return Response(serializer.data)
 

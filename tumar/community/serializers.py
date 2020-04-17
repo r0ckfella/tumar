@@ -70,10 +70,10 @@ class CommentSerializer(serializers.ModelSerializer):
         }
 
     def get_my_upvote(self, obj):
-        return obj.votes.filter(type="U", user=self.user).exists()
+        return obj.votes.filter(type="U", user=self.context["user"]).exists()
 
     def get_my_downvote(self, obj):
-        return obj.votes.filter(type="D", user=self.user).exists()
+        return obj.votes.filter(type="D", user=self.context["user"]).exists()
 
     def create(self, validated_data):
         images_data = None
@@ -140,10 +140,10 @@ class PostSerializer(serializers.ModelSerializer):
         )
 
     def get_my_upvote(self, obj):
-        return obj.votes.filter(type="U", user=self.user).exists()
+        return obj.votes.filter(type="U", user=self.context["request"].user).exists()
 
     def get_my_downvote(self, obj):
-        return obj.votes.filter(type="D", user=self.user).exists()
+        return obj.votes.filter(type="D", user=self.context["request"].user).exists()
 
 
 class PostCreateUpdateSerializer(serializers.ModelSerializer):
