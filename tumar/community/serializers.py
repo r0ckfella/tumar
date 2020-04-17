@@ -62,8 +62,6 @@ class CommentSerializer(serializers.ModelSerializer):
             "is_active",
             "user",
             "replies",
-            "my_upvote",
-            "my_downvote",
         )
         extra_kwargs = {
             "post": {"write_only": True},
@@ -135,8 +133,6 @@ class PostSerializer(serializers.ModelSerializer):
             "is_active",
             "user",
             "categories",
-            "my_upvote",
-            "my_downvote",
         )
 
     def get_my_upvote(self, obj):

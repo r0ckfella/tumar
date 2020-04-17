@@ -162,7 +162,9 @@ class CommentListView(APIView):
 
 class CommentCreateView(APIView):
     def post(self, request):
-        serializer = CommentSerializer(data=request.data)
+        serializer = CommentSerializer(
+            data=request.data, context={"user": request.user}
+        )
 
         if serializer.is_valid():
             serializer.save(user=request.user)
