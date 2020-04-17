@@ -11,13 +11,18 @@ from .models import User, SMSVerification
 
 
 class UserPreviewSerializer(serializers.ModelSerializer):
+    full_name = serializers.SerializerMethodField()
+
     class Meta:
         model = User
         fields = (
             "id",
-            "username",
+            "full_name",
             "image",
         )
+
+    def get_full_name(self, obj):
+        return obj.get_full_name()
 
 
 class UserSerializer(serializers.ModelSerializer):

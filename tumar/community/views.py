@@ -78,6 +78,17 @@ class PostCreateView(APIView):
 
 
 class PostUpdateDestroyView(APIView):
+    def get(self, request, post_pk):
+        post = None
+        if request.user.is_superuser:
+            post = get_object_or_404(Post, id=post_pk)
+        else:
+            post = get_object_or_404(Post, user=request.user, id=post_pk)
+
+        serializer = PostSerializer(post, context={"request": request})
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
     def patch(self, request, post_pk):
         # Prohibit if a user assigned Лучшее category to a post
         if not request.user.is_superuser and "categories" in request.data:
