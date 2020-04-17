@@ -79,11 +79,7 @@ class PostCreateView(APIView):
 
 class PostUpdateDestroyView(APIView):
     def get(self, request, post_pk):
-        post = None
-        if request.user.is_superuser:
-            post = get_object_or_404(Post, id=post_pk)
-        else:
-            post = get_object_or_404(Post, user=request.user, id=post_pk)
+        post = get_object_or_404(Post, id=post_pk)
 
         serializer = PostSerializer(post, context={"request": request})
 
