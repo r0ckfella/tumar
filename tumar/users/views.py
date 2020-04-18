@@ -98,7 +98,7 @@ class ActivateAccountView(APIView):
         user = get_object_or_404(User, username=request.data["phone_number"])
         verification = SMSVerification.objects.filter(
             user=user, activated=False
-        ).latest()
+        ).latest("id")
         is_activated = verification.activate_user(request.data["code"])
 
         if not is_activated:
