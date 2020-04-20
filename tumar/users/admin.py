@@ -52,9 +52,10 @@ class UserAdmin(UserAdmin):
         When obj is None, the user requested the list view.
         When obj is not None, the user requested the change view of a specific instance.
         """
-        if request.user.is_superuser:
-            return True
-        return False
+        return (
+            request.user.is_superuser
+            or request.user.groups.filter(name="Поддержка").exists()
+        )
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)

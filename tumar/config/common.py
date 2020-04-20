@@ -61,6 +61,8 @@ class Common(Configuration):
     SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
     WSGI_APPLICATION = "tumar.wsgi.application"
 
+    FILE_UPLOAD_PERMISSIONS = 0o644
+
     # Email
     EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 

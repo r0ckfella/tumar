@@ -181,6 +181,8 @@ class PostCreateUpdateSerializer(serializers.ModelSerializer):
         if "categories" in validated_data:
             categories = validated_data.pop("categories")
 
+        # maybe categories = validated_data.pop("categories", [])
+
         post = Post.objects.create(**validated_data)
 
         if images_data:

@@ -80,6 +80,7 @@ class CreateUserSerializer(serializers.ModelSerializer):
             "email",
             "first_name",
             "last_name",
+            "image",
             # "token",
         )
         # read_only_fields = ("token",)
