@@ -1,5 +1,3 @@
-import requests
-
 from django.conf import settings
 from django.contrib.auth.forms import SetPasswordForm
 from rest_framework import serializers
@@ -7,7 +5,7 @@ from rest_framework import serializers
 # from rest_framework.authtoken.models import Token
 from rest_framework.exceptions import ValidationError
 
-from .models import User, SMSVerification
+from .models import User, SMSVerification, NEW_ACCOUNT
 
 
 class UserPreviewSerializer(serializers.ModelSerializer):
@@ -48,22 +46,10 @@ class CreateUserSerializer(serializers.ModelSerializer):
         user = User.objects.create_user(**validated_data, is_active=False)
 
         # Creating verification SMS code and saving to DB
-        verification = SMSVerification.objects.create(user=user)
-        print("IN CREATE USER SERIALIZER")
+        verification = SMSVerification.objects.create(user=user, type=NEW_ACCOUNT)
+
         # Sending the SMS
-        url = "https://smsc.kz/sys/send.php"
-        payload = {
-            "login": "waviot.asia",
-            "psw": "moderator1",
-            "phones": user.username,
-            "mes": "Ваш код: {}".format(verification.code),
-        }
-
-        r = requests.get(url, params=payload)
-
-        if r.status_code != requests.codes.ok:
-            print(r.text)
-            r.raise_for_status()
+        verification.send_sms()
 
         return user
 

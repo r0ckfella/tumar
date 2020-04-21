@@ -70,6 +70,13 @@ class Company(models.Model):
     facebook_url = models.CharField(
         max_length=100, blank=True, verbose_name=_("Facebook")
     )
+    image = models.ImageField(
+        upload_to="companyimages",
+        max_length=150,
+        null=True,
+        blank=True,
+        verbose_name=_("Company Logo"),
+    )
 
     class Meta:
         verbose_name = _("Company")

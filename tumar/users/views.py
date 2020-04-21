@@ -2,7 +2,6 @@
 # from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 # from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
 # from django.utils.translation import gettext_lazy as _
-import requests
 
 from rest_framework import viewsets, mixins, status
 from rest_framework.authtoken.models import Token
@@ -18,11 +17,11 @@ from rest_framework.views import APIView
 
 # from rest_auth.registration.views import SocialLoginView
 
-from .models import User
+from .models import User, NEW_ACCOUNT, SMSVerification, NEW_PHONE_NUM, OLD_PHONE_NUM
 from .permissions import IsUserOrReadOnly
 
 # from .services import create_user_account
-from .serializers import CreateUserSerializer, UserSerializer, SMSVerification
+from .serializers import CreateUserSerializer, UserSerializer
 
 
 class UserViewSet(
@@ -86,19 +85,19 @@ class CustomAuthToken(ObtainAuthToken):
         )
 
 
-class ActivateAccountView(APIView):
+class NewAccountActivationView(APIView):
     permission_classes = (AllowAny,)
 
     def post(self, request):
         """
         JSON fields:
-        - phone_number: str
+        - phone_num: str
         - code: str
         """
-        user = get_object_or_404(User, username=request.data["phone_number"])
+        user = get_object_or_404(User, username=request.data["phone_num"])
         verification = SMSVerification.objects.filter(
-            user=user, activated=False
-        ).latest("id")
+            user=user, activated=False, type=NEW_ACCOUNT
+        ).latest("created_at")
         is_activated = verification.activate_user(request.data["code"])
 
         if not is_activated:
@@ -112,35 +111,117 @@ class ActivateAccountView(APIView):
         )
 
 
-class ResendSMSView(APIView):
+class ResetPasswordView(APIView):
     permission_classes = (AllowAny,)
 
     def post(self, request):
         """
         JSON fields:
-        - phone_number: str
+        - key: str
+        - new_password: str
         """
-        user = get_object_or_404(User, username=request.data["phone_number"])
-        user.sms_codes.update(activated=False)
-        verification = user.sms_codes.create()
+        verification = get_object_or_404(SMSVerification, pk=request.data["key"])
+        if verification.activated:
+            return Response(
+                {"fail": "This code was already used."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        user = verification.user
+        user.set_password(request.data["new_password"])
+        user.save()
+        verification.activate()
+        return Response({"success": True}, status=status.HTTP_200_OK)
+
+
+class ChangePhoneNumberView(APIView):
+    permission_classes = (AllowAny,)
+
+    def post(self, request):
+        """
+        JSON fields:
+        - old_phone_num_key: str
+        - new_phone_num_key: str
+        - new_phone_num: str
+        """
+        user = get_object_or_404(
+            SMSVerification, pk=request.data["old_phone_num_key"], type=OLD_PHONE_NUM
+        ).user
+
+        if not SMSVerification.objects.filter(
+            pk=request.data["new_phone_num_key"], type=NEW_PHONE_NUM
+        ).exists():
+            return Response(
+                {"fail": "Security error"}, status=status.HTTP_403_FORBIDDEN
+            )
+
+        user.username = request.data["new_phone_num"]
+        user.save()
+
+        return Response({"success": True}, status=status.HTTP_200_OK)
+
+
+class CheckCodeView(APIView):
+    permission_classes = (AllowAny,)
+
+    def post(self, request):
+        """
+        JSON fields:
+        - phone_num: str
+        - type: str
+        - code: str
+        Returns
+        - key: uuid str
+        """
+        verification = None
+        try:
+            user = User.objects.get(username=request.data["phone_num"])
+            verification = SMSVerification.objects.filter(
+                user=user, activated=False, type=request.data["type"],
+            ).latest("created_at")
+        except User.DoesNotExist:
+            verification = SMSVerification.objects.filter(
+                phone_num=request.data["phone_num"],
+                activated=False,
+                type=request.data["type"],
+            ).latest("created_at")
+
+        is_same = verification.check_code(request.data["code"])
+
+        if not is_same:
+            return Response({"fail": "wrong code"}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response({"key": verification.pk}, status=status.HTTP_200_OK)
+
+
+class SendSMSView(APIView):
+    permission_classes = (AllowAny,)
+
+    def post(self, request):
+        """
+        JSON fields:
+        - phone_num: str
+        - type: str
+        """
+        verification = None
+        verification = None
+        try:
+            user = User.objects.get(username=request.data["phone_num"])
+            user.sms_codes.filter(type=request.data["type"]).update(
+                activated=True
+            )  # questionable
+            verification = user.sms_codes.create(type=request.data["type"])
+        except User.DoesNotExist:
+            verification = SMSVerification.objects.create(
+                type=NEW_PHONE_NUM, phone_num=request.data["phone_num"]
+            )
 
         # Sending the SMS
-        url = "https://smsc.kz/sys/send.php"
-        payload = {
-            "login": "waviot.asia",
-            "psw": "moderator1",
-            "phones": user.username,
-            "mes": "Ваш код: {}".format(verification.code),
-        }
+        if not verification.send_sms():
+            verification.delete()
+            return Response({"sent?": False}, status=status.HTTP_404_NOT_FOUND)
 
-        r = requests.get(url, params=payload)
-
-        if r.status_code != requests.codes.ok:
-            print(r.text)
-            r.raise_for_status()
-            return Response({"resent?": False}, status=status.HTTP_404_NOT_FOUND)
-
-        return Response({"resent?": True}, status=status.HTTP_200_OK)
+        return Response({"sent?": True}, status=status.HTTP_200_OK)
 
 
 # class FacebookLogin(SocialLoginView):

@@ -30,8 +30,11 @@ from .users.views import (
     UserViewSet,
     UserCreateViewSet,
     CustomAuthToken,
-    ActivateAccountView,
-    ResendSMSView,
+    NewAccountActivationView,
+    SendSMSView,
+    ResetPasswordView,
+    ChangePhoneNumberView,
+    CheckCodeView,
     # FacebookLogin,
     # GoogleLogin,
     # SocialAccountExtraView,
@@ -88,8 +91,11 @@ urlpatterns = i18n_patterns(
         "api/v1/",
         include(
             [
-                path("users/activate/", ActivateAccountView.as_view()),
-                path("users/resend-sms/", ResendSMSView.as_view()),
+                path("users/activate-account/", NewAccountActivationView.as_view()),
+                path("users/send-sms/", SendSMSView.as_view()),
+                path("users/check-code/", CheckCodeView.as_view()),
+                path("users/reset-password/", ResetPasswordView.as_view()),
+                path("users/change-phone-num/", ChangePhoneNumberView.as_view()),
                 path("get-path/", GetAnimalPathView.as_view(), name="get_path"),
                 path(
                     "latest-geolocs/",
