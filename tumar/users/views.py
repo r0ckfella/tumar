@@ -81,6 +81,7 @@ class CustomAuthToken(ObtainAuthToken):
                 "full_name": user.get_full_name(),
                 "email": user.email,
                 "phone_num": user.username,
+                "image": user.image,
             }
         )
 
