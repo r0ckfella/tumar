@@ -2,6 +2,8 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
 
+from ..users.utils import compress
+
 # Create your models here.
 
 
@@ -61,6 +63,15 @@ class PostImage(models.Model):
     class Meta:
         verbose_name = _("Post Image")
         verbose_name_plural = _("Post Images")
+
+    def save(self, *args, **kwargs):
+        # call the compress function
+        new_image = compress(self.image)
+
+        # set self.image to new_image
+        self.image = new_image
+
+        super().save(*args, **kwargs)
 
 
 class PostVote(models.Model):
@@ -147,6 +158,15 @@ class CommentImage(models.Model):
     class Meta:
         verbose_name = _("Comment Image")
         verbose_name_plural = _("Comment Images")
+
+    def save(self, *args, **kwargs):
+        # call the compress function
+        new_image = compress(self.image)
+
+        # set self.image to new_image
+        self.image = new_image
+
+        super().save(*args, **kwargs)
 
 
 class CommentVote(models.Model):

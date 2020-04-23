@@ -12,6 +12,7 @@ from django.utils.translation import gettext_lazy as _
 # Create your models here.
 from rest_framework.exceptions import ValidationError
 
+from ..users.utils import compress
 from .managers import GeolocationQuerySet
 
 
@@ -127,6 +128,15 @@ class BaseAnimal(models.Model):
             return self.tag_number
 
         return self.id
+
+    def save(self, *args, **kwargs):
+        # call the compress function
+        new_image = compress(self.image)
+
+        # set self.image to new_image
+        self.image = new_image
+
+        super().save(*args, **kwargs)
 
 
 class Animal(BaseAnimal):

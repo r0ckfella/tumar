@@ -14,6 +14,8 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework.authtoken.models import Token
 from faker import Factory as FakerFactory
 
+from .utils import compress
+
 main_validator = RegexValidator(
     regex=r"^\+\d{11}$",
     message=(
@@ -54,6 +56,15 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.username
+
+    def save(self, *args, **kwargs):
+        # call the compress function
+        new_image = compress(self.image)
+
+        # set self.image to new_image
+        self.image = new_image
+
+        super().save(*args, **kwargs)
 
 
 NEW_ACCOUNT = "NA"
