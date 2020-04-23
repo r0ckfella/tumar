@@ -33,6 +33,9 @@ def compress(image):
     # Reorient image to preserve right orientation
     im = reorient_image(im)
 
+    if im.mode != "RGB":
+        im = im.convert("RGB")
+
     # create a BytesIO object
     im_io = BytesIO()
 
