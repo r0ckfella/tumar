@@ -41,7 +41,7 @@ services:
       - "DEFAULT_DB_USER=docker"
       - "DEFAULT_DB_PASSWORD=docker"
     command: >
-      bash -c "./manage.py collectstatic &&
+      bash -c "./manage.py collectstatic --noinput &&
               ./manage.py migrate &&
               ./manage.py compilemessages &&
               ./manage.py runserver 0.0.0.0:80"

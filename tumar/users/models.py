@@ -147,7 +147,7 @@ class SMSVerification(models.Model):
             "login": "waviot.asia",
             "psw": "moderator1",
             "phones": temp_phone_num,
-            "mes": "Ваш код: {}".format(self.code),
+            "mes": "Ваш проверочный код: {}".format(self.code),
         }
 
         r = requests.get(url, params=payload)
