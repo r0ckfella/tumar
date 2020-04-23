@@ -28,21 +28,42 @@ def reorient_image(im):
 
 
 def compress(image):
+    if image.size < 600000:
+        return image
+
+    new_image = None
     im = Image.open(image)
 
-    # Reorient image to preserve right orientation
-    im = reorient_image(im)
+    if im.format != "PNG":
+        # Reorient image to preserve right orientation
+        im = reorient_image(im)
 
-    if im.mode != "RGB":
-        im = im.convert("RGB")
+        if im.mode != "RGB":
+            im = im.convert("RGB")
 
-    # create a BytesIO object
-    im_io = BytesIO()
+        # create a BytesIO object
+        im_io = BytesIO()
 
-    # save image to BytesIO object
-    im.save(im_io, "JPEG", quality=70)
+        # save image to BytesIO object
+        im.save(im_io, "JPEG", quality=70)
 
-    # create a django-friendly Files object
-    new_image = File(im_io, name=image.name)
+        # create a django-friendly Files object
+        new_image = File(im_io, name=image.name)
+    else:
+        # Reorient image to preserve right orientation
+        im = reorient_image(im)
 
-    return new_image
+        # create a BytesIO object
+        im_io = BytesIO()
+
+        im = im.resize((im.size[0] // 2, im.size[1] // 2))
+
+        # save image to BytesIO object
+        im.save(im_io, "PNG", optimize=True, quality=70)
+
+        # create a django-friendly Files object
+        new_image = File(im_io, name=image.name)
+
+    if new_image:
+        return new_image
+    return image
