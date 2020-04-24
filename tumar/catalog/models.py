@@ -88,10 +88,11 @@ class Company(models.Model):
         return self.title
 
     def save(self, *args, **kwargs):
-        # call the compress function
-        new_image = compress(self.image)
+        if self.image:
+            # call the compress function
+            new_image = compress(self.image)
 
-        # set self.image to new_image
-        self.image = new_image
+            # set self.image to new_image
+            self.image = new_image
 
         super().save(*args, **kwargs)

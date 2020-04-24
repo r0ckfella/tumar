@@ -65,11 +65,12 @@ class PostImage(models.Model):
         verbose_name_plural = _("Post Images")
 
     def save(self, *args, **kwargs):
-        # call the compress function
-        new_image = compress(self.image)
+        if self.image:
+            # call the compress function
+            new_image = compress(self.image)
 
-        # set self.image to new_image
-        self.image = new_image
+            # set self.image to new_image
+            self.image = new_image
 
         super().save(*args, **kwargs)
 
@@ -160,11 +161,12 @@ class CommentImage(models.Model):
         verbose_name_plural = _("Comment Images")
 
     def save(self, *args, **kwargs):
-        # call the compress function
-        new_image = compress(self.image)
+        if self.image:
+            # call the compress function
+            new_image = compress(self.image)
 
-        # set self.image to new_image
-        self.image = new_image
+            # set self.image to new_image
+            self.image = new_image
 
         super().save(*args, **kwargs)
 
