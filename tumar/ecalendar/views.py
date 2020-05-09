@@ -24,11 +24,11 @@ class BreedingStockEventViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         if self.request.user.is_superuser:
             return BreedingStockEvent.objects.all().order_by(
-                "animal__id", "-scheduled_date"
+                "animal__id", "-scheduled_date_range"
             )
         return BreedingStockEvent.objects.filter(
             animal__farm__user=self.request.user
-        ).order_by("animal__id", "-scheduled_date")
+        ).order_by("animal__id", "-scheduled_date_range")
 
 
 class CalfEventViewSet(viewsets.ModelViewSet):
@@ -36,16 +36,18 @@ class CalfEventViewSet(viewsets.ModelViewSet):
     Lists and retrieves events and their animal
     """
 
-    # queryset = CalfEvent.objects.all().order_by('animal__id', '-scheduled_date')
+    # queryset = CalfEvent.objects.all().order_by('animal__id', '-scheduled_date_range')
     serializer_class = CalfEventSerializer
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_fields = ("animal__id",)
 
     def get_queryset(self):
         if self.request.user.is_superuser:
-            return CalfEvent.objects.all().order_by("animal__id", "-scheduled_date")
+            return CalfEvent.objects.all().order_by(
+                "animal__id", "-scheduled_date_range"
+            )
         return CalfEvent.objects.filter(animal__farm__user=self.request.user).order_by(
-            "animal__id", "-scheduled_date"
+            "animal__id", "-scheduled_date_range"
         )
 
 
@@ -106,13 +108,13 @@ class CalendarView(APIView):
         }
 
         cow_serializer = BreedingStockEventSerializer(
-            cow.events.order_by("scheduled_date"), many=True
+            cow.events.order_by("scheduled_date_range"), many=True
         )
         data["cow"]["events"] = cow_serializer.data
 
         for calf in female_calves:
             calf_serializer = CalfEventSerializer(
-                calf.events.order_by("scheduled_date"), many=True
+                calf.events.order_by("scheduled_date_range"), many=True
             )
             data["female_calves"].append(
                 {"id": calf.id, "name": calf.name, "events": []}
@@ -121,7 +123,7 @@ class CalendarView(APIView):
 
         for calf in male_calves:
             calf_serializer = CalfEventSerializer(
-                calf.events.order_by("scheduled_date"), many=True
+                calf.events.order_by("scheduled_date_range"), many=True
             )
             data["male_calves"].append({"id": calf.id, "name": calf.name, "events": []})
             data["male_calves"][-1]["events"] = calf_serializer.data

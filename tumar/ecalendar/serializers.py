@@ -9,7 +9,7 @@ class BreedingStockEventSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "title",
-            "scheduled_date",
+            "scheduled_date_range",
             "completion_date",
             "report",
             "type",
@@ -32,7 +32,7 @@ class CalfEventSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "title",
-            "scheduled_date",
+            "scheduled_date_range",
             "completion_date",
             "report",
             "type",

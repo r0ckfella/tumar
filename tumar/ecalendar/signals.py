@@ -171,13 +171,15 @@ def on_change_breedingstock(sender, instance: BreedingStock, **kwargs):
         if (
             previous.birth_date is None and instance.birth_date is not None
         ):  # field will be updated
-            create_mother_cow_events(instance)
+            # create_mother_cow_events(instance)
+            pass
 
 
 def post_save_breedingstock(sender, instance: BreedingStock, created, **kwargs):
     if created:
         if instance.birth_date is not None:  # new object will be created
-            create_mother_cow_events(instance)
+            # create_mother_cow_events(instance)
+            pass
 
 
 def on_change_calf(sender, instance: Calf, **kwargs):
@@ -187,18 +189,22 @@ def on_change_calf(sender, instance: Calf, **kwargs):
             previous.birth_date is None and instance.birth_date is not None
         ):  # field will be updated
             if instance.gender == MALE:
-                create_male_calf_events(instance)
+                # create_male_calf_events(instance)
+                pass
             elif instance.gender == FEMALE:
-                create_female_calf_events(instance)
+                # create_female_calf_events(instance)
+                pass
 
 
 def post_save_calf(sender, instance: Calf, created, **kwargs):
     if created:
         if instance.birth_date is not None:  # new object will be created
             if instance.gender == MALE:
-                create_male_calf_events(instance)
+                # create_male_calf_events(instance)
+                pass
             elif instance.gender == FEMALE:
-                create_female_calf_events(instance)
+                # create_female_calf_events(instance)
+                pass
 
 
 pre_save.connect(receiver=on_change_breedingstock, sender=BreedingStock)

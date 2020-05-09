@@ -1,7 +1,6 @@
-import datetime
-
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from django.contrib.postgres.fields import DateRangeField
 
 from tumar.animals.models import BreedingStock, Calf
 
@@ -23,8 +22,11 @@ TYPE_CHOICES = [
 
 class Event(models.Model):
     title = models.CharField(max_length=80, verbose_name=_("Title"))
-    scheduled_date = models.DateField(
-        default=datetime.date.today, verbose_name=_("Scheduled date of the event")
+    # scheduled_date = models.DateField(
+    #     default=datetime.date.today, verbose_name=_("Scheduled date of the event")
+    # )
+    scheduled_date_range = DateRangeField(
+        verbose_name=_("Scheduled date range of the event")
     )
     completion_date = models.DateField(
         null=True, verbose_name=_("Date of the event completion")

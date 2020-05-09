@@ -182,7 +182,6 @@ dependencies:
     - black==19.10b0
     - django==2.1.15
     - django-modeladmin-reorder==0.3.1
-    - django-phone-verify==1.0.0
     - django-phonenumber-field==4.0.0
     - django-rest-auth==0.9.5
     - django-unique-upload==0.2.1
@@ -207,5 +206,5 @@ dependencies:
     - toml==0.10.0
     - twilio==6.38.0
     - typed-ast==1.4.1
-prefix: /home/zest/miniconda3/envs/tumar_dev
+prefix: /home/badd357/miniconda3/envs/tumar_dev
 
