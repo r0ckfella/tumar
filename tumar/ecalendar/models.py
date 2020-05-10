@@ -22,14 +22,8 @@ TYPE_CHOICES = [
 
 class Event(models.Model):
     title = models.CharField(max_length=80, verbose_name=_("Title"))
-    # scheduled_date = models.DateField(
-    #     default=datetime.date.today, verbose_name=_("Scheduled date of the event")
-    # )
     scheduled_date_range = DateRangeField(
         verbose_name=_("Scheduled date range of the event")
-    )
-    completion_date = models.DateField(
-        null=True, verbose_name=_("Date of the event completion")
     )
     type = models.CharField(
         max_length=2,
@@ -38,16 +32,15 @@ class Event(models.Model):
         verbose_name=_("Type of the event"),
     )
     report = models.TextField(blank=True, verbose_name=_("Report"))
-    completed = models.BooleanField(default=False, verbose_name=_("Completed?"))
 
     class Meta:
         abstract = True
 
 
 class BreedingStockEvent(Event):
-    animal = models.ForeignKey(
+    animals = models.ManyToManyField(
         BreedingStock,
-        on_delete=models.CASCADE,
+        through="SingleBreedingStockEvent",
         related_name="events",
         verbose_name=_("Cow Animal of the event"),
     )
@@ -57,13 +50,22 @@ class BreedingStockEvent(Event):
         verbose_name_plural = _("Cow Events")
 
     def __str__(self):
-        return str(self.animal) + ":" + str(self.title)
+        return str(self.title)
+
+
+class SingleBreedingStockEvent(models.Model):
+    event = models.ForeignKey(BreedingStockEvent, on_delete=models.CASCADE)
+    animal = models.ForeignKey(BreedingStock, on_delete=models.CASCADE)
+    completed = models.BooleanField(default=False, verbose_name=_("Completed?"))
+    completion_date = models.DateField(
+        null=True, blank=True, verbose_name=_("Date of the event completion")
+    )
 
 
 class CalfEvent(Event):
-    animal = models.ForeignKey(
+    animals = models.ManyToManyField(
         Calf,
-        on_delete=models.CASCADE,
+        through="SingleCalfEvent",
         related_name="events",
         verbose_name=_("Calf Animal of the event"),
     )
@@ -73,4 +75,13 @@ class CalfEvent(Event):
         verbose_name_plural = _("Calf Events")
 
     def __str__(self):
-        return str(self.animal) + ":" + str(self.title)
+        return str(self.title)
+
+
+class SingleCalfEvent(models.Model):
+    event = models.ForeignKey(CalfEvent, on_delete=models.CASCADE)
+    animal = models.ForeignKey(Calf, on_delete=models.CASCADE)
+    completed = models.BooleanField(default=False, verbose_name=_("Completed?"))
+    completion_date = models.DateField(
+        null=True, blank=True, verbose_name=_("Date of the event completion")
+    )

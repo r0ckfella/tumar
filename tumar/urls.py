@@ -47,6 +47,8 @@ from .ecalendar.views import (
     AllBreedingStockEventView,
     AllCalfEventView,
     CalendarView,
+    ToggleBreedingStockEventView,
+    ToggleCalfEventView,
 )
 from .catalog.views import CompanyDirectionListView, CompanyViewSet
 from .community.views import (
@@ -113,6 +115,14 @@ urlpatterns = i18n_patterns(
                     LatestIndicatorsView.as_view(),
                 ),
                 path("indicators/request/", RequestIndicatorsView.as_view()),
+                path(
+                    "events/breedingstock/<int:event_pk>/toggle/<uuid:animal_pk>/",
+                    ToggleBreedingStockEventView.as_view(),
+                ),
+                path(
+                    "events/calf/<int:event_pk>/toggle/<uuid:animal_pk>/",
+                    ToggleCalfEventView.as_view(),
+                ),
                 path(
                     "events/breedingstock/next-year/",
                     NextYearBreedingStockEventView.as_view(),

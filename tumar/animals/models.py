@@ -66,8 +66,8 @@ class Farm(models.Model):
         return str(self.id)
 
     def save(self, *args, **kwargs):
-        if self.api_key:
-            url = "http://42.123.123.254//ucows/login/login"
+        if self.api_key and len(self.api_key) != 32:
+            url = "http://42.123.123.254/ucows/login/login"
             headers = {"Content-type": "application/json", "Accept": "application/json"}
             payload = {"username": self.api_key, "password": "000000"}
 
@@ -156,8 +156,12 @@ class Animal(BaseAnimal):
         verbose_name=_("IMEI of the tracker"),
     )
     imsi = models.CharField(max_length=30, blank=True, verbose_name=_("IMSI number"))
-    battery_charge = models.PositiveSmallIntegerField(
-        null=True, blank=True, verbose_name=_("Battery charge")
+    battery_charge = models.DecimalField(
+        null=True,
+        blank=True,
+        max_digits=6,
+        decimal_places=3,
+        verbose_name=_("Battery charge"),
     )
     updated = models.DateTimeField(default=timezone.now, verbose_name=_("Last updated"))
 

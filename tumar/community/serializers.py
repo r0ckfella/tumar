@@ -74,29 +74,23 @@ class CommentSerializer(serializers.ModelSerializer):
         return obj.votes.filter(type="D", user=self.context["user"]).exists()
 
     def create(self, validated_data):
-        images_data = None
-        if "images" in validated_data:
-            images_data = validated_data.pop("images")
+        images_data = validated_data.pop("images", [])
 
         comment = Comment.objects.create(**validated_data)
-        if images_data:
-            for image_data in images_data:
-                comment.images.create(**image_data)
+        for image_data in images_data:
+            comment.images.create(**image_data)
         return comment
 
     def update(self, instance, validated_data):
-        images_data = None
-        if "images" in validated_data:
-            images_data = validated_data.pop("images")
+        images_data = validated_data.pop("images", [])
 
         if "id" in validated_data:
             validated_data.pop("id")  # remove id, since we already have instance obj
         instance = super(CommentSerializer, self).update(instance, validated_data)
 
-        if images_data:
-            for image_data in images_data:
-                if "id" not in image_data:
-                    instance.images.create(**image_data)
+        for image_data in images_data:
+            if "id" not in image_data:
+                instance.images.create(**image_data)
 
         return instance
 
@@ -174,34 +168,23 @@ class PostCreateUpdateSerializer(serializers.ModelSerializer):
         )
 
     def create(self, validated_data):
-        images_data = None
-        categories = None
-        if "images" in validated_data:
-            images_data = validated_data.pop("images")
-        if "categories" in validated_data:
-            categories = validated_data.pop("categories")
-
-        # maybe categories = validated_data.pop("categories", [])
+        images_data = validated_data.pop("images", [])
+        categories = validated_data.pop("categories", [])
 
         post = Post.objects.create(**validated_data)
 
-        if images_data:
-            for image_data in images_data:
-                post.images.create(**image_data)
-        if categories:
-            for category in categories:
-                # if a category needs to be created instantly, it can be done here
-                post.categories.add(category)
+        for image_data in images_data:
+            post.images.create(**image_data)
+
+        for category in categories:
+            # if a category needs to be created instantly, it can be done here
+            post.categories.add(category)
 
         return post
 
     def update(self, instance, validated_data):
-        images_data = None
-        categories = None
-        if "images" in validated_data:
-            images_data = validated_data.pop("images")
-        if "categories" in validated_data:
-            categories = validated_data.pop("categories")
+        images_data = validated_data.pop("images", [])
+        categories = validated_data.pop("categories", [])
 
         if "id" in validated_data:
             validated_data.pop("id")
@@ -209,16 +192,15 @@ class PostCreateUpdateSerializer(serializers.ModelSerializer):
             instance, validated_data
         )
 
-        if images_data:
-            for image_data in images_data:
-                if "id" not in image_data:
-                    instance.images.create(**image_data)
+        for image_data in images_data:
+            if "id" not in image_data:
+                instance.images.create(**image_data)
+
         if categories:
-            for category in categories:
-                # if a category needs to be created instantly, it can be done here
-                # category = Category.objects.get(pk=category_id)
-                instance.categories.clear()
-                instance.categories.add(category)
+            # if a category needs to be created instantly, it can be done here
+            # category = Category.objects.get(pk=category_id)
+            instance.categories.clear()
+            instance.categories.add(categories)
 
         return instance
 
