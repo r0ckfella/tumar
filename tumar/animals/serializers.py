@@ -139,16 +139,16 @@ class FarmSerializer(serializers.ModelSerializer):
             "bank",
             "bin",
             "address",
-            "calves_number",
-            "breedingstock_number",
-            "breedingbull_number",
-            "storecattle_number",
+            "calf_count",
+            "breedingstock_count",
+            "breedingbull_count",
+            "storecattle_count",
         )
         read_only_fields = (
-            "calves_number",
-            "breedingstock_number",
-            "breedingbull_number",
-            "storecattle_number",
+            "calf_count",
+            "breedingstock_count",
+            "breedingbull_count",
+            "storecattle_count",
         )
 
 

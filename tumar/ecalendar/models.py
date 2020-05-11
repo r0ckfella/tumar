@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from django.contrib.postgres.fields import DateRangeField
+from django.contrib.postgres.fields import DateRangeField, JSONField
 
 from tumar.animals.models import BreedingStock, Calf
 
@@ -32,6 +32,7 @@ class Event(models.Model):
         verbose_name=_("Type of the event"),
     )
     report = models.TextField(blank=True, verbose_name=_("Report"))
+    attributes = JSONField(null=True, blank=True)
 
     class Meta:
         abstract = True

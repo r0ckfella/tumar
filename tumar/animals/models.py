@@ -1,16 +1,20 @@
 import uuid
 import requests
 import json
+import datetime
 
 from django.conf import settings
 from django.contrib.gis.db import models
+from django.contrib.gis.db.models.functions import Area
 from django.core.validators import RegexValidator
 from django.db import connections
+from django.db.models import Sum
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 # Create your models here.
 from rest_framework.exceptions import ValidationError
+from dateutil.relativedelta import relativedelta
 
 from ..users.utils import compress
 from .managers import GeolocationQuerySet
@@ -41,20 +45,41 @@ class Farm(models.Model):
     )
 
     @property
-    def calves_number(self):
-        return self.calf_set.count()
+    def calf_count(self):
+        return self.calf_set.filter(active=True).count()
 
     @property
-    def breedingstock_number(self):
+    def breedingstock_count(self):
         return self.breedingstock_set.count()
 
     @property
-    def breedingbull_number(self):
+    def breedingbull_count(self):
         return self.breedingbull_set.count()
 
     @property
-    def storecattle_number(self):
+    def storecattle_count(self):
         return self.storecattle_set.count()
+
+    @property
+    def animal_count(self):
+        return self.animal_set.count()
+
+    @property
+    def total_animal_count(self):
+        return (
+            self.calf_count
+            + self.breedingstock_count
+            + self.breedingbull_count
+            + self.storecattle_count
+            + self.animal_count
+        )
+
+    @property
+    def total_pastures_area_in_ha(self):
+        total_pastures_area = self.cadastres.annotate(area=Area("geom")).aggregate(
+            total_area=Sum("area")
+        )["total_area"]
+        return total_pastures_area.sq_m / 10000
 
     class Meta:
         verbose_name = _("Farm")
@@ -199,6 +224,18 @@ BREED_CHOICES = [
 ]
 
 
+class BreedingStockManager(models.Manager):
+    def pregnant_count(self):
+        return (
+            self.get_queryset()
+            .filter(
+                events__title__icontains="случка",
+                singlebreedingstockevent__completed=False,
+            )
+            .count()
+        )
+
+
 class BreedingStock(BaseAnimal):  # Маточное поголовье
     breed = models.CharField(
         max_length=2,
@@ -211,6 +248,8 @@ class BreedingStock(BaseAnimal):  # Маточное поголовье
         verbose_name = _("Breeding Stock")
         verbose_name_plural = _("Breeding Stock")
 
+    objects = BreedingStockManager()
+
 
 MALE = "ML"
 FEMALE = "FM"
@@ -218,8 +257,30 @@ FEMALE = "FM"
 GENDER_CHOICES = [(MALE, _("Бычок")), (FEMALE, _("Телочка"))]
 
 
+class CalfManager(models.Manager):
+    def less_12_months_count(self):
+        time_threshold = datetime.date.today() - relativedelta(months=12)
+        return (
+            self.get_queryset()
+            .filter(active=True)
+            .filter(birth_date__gt=time_threshold)
+            .count()
+        )
+
+    def greater_12_months_count(self):
+        time_threshold = datetime.date.today() - relativedelta(months=12)
+        return (
+            self.get_queryset()
+            .filter(active=True)
+            .filter(birth_date__lt=time_threshold)
+            .count()
+        )
+
+
 class Calf(BaseAnimal):  # Телята
-    wean_date = models.DateTimeField(null=True, verbose_name=_("Date of weaning"))
+    wean_date = models.DateTimeField(
+        blank=True, null=True, verbose_name=_("Date of weaning")
+    )
     gender = models.CharField(
         max_length=2, choices=GENDER_CHOICES, default=FEMALE, verbose_name=_("Gender")
     )
@@ -235,11 +296,28 @@ class Calf(BaseAnimal):  # Телята
         related_name="calves",
         verbose_name=_("Mother"),
     )
-    Active = models.BooleanField(default=True, verbose_name=_("Active?"))
+    active = models.BooleanField(default=True, verbose_name=_("Active?"))
+
+    @property
+    def birth_weight(self):
+        return (
+            self.singlecalfevent_set.filter(
+                event__title__icontains="отел", completed=True
+            )
+            .order_by("completion_date")
+            .first()
+            .event.attributes.get("birth_weight", None)
+        )
 
     class Meta:
         verbose_name = _("Calf")
         verbose_name_plural = _("Calves")
+
+    objects = CalfManager()
+
+
+class BreedingBullManager(models.Manager):
+    pass
 
 
 class BreedingBull(BaseAnimal):  # Племенной бык
@@ -256,6 +334,8 @@ class BreedingBull(BaseAnimal):  # Племенной бык
     class Meta:
         verbose_name = _("Breeding Bull")
         verbose_name_plural = _("Breeding Bulls")
+
+    objects = BreedingBullManager()
 
 
 class StoreCattle(BaseAnimal):  # Скот на откорме
@@ -293,15 +373,16 @@ class Geolocation(models.Model):
 
 
 class Cadastre(models.Model):
-    farm = models.ForeignKey(
-        Farm, on_delete=models.CASCADE, related_name="cadastres", verbose_name=_("Farm")
-    )
     cadastre_num_regex = RegexValidator(
         regex=r"^\d+$",
         message=(
             "Only digits are allowed for the cadastre number. "
             "Up to 30 digits allowed."
         ),
+    )
+
+    farm = models.ForeignKey(
+        Farm, on_delete=models.CASCADE, related_name="cadastres", verbose_name=_("Farm")
     )
     cad_number = models.CharField(
         max_length=30, blank=True, verbose_name=_("Cadastre Number")

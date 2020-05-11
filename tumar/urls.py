@@ -65,6 +65,7 @@ from .community.views import (
     CommentVoteView,
     MyPostsView,
 )
+from .dashboard.views import AnimalCountByTypeView
 
 router = DefaultRouter()
 
@@ -162,6 +163,9 @@ urlpatterns = i18n_patterns(
                 path(
                     "community/comments/<int:comment_pk>/vote/<str:vote_type>/",
                     CommentVoteView.as_view(),
+                ),
+                path(
+                    "dashboard/animal-count-by-type/", AnimalCountByTypeView.as_view()
                 ),
             ]
             + router.urls
