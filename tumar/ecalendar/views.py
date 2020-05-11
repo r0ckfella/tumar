@@ -27,15 +27,14 @@ class BreedingStockEventViewSet(viewsets.ModelViewSet):
     serializer_class = BreedingStockEventSerializer
     filter_backends = (filters.DjangoFilterBackend,)
     # filterset_fields = ("animals__id",)
+    pagination_class = None
 
     def get_queryset(self):
         if self.request.user.is_superuser:
-            return BreedingStockEvent.objects.all().order_by(
-                "animal__id", "-scheduled_date_range"
-            )
+            return BreedingStockEvent.objects.all().order_by("-scheduled_date_range")
         return BreedingStockEvent.objects.filter(
             animal__farm__user=self.request.user
-        ).order_by("animal__id", "-scheduled_date_range")
+        ).order_by("-scheduled_date_range")
 
 
 class ToggleBreedingStockEventView(APIView):
@@ -65,7 +64,10 @@ class ToggleBreedingStockEventView(APIView):
 
         single_bs_event.save()
 
-        return Response({"success": True}, status=status.HTTP_201_CREATED)
+        return Response(
+            {"success": True, "completed": single_bs_event.completed},
+            status=status.HTTP_201_CREATED,
+        )
 
 
 class CalfEventViewSet(viewsets.ModelViewSet):
@@ -77,14 +79,13 @@ class CalfEventViewSet(viewsets.ModelViewSet):
     serializer_class = CalfEventSerializer
     filter_backends = (filters.DjangoFilterBackend,)
     # filterset_fields = ("animal__id",)
+    pagination_class = None
 
     def get_queryset(self):
         if self.request.user.is_superuser:
-            return CalfEvent.objects.all().order_by(
-                "animal__id", "-scheduled_date_range"
-            )
+            return CalfEvent.objects.all().order_by("-scheduled_date_range")
         return CalfEvent.objects.filter(animal__farm__user=self.request.user).order_by(
-            "animal__id", "-scheduled_date_range"
+            "-scheduled_date_range"
         )
 
 
@@ -93,29 +94,32 @@ class ToggleCalfEventView(APIView):
         completion_date = request.data.get("completion_date", None)
 
         if request.user.is_superuser:
-            single_bs_event = get_object_or_404(
+            single_calf_event = get_object_or_404(
                 SingleCalfEvent, animal=animal_pk, event=event_pk
             )
         else:
-            single_bs_event = get_object_or_404(
+            single_calf_event = get_object_or_404(
                 SingleCalfEvent,
                 event=event_pk,
                 animal=animal_pk,
                 animal__farm__user=request.user,
             )
 
-        single_bs_event.completed = not single_bs_event.completed
+        single_calf_event.completed = not single_calf_event.completed
 
         if completion_date:
-            single_bs_event.completion_date = datetime.datetime.strptime(
+            single_calf_event.completion_date = datetime.datetime.strptime(
                 completion_date, "%d-%m-%Y"
             ).date()
         else:
-            single_bs_event.completion_date = datetime.date.today()
+            single_calf_event.completion_date = datetime.date.today()
 
-        single_bs_event.save()
+        single_calf_event.save()
 
-        return Response({"success": True}, status=status.HTTP_201_CREATED)
+        return Response(
+            {"success": True, "completed": single_calf_event.completed},
+            status=status.HTTP_201_CREATED,
+        )
 
 
 class NextYearBreedingStockEventView(APIView):
