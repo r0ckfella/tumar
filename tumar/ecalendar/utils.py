@@ -1,6 +1,37 @@
 from dateutil.relativedelta import relativedelta
+from psycopg2.extras import DateRange
 
 from .models import HANDLING, FEEDING
+
+
+def merge_events(event_cls, single_event_cls, instance):
+    # Checking if there any similar event
+    overlapping_events = event_cls.objects.filter(
+        title__icontains=instance.title[: len(instance.title) // 2],
+        type=instance.type,
+        scheduled_date_range__overlap=instance.scheduled_date_range,
+    )
+
+    for event in overlapping_events:
+        instance.scheduled_date_range = DateRange(
+            event.scheduled_date_range.lower
+            if event.scheduled_date_range.lower < instance.scheduled_date_range.lower
+            else instance.scheduled_date_range.lower,
+            event.scheduled_date_range.upper
+            if event.scheduled_date_range.upper > instance.scheduled_date_range.upper
+            else instance.scheduled_date_range.upper,
+        )
+
+        instance.report = instance.report + " " + event.report
+
+    instance.save()
+
+    # Attach animals to instance
+    single_event_cls.objects.filter(event__in=overlapping_events).exclude(
+        pk=instance.pk
+    ).update(event=instance)
+
+    overlapping_events.exclude(pk=instance.pk).delete()
 
 
 def create_mother_cow_events_next_year(obj):

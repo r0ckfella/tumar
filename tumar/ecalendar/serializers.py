@@ -8,6 +8,7 @@ from .models import (
     SingleCalfEvent,
 )
 from ..animals.models import BreedingStock, Calf
+from .utils import merge_events
 
 
 class BreedingStockNestedSerializer(serializers.ModelSerializer):
@@ -85,35 +86,7 @@ class BreedingStockEventSerializer(serializers.ModelSerializer):
         animals_list = validated_data.pop("animals_list", [])
         bs_event = BreedingStockEvent(**validated_data)
 
-        # Checking if there any similar event
-        overlapping_events = BreedingStockEvent.objects.filter(
-            title__icontains=bs_event.title[: len(bs_event.title) // 2],
-            type=bs_event.type,
-            scheduled_date_range__overlap=bs_event.scheduled_date_range,
-        )
-
-        for event in overlapping_events:
-            bs_event.scheduled_date_range = DateRange(
-                event.scheduled_date_range.lower
-                if event.scheduled_date_range.lower
-                < bs_event.scheduled_date_range.lower
-                else bs_event.scheduled_date_range.lower,
-                event.scheduled_date_range.upper
-                if event.scheduled_date_range.upper
-                > bs_event.scheduled_date_range.upper
-                else bs_event.scheduled_date_range.upper,
-            )
-
-            bs_event.report = bs_event.report + " " + event.report
-
-        bs_event.save()
-
-        # Attach animals to bs_event
-        SingleBreedingStockEvent.objects.filter(event__in=overlapping_events).update(
-            event=bs_event
-        )
-
-        overlapping_events.exclude(pk=bs_event.pk).delete()
+        merge_events(BreedingStockEvent, SingleBreedingStockEvent, bs_event)
 
         # Create additional animals for bs_event
         for pk in animals_list:
@@ -138,6 +111,8 @@ class BreedingStockEventSerializer(serializers.ModelSerializer):
                 SingleBreedingStockEvent.objects.get_or_create(
                     event=instance, animal=animal_pk
                 )
+
+        merge_events(BreedingStockEvent, SingleBreedingStockEvent, instance)
 
         return instance
 
@@ -174,35 +149,7 @@ class CalfEventSerializer(serializers.ModelSerializer):
         animals_list = validated_data.pop("animals_list", [])
         calf_event = CalfEvent(**validated_data)
 
-        # Checking if there any similar event
-        overlapping_events = CalfEvent.objects.filter(
-            title__icontains=calf_event.title[: len(calf_event.title) // 2],
-            type=calf_event.type,
-            scheduled_date_range__overlap=calf_event.scheduled_date_range,
-        )
-
-        for event in overlapping_events:
-            calf_event.scheduled_date_range = DateRange(
-                event.scheduled_date_range.lower
-                if event.scheduled_date_range.lower
-                < calf_event.scheduled_date_range.lower
-                else calf_event.scheduled_date_range.lower,
-                event.scheduled_date_range.upper
-                if event.scheduled_date_range.upper
-                > calf_event.scheduled_date_range.upper
-                else calf_event.scheduled_date_range.upper,
-            )
-
-            calf_event.report = calf_event.report + " " + event.report
-
-        calf_event.save()
-
-        # Attach animals to calf_event
-        SingleCalfEvent.objects.filter(event__in=overlapping_events).update(
-            event=calf_event
-        )
-
-        overlapping_events.exclude(pk=calf_event.pk).delete()
+        merge_events(CalfEvent, SingleBreedingStockEvent, calf_event)
 
         for pk in animals_list:
             SingleCalfEvent.objects.get_or_create(event=calf_event, animal=pk)
@@ -223,5 +170,7 @@ class CalfEventSerializer(serializers.ModelSerializer):
             for animal_pk in animals_list:
                 # instance.animals.add(animals_list)
                 SingleCalfEvent.objects.get_or_create(event=instance, animal=animal_pk)
+
+        merge_events(CalfEvent, SingleBreedingStockEvent, instance)
 
         return instance
