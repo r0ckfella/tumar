@@ -31,6 +31,7 @@ class SingleBreedingStockEventSerializer(serializers.ModelSerializer):
             "animal",
             "completed",
             "completion_date",
+            "attributes",
         )
 
 
@@ -42,6 +43,7 @@ class CalfNestedSerializer(serializers.ModelSerializer):
             "tag_number",
             "name",
             "gender",
+            "attributes",
         )
 
 

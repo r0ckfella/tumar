@@ -104,9 +104,12 @@ class Farm(models.Model):
 
     def save(self, *args, **kwargs):
         if self.api_key and len(self.api_key) != 32:
-            url = "http://42.123.123.254/ucows/login/login"
+            url = settings.CHINESE_LOGIN_URL
             headers = {"Content-type": "application/json", "Accept": "application/json"}
-            payload = {"username": self.api_key, "password": "000000"}
+            payload = {
+                "username": self.api_key,
+                "password": settings.STANDARD_LOGIN_PASSWORD,
+            }
 
             r = requests.post(url, data=json.dumps(payload), headers=headers)
 

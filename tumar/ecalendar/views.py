@@ -40,6 +40,7 @@ class BreedingStockEventViewSet(viewsets.ModelViewSet):
 class ToggleBreedingStockEventView(APIView):
     def patch(self, request, event_pk, animal_pk):
         completion_date = request.data.get("completion_date", None)
+        attributes = request.data.get("attributes", None)
 
         if request.user.is_superuser:
             single_bs_event = get_object_or_404(
@@ -61,6 +62,9 @@ class ToggleBreedingStockEventView(APIView):
             ).date()
         else:
             single_bs_event.completion_date = datetime.date.today()
+
+        for key, value in attributes.items():
+            single_bs_event.attributes[key] = value
 
         single_bs_event.save()
 
@@ -92,6 +96,7 @@ class CalfEventViewSet(viewsets.ModelViewSet):
 class ToggleCalfEventView(APIView):
     def patch(self, request, event_pk, animal_pk):
         completion_date = request.data.get("completion_date", None)
+        attributes = request.data.get("attributes", None)
 
         if request.user.is_superuser:
             single_calf_event = get_object_or_404(
@@ -113,6 +118,9 @@ class ToggleCalfEventView(APIView):
             ).date()
         else:
             single_calf_event.completion_date = datetime.date.today()
+
+        for key, value in attributes.items():
+            single_calf_event.attributes[key] = value
 
         single_calf_event.save()
 

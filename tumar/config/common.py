@@ -235,3 +235,8 @@ class Common(Configuration):
         "indicators",
         {"app": "users", "models": ("users.User", "auth.Group", "authtoken.Token")},
     )
+
+    DOWNLOAD_GEOLOCATIONS_URL = os.getenv("DOWNLOAD_GEOLOCATIONS_URL")
+    GET_BATTERY_CHARGE_URL = os.getenv("GET_BATTERY_CHARGE_URL")
+    CHINESE_LOGIN_URL = os.getenv("CHINESE_LOGIN_URL")
+    STANDARD_LOGIN_PASSWORD = os.getenv("STANDARD_LOGIN_PASSWORD")
