@@ -5,10 +5,21 @@ import datetime
 
 from django.conf import settings
 from django.contrib.gis.db import models
-from django.contrib.gis.db.models.functions import Area
+from django.contrib.gis.db.models.functions import Area, Cast
+from django.db.models import (
+    OuterRef,
+    Subquery,
+    Sum,
+    FloatField,
+    Avg,
+    F,
+    ExpressionWrapper,
+    Value,
+    DateField,
+)
+from django.db.models.functions import ExtractDay
 from django.core.validators import RegexValidator
 from django.db import connections
-from django.db.models import Sum
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
@@ -18,6 +29,7 @@ from dateutil.relativedelta import relativedelta
 
 from ..users.utils import compress
 from .managers import GeolocationQuerySet
+from ..ecalendar.models import SingleCalfEvent, SingleBreedingStockEvent
 
 
 class Farm(models.Model):
@@ -235,6 +247,48 @@ class BreedingStockManager(models.Manager):
             .count()
         )
 
+    def avg_cow_skt(self):
+        cow_skt_event = SingleBreedingStockEvent.objects.filter(
+            event__title__icontains="СКТ", completed=True
+        ).filter(animal=OuterRef("pk"))
+        cow_skt_event_query = Subquery(cow_skt_event.values("attributes__skt")[:1])
+
+        avg_cow_skt = (
+            self.get_queryset()
+            .annotate(skt_str=cow_skt_event_query)
+            .annotate(skt_casted=Cast("skt_str", output_field=FloatField()))
+            .aggregate(result=Avg("skt_casted"))["result"]
+        )
+
+        return avg_cow_skt
+
+    def get_cows_count_by_year(self, years_old):
+        curr_year = datetime.datetime.now().year
+
+        cows_count = (
+            self.get_queryset()
+            .filter(birth_date__year=str(curr_year - years_old))
+            .count()
+        )
+
+        return cows_count
+
+    def get_cows_count_by_year_range(self, years_old_lower, years_old_upper):
+        curr_year = datetime.datetime.now().year
+
+        cows_count = (
+            self.get_queryset()
+            .filter(
+                birth_date__year__range=(
+                    curr_year - years_old_upper,
+                    curr_year - years_old_lower,
+                )
+            )
+            .count()
+        )
+
+        return cows_count
+
 
 class BreedingStock(BaseAnimal):  # Маточное поголовье
     breed = models.CharField(
@@ -275,6 +329,121 @@ class CalfManager(models.Manager):
             .filter(birth_date__lt=time_threshold)
             .count()
         )
+
+    def sum_birth_weight(self):
+        birth_event = (
+            SingleCalfEvent.objects.filter(
+                event__title__icontains="отел", completed=True
+            )
+            .filter(animal=OuterRef("pk"))
+            .order_by("completion_date")
+        )
+        ann_query = Subquery(birth_event.values("attributes__birth_weight")[:1])
+
+        sum_birth_weight = (
+            self.get_queryset()
+            .filter(active=True)
+            .annotate(birth_weight_str=ann_query)
+            .annotate(birth_weight=Cast("birth_weight_str", output_field=FloatField()))
+            .aggregate(total_sum=Sum("birth_weight"))["total_sum"]
+        )
+
+        return sum_birth_weight
+
+    def avg_205_day_predicted_weight(self):
+        birth_event = (
+            SingleCalfEvent.objects.filter(
+                event__title__icontains="отел", completed=True
+            )
+            .filter(animal=OuterRef("pk"))
+            .order_by("completion_date")
+        )
+        birth_weight_query = Subquery(
+            birth_event.values("attributes__birth_weight")[:1]
+        )
+
+        wean_event = (
+            SingleCalfEvent.objects.filter(
+                event__title__icontains="отъём", completed=True
+            )
+            .filter(animal=OuterRef("pk"))
+            .order_by("completion_date")
+        )
+        wean_weight_query = Subquery(wean_event.values("attributes__wean_weight")[:1])
+        wean_date_query = Subquery(wean_event.values("completion_date")[:1])
+
+        avg_205_day_weight_formula = ExpressionWrapper(
+            ((F("wean_weight") - F("birth_weight")) * Value(205.0)) / F("wean_age")
+            + F("birth_weight"),
+            output_field=FloatField(),
+        )
+
+        avg_205_day_predicted_weight = (
+            self.get_queryset()
+            .filter(active=True)
+            .annotate(birth_weight_str=birth_weight_query)
+            .annotate(birth_weight=Cast("birth_weight_str", output_field=FloatField()))
+            .annotate(wean_weight_str=wean_weight_query)
+            .annotate(wean_weight=Cast("wean_weight_str", output_field=FloatField()))
+            .annotate(wean_event_date=wean_date_query)
+            .annotate(
+                wean_event_date_casted=Cast("wean_event_date", output_field=DateField())
+            )
+            .annotate(
+                wean_age_int=ExtractDay(F("wean_event_date_casted") - F("birth_date"))
+                + Value(1)
+            )
+            .annotate(wean_age=Cast("wean_age_int", output_field=FloatField()))
+            .annotate(predicted_weight=avg_205_day_weight_formula)
+            .aggregate(result=Avg("predicted_weight"))["result"]
+        )
+
+        return avg_205_day_predicted_weight
+
+    def cows_effectiveness(self):
+        day_205_event = (
+            SingleCalfEvent.objects.filter(
+                event__title__icontains="взвешивание", completed=True
+            )
+            .annotate(
+                age_int=ExtractDay(F("completion_date") - F("animal__birth_date"))
+                + Value(1)
+            )
+            .filter(age_int__range=(200, 210))
+            .filter(animal=OuterRef("pk"))
+        )
+        day_205_event_query = Subquery(day_205_event.values("attributes__weight")[:1])
+
+        birth_event = SingleBreedingStockEvent.objects.filter(
+            event__title__icontains="отел", completed=True
+        ).filter(animal=OuterRef("mother"))
+        birth_event_query = Subquery(
+            birth_event.values("attributes__before_weight")[:1]
+        )
+
+        cow_effectiveness_formula = ExpressionWrapper(
+            F("day_205_weight") / F("before_weight"), output_field=FloatField(),
+        )
+
+        cows_effectiveness = (
+            self.get_queryset()
+            .filter(active=True)
+            .annotate(day_205_weight_str=day_205_event_query)
+            .annotate(
+                day_205_weight=Cast("day_205_weight_str", output_field=FloatField())
+            )
+            .annotate(before_weight_str=birth_event_query)
+            .annotate(
+                before_weight=Cast("before_weight_str", output_field=FloatField())
+            )
+            .annotate(single_effectiveness=cow_effectiveness_formula)
+            .aggregate(result=Avg("single_effectiveness"))["result"]
+        )
+
+        if cows_effectiveness is None:
+            cows_effectiveness = 0
+
+        return cows_effectiveness * 100
 
 
 class Calf(BaseAnimal):  # Телята

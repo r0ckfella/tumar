@@ -2,7 +2,6 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.contrib.postgres.fields import DateRangeField, JSONField
 
-from tumar.animals.models import BreedingStock, Calf
 
 # Create your models here.
 
@@ -32,7 +31,6 @@ class Event(models.Model):
         verbose_name=_("Type of the event"),
     )
     report = models.TextField(blank=True, verbose_name=_("Report"))
-    attributes = JSONField(null=True, blank=True)
 
     class Meta:
         abstract = True
@@ -40,7 +38,7 @@ class Event(models.Model):
 
 class BreedingStockEvent(Event):
     animals = models.ManyToManyField(
-        BreedingStock,
+        "animals.BreedingStock",
         through="SingleBreedingStockEvent",
         related_name="events",
         verbose_name=_("Cow Animal of the event"),
@@ -56,16 +54,17 @@ class BreedingStockEvent(Event):
 
 class SingleBreedingStockEvent(models.Model):
     event = models.ForeignKey(BreedingStockEvent, on_delete=models.CASCADE)
-    animal = models.ForeignKey(BreedingStock, on_delete=models.CASCADE)
+    animal = models.ForeignKey("animals.BreedingStock", on_delete=models.CASCADE)
     completed = models.BooleanField(default=False, verbose_name=_("Completed?"))
     completion_date = models.DateField(
         null=True, blank=True, verbose_name=_("Date of the event completion")
     )
+    attributes = JSONField(null=True, blank=True)
 
 
 class CalfEvent(Event):
     animals = models.ManyToManyField(
-        Calf,
+        "animals.Calf",
         through="SingleCalfEvent",
         related_name="events",
         verbose_name=_("Calf Animal of the event"),
@@ -81,8 +80,9 @@ class CalfEvent(Event):
 
 class SingleCalfEvent(models.Model):
     event = models.ForeignKey(CalfEvent, on_delete=models.CASCADE)
-    animal = models.ForeignKey(Calf, on_delete=models.CASCADE)
+    animal = models.ForeignKey("animals.Calf", on_delete=models.CASCADE)
     completed = models.BooleanField(default=False, verbose_name=_("Completed?"))
     completion_date = models.DateField(
         null=True, blank=True, verbose_name=_("Date of the event completion")
     )
+    attributes = JSONField(null=True, blank=True)

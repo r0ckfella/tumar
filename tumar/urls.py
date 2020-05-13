@@ -65,7 +65,16 @@ from .community.views import (
     CommentVoteView,
     MyPostsView,
 )
-from .dashboard.views import AnimalCountByTypeView
+from .dashboard.views import (
+    AnimalCountByTypeView,
+    CalfToCowsRatioView,
+    PastureToAnimalRatioView,
+    BirthWeightAverageView,
+    Predicted205DayWeightAverageView,
+    CowEffectivenessAverageView,
+    CowSKTAverageView,
+    CowCountByYearView,
+)
 
 router = DefaultRouter()
 
@@ -167,6 +176,24 @@ urlpatterns = i18n_patterns(
                 path(
                     "dashboard/animal-count-by-type/", AnimalCountByTypeView.as_view()
                 ),
+                path("dashboard/calf-to-cows-ratio/", CalfToCowsRatioView.as_view()),
+                path(
+                    "dashboard/pasture-to-animal-ratio-view/",
+                    PastureToAnimalRatioView.as_view(),
+                ),
+                path(
+                    "dashboard/birth-weight-average/", BirthWeightAverageView.as_view()
+                ),
+                path(
+                    "dashboard/predicted-205-day-weight-average/",
+                    Predicted205DayWeightAverageView.as_view(),
+                ),
+                path(
+                    "dashboard/cow-effectiveness-average/",
+                    CowEffectivenessAverageView.as_view(),
+                ),
+                path("dashboard/cow-skt-average/", CowSKTAverageView.as_view()),
+                path("dashboard/cow-count-by-year/", CowCountByYearView.as_view()),
             ]
             + router.urls
         ),
