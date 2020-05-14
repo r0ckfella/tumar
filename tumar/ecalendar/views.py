@@ -63,6 +63,9 @@ class ToggleBreedingStockEventView(APIView):
         else:
             single_bs_event.completion_date = datetime.date.today()
 
+        if single_bs_event.attributes is None:
+            single_bs_event.attributes = {}
+
         for key, value in attributes.items():
             single_bs_event.attributes[key] = value
 
@@ -118,6 +121,9 @@ class ToggleCalfEventView(APIView):
             ).date()
         else:
             single_calf_event.completion_date = datetime.date.today()
+
+        if single_calf_event.attributes is None:
+            single_calf_event.attributes = {}
 
         for key, value in attributes.items():
             single_calf_event.attributes[key] = value
