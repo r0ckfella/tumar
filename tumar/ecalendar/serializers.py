@@ -151,7 +151,7 @@ class CalfEventSerializer(serializers.ModelSerializer):
         animals_list = validated_data.pop("animals_list", [])
         calf_event = CalfEvent(**validated_data)
 
-        merge_events(CalfEvent, SingleBreedingStockEvent, calf_event)
+        merge_events(CalfEvent, SingleCalfEvent, calf_event)
 
         for pk in animals_list:
             SingleCalfEvent.objects.get_or_create(event=calf_event, animal=pk)
@@ -173,6 +173,6 @@ class CalfEventSerializer(serializers.ModelSerializer):
                 # instance.animals.add(animals_list)
                 SingleCalfEvent.objects.get_or_create(event=instance, animal=animal_pk)
 
-        merge_events(CalfEvent, SingleBreedingStockEvent, instance)
+        merge_events(CalfEvent, SingleCalfEvent, instance)
 
         return instance
