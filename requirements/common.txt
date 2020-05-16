@@ -1,6 +1,6 @@
 # Core
 pytz==2018.9
-Django==2.1.15
+Django==2.2.12
 django-configurations==2.1
 python-dotenv==0.12.0
 

@@ -24,8 +24,13 @@ class CalfToCowsRatioView(APIView):
     def get(self, request):
         the_farm = request.user.farm
 
+        try:
+            res = the_farm.calf_count / the_farm.breedingstock_count * 100
+        except ZeroDivisionError:
+            res = 0
+
         response_data = {
-            "Выход телят": the_farm.calf_count / the_farm.breedingstock_count * 100,
+            "Выход телят": res,
         }
 
         return Response(response_data, status=status.HTTP_200_OK)
@@ -35,9 +40,13 @@ class PastureToAnimalRatioView(APIView):
     def get(self, request):
         the_farm = request.user.farm
 
+        try:
+            res = the_farm.total_pastures_area_in_ha / the_farm.total_animal_count
+        except ZeroDivisionError:
+            res = 0
+
         response_data = {
-            "Обеспеченность пастбищами (га/голову)": the_farm.total_pastures_area_in_ha
-            / the_farm.total_animal_count,
+            "Обеспеченность пастбищами (га/голову)": res,
         }
 
         return Response(response_data, status=status.HTTP_200_OK)
@@ -47,9 +56,13 @@ class BirthWeightAverageView(APIView):
     def get(self, request):
         the_farm = request.user.farm
 
+        try:
+            res = the_farm.calf_set.sum_birth_weight() / the_farm.calf_count
+        except (ZeroDivisionError, TypeError):
+            res = 0
+
         response_data = {
-            "Лёгкость отела (кг)": the_farm.calf_set.sum_birth_weight()
-            / the_farm.calf_count,
+            "Лёгкость отела (кг)": res,
         }
 
         return Response(response_data, status=status.HTTP_200_OK)
