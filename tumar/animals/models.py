@@ -17,7 +17,7 @@ from django.db.models import (
     Value,
     DateField,
 )
-from django.db.models.functions import ExtractDay
+from django.db.models.functions import ExtractDay, Coalesce
 from django.core.validators import RegexValidator
 from django.db import connections
 from django.utils import timezone
@@ -347,7 +347,11 @@ class CalfManager(models.Manager):
         sum_birth_weight = (
             self.get_queryset()
             .filter(active=True)
-            .annotate(birth_weight=Cast(ann_query, output_field=FloatField()))
+            .annotate(
+                birth_weight=Cast(
+                    Coalesce(ann_query, Value(0)), output_field=FloatField()
+                )
+            )
             .aggregate(total_sum=Sum("birth_weight"))["total_sum"]
         )
 
@@ -388,9 +392,24 @@ class CalfManager(models.Manager):
         avg_205_day_predicted_weight = (
             self.get_queryset()
             .filter(active=True)
-            .annotate(birth_weight=Cast(birth_weight_query, output_field=FloatField()))
-            .annotate(wean_weight=Cast(wean_weight_query, output_field=FloatField()))
-            .annotate(wean_event_date=Cast(wean_date_query, output_field=DateField()))
+            .annotate(
+                birth_weight=Cast(
+                    Coalesce(birth_weight_query, Value(0)), output_field=FloatField()
+                )
+            )
+            .annotate(
+                wean_weight=Cast(
+                    Coalesce(wean_weight_query, Value(0)), output_field=FloatField()
+                )
+            )
+            .annotate(
+                wean_event_date=Cast(
+                    Coalesce(
+                        wean_date_query, "birth_date"
+                    ),  # Coalesce validation for None values
+                    output_field=DateField(),
+                )
+            )
             .annotate(
                 wean_age=Cast(
                     ExtractDay(F("wean_event_date") - F("birth_date")) + Value(1),
@@ -436,9 +455,15 @@ class CalfManager(models.Manager):
             self.get_queryset()
             .filter(active=True)
             .annotate(
-                day_205_weight=Cast(day_205_event_query, output_field=FloatField())
+                day_205_weight=Cast(
+                    Coalesce(day_205_event_query, Value(0)), output_field=FloatField()
+                )
             )
-            .annotate(before_weight=Cast(birth_event_query, output_field=FloatField()))
+            .annotate(
+                before_weight=Cast(
+                    Coalesce(birth_event_query, Value(1)), output_field=FloatField()
+                )
+            )
             .annotate(single_effectiveness=cow_effectiveness_formula)
             .aggregate(result=Avg("single_effectiveness"))["result"]
         )

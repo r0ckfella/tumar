@@ -24,6 +24,7 @@ class CompanyListSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "title",
+            "image",
         )
 
 
