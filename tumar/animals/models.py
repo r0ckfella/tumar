@@ -252,15 +252,14 @@ class BreedingStockManager(models.Manager):
 
     def avg_cow_skt(self):
         cow_skt_event = SingleBreedingStockEvent.objects.filter(
-            event__title__icontains="СКТ", completed=True
+            event__title__icontains="СКТ", completed=True, attributes__has_key="skt"
         ).filter(animal=OuterRef("pk"))
         cow_skt_event_query = Subquery(cow_skt_event.values("attributes__skt")[:1])
 
         avg_cow_skt = (
             self.get_queryset()
-            .annotate(skt_str=cow_skt_event_query)
-            .annotate(skt_casted=Cast("skt_str", output_field=FloatField()))
-            .aggregate(result=Avg("skt_casted"))["result"]
+            .annotate(skt=Cast(cow_skt_event_query, output_field=FloatField()))
+            .aggregate(result=Avg("skt"))["result"]
         )
 
         return avg_cow_skt
@@ -336,7 +335,9 @@ class CalfManager(models.Manager):
     def sum_birth_weight(self):
         birth_event = (
             SingleCalfEvent.objects.filter(
-                event__title__icontains="отел", completed=True
+                event__title__icontains="отел",
+                completed=True,
+                attributes__has_key="birth_weight",
             )
             .filter(animal=OuterRef("pk"))
             .order_by("completion_date")
@@ -346,8 +347,7 @@ class CalfManager(models.Manager):
         sum_birth_weight = (
             self.get_queryset()
             .filter(active=True)
-            .annotate(birth_weight_str=ann_query)
-            .annotate(birth_weight=Cast("birth_weight_str", output_field=FloatField()))
+            .annotate(birth_weight=Cast(ann_query, output_field=FloatField()))
             .aggregate(total_sum=Sum("birth_weight"))["total_sum"]
         )
 
@@ -356,7 +356,9 @@ class CalfManager(models.Manager):
     def avg_205_day_predicted_weight(self):
         birth_event = (
             SingleCalfEvent.objects.filter(
-                event__title__icontains="отел", completed=True
+                event__title__icontains="отел",
+                completed=True,
+                attributes__has_key="birth_weight",
             )
             .filter(animal=OuterRef("pk"))
             .order_by("completion_date")
@@ -367,7 +369,9 @@ class CalfManager(models.Manager):
 
         wean_event = (
             SingleCalfEvent.objects.filter(
-                event__title__icontains="отъём", completed=True
+                event__title__icontains="отъём",
+                completed=True,
+                attributes__has_key="wean_weight",
             )
             .filter(animal=OuterRef("pk"))
             .order_by("completion_date")
@@ -384,19 +388,15 @@ class CalfManager(models.Manager):
         avg_205_day_predicted_weight = (
             self.get_queryset()
             .filter(active=True)
-            .annotate(birth_weight_str=birth_weight_query)
-            .annotate(birth_weight=Cast("birth_weight_str", output_field=FloatField()))
-            .annotate(wean_weight_str=wean_weight_query)
-            .annotate(wean_weight=Cast("wean_weight_str", output_field=FloatField()))
-            .annotate(wean_event_date=wean_date_query)
+            .annotate(birth_weight=Cast(birth_weight_query, output_field=FloatField()))
+            .annotate(wean_weight=Cast(wean_weight_query, output_field=FloatField()))
+            .annotate(wean_event_date=Cast(wean_date_query, output_field=DateField()))
             .annotate(
-                wean_event_date_casted=Cast("wean_event_date", output_field=DateField())
+                wean_age=Cast(
+                    ExtractDay(F("wean_event_date") - F("birth_date")) + Value(1),
+                    output_field=FloatField(),
+                )
             )
-            .annotate(
-                wean_age_int=ExtractDay(F("wean_event_date_casted") - F("birth_date"))
-                + Value(1)
-            )
-            .annotate(wean_age=Cast("wean_age_int", output_field=FloatField()))
             .annotate(predicted_weight=avg_205_day_weight_formula)
             .aggregate(result=Avg("predicted_weight"))["result"]
         )
@@ -406,7 +406,9 @@ class CalfManager(models.Manager):
     def cows_effectiveness(self):
         day_205_event = (
             SingleCalfEvent.objects.filter(
-                event__title__icontains="взвешивание", completed=True
+                event__title__icontains="взвешивание",
+                completed=True,
+                attributes__has_key="weight",
             )
             .annotate(
                 age_int=ExtractDay(F("completion_date") - F("animal__birth_date"))
@@ -418,7 +420,9 @@ class CalfManager(models.Manager):
         day_205_event_query = Subquery(day_205_event.values("attributes__weight")[:1])
 
         birth_event = SingleBreedingStockEvent.objects.filter(
-            event__title__icontains="отел", completed=True
+            event__title__icontains="отел",
+            completed=True,
+            attributes__has_key="before_weight",
         ).filter(animal=OuterRef("mother"))
         birth_event_query = Subquery(
             birth_event.values("attributes__before_weight")[:1]
@@ -431,14 +435,10 @@ class CalfManager(models.Manager):
         cows_effectiveness = (
             self.get_queryset()
             .filter(active=True)
-            .annotate(day_205_weight_str=day_205_event_query)
             .annotate(
-                day_205_weight=Cast("day_205_weight_str", output_field=FloatField())
+                day_205_weight=Cast(day_205_event_query, output_field=FloatField())
             )
-            .annotate(before_weight_str=birth_event_query)
-            .annotate(
-                before_weight=Cast("before_weight_str", output_field=FloatField())
-            )
+            .annotate(before_weight=Cast(birth_event_query, output_field=FloatField()))
             .annotate(single_effectiveness=cow_effectiveness_formula)
             .aggregate(result=Avg("single_effectiveness"))["result"]
         )
