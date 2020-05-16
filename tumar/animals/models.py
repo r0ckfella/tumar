@@ -258,7 +258,11 @@ class BreedingStockManager(models.Manager):
 
         avg_cow_skt = (
             self.get_queryset()
-            .annotate(skt=Cast(cow_skt_event_query, output_field=FloatField()))
+            .annotate(
+                skt=Cast(
+                    Coalesce(cow_skt_event_query, Value(0)), output_field=FloatField()
+                )
+            )
             .aggregate(result=Avg("skt"))["result"]
         )
 
