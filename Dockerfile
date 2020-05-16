@@ -16,7 +16,8 @@ RUN apt-get update -y && \
   locales \
   gettext \
   postgresql \
-  apt-transport-https && \
+  apt-transport-https \
+  build-essential && \
   rm -rf /var/lib/apt/lists/*
 
 
