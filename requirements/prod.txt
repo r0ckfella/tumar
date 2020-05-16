@@ -1,4 +1,4 @@
 -r common.txt
 
 django-log-to-telegram==2020.1.23
-uwsgi
+uwsgi==2.0.18
