@@ -32,9 +32,11 @@ class BreedingStockEventViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         if self.request.user.is_superuser:
             return BreedingStockEvent.objects.all().order_by("-scheduled_date_range")
-        return BreedingStockEvent.objects.filter(
-            animal__farm__user=self.request.user
-        ).order_by("-scheduled_date_range")
+        return (
+            BreedingStockEvent.objects.filter(animals__farm__user=self.request.user)
+            .distinct()
+            .order_by("-scheduled_date_range")
+        )
 
 
 class ToggleBreedingStockEventView(APIView):
@@ -91,8 +93,10 @@ class CalfEventViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         if self.request.user.is_superuser:
             return CalfEvent.objects.all().order_by("-scheduled_date_range")
-        return CalfEvent.objects.filter(animal__farm__user=self.request.user).order_by(
-            "-scheduled_date_range"
+        return (
+            CalfEvent.objects.filter(animals__farm__user=self.request.user)
+            .distinct()
+            .order_by("-scheduled_date_range")
         )
 
 
