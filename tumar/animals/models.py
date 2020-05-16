@@ -16,6 +16,7 @@ from django.db.models import (
     ExpressionWrapper,
     Value,
     DateField,
+    CharField,
 )
 from django.db.models.functions import ExtractDay, Coalesce
 from django.core.validators import RegexValidator
@@ -261,9 +262,10 @@ class BreedingStockManager(models.Manager):
             .annotate(
                 skt=Cast(
                     Coalesce(cow_skt_event_query, Value("0.0")),
-                    output_field=FloatField(),
+                    output_field=CharField(),
                 )
             )
+            .annotate(skt_float=Cast("skt", output_field=FloatField()))
             .aggregate(result=Avg("skt"))["result"]
         )
 
@@ -347,17 +349,20 @@ class CalfManager(models.Manager):
             .filter(animal=OuterRef("pk"))
             .order_by("completion_date")
         )
-        ann_query = Subquery(birth_event.values("attributes__birth_weight")[:1])
+        birth_event_query = Subquery(birth_event.values("attributes__birth_weight")[:1])
 
         sum_birth_weight = (
             self.get_queryset()
             .filter(active=True)
             .annotate(
                 birth_weight=Cast(
-                    Coalesce(ann_query, Value("0.0")), output_field=FloatField()
+                    Coalesce(birth_event_query, Value("0.0")), output_field=CharField()
                 )
             )
-            .aggregate(total_sum=Sum("birth_weight"))["total_sum"]
+            .annotate(
+                birth_weight_float=Cast("birth_weight", output_field=FloatField())
+            )
+            .aggregate(total_sum=Sum("birth_weight_float"))["total_sum"]
         )
 
         return sum_birth_weight
@@ -400,14 +405,18 @@ class CalfManager(models.Manager):
             .annotate(
                 birth_weight=Cast(
                     Coalesce(birth_weight_query, Value("0.0")),
-                    output_field=FloatField(),
+                    output_field=CharField(),
                 )
             )
             .annotate(
+                birth_weight_float=Cast("birth_weight", output_field=FloatField())
+            )
+            .annotate(
                 wean_weight=Cast(
-                    Coalesce(wean_weight_query, Value("0.0")), output_field=FloatField()
+                    Coalesce(wean_weight_query, Value("0.0")), output_field=CharField()
                 )
             )
+            .annotate(wean_weight_float=Cast("wean_weight", output_field=FloatField()))
             .annotate(
                 wean_event_date=Cast(
                     Coalesce(
@@ -454,7 +463,8 @@ class CalfManager(models.Manager):
         )
 
         cow_effectiveness_formula = ExpressionWrapper(
-            F("day_205_weight") / F("before_weight"), output_field=FloatField(),
+            F("day_205_weight_float") / F("before_weight_float"),
+            output_field=FloatField(),
         )
 
         cows_effectiveness = (
@@ -463,13 +473,19 @@ class CalfManager(models.Manager):
             .annotate(
                 day_205_weight=Cast(
                     Coalesce(day_205_event_query, Value("0.0")),
-                    output_field=FloatField(),
+                    output_field=CharField(),
                 )
             )
             .annotate(
+                day_205_weight_float=Cast("day_205_weight", output_field=FloatField())
+            )
+            .annotate(
                 before_weight=Cast(
-                    Coalesce(birth_event_query, Value("1.0")), output_field=FloatField()
+                    Coalesce(birth_event_query, Value("1.0")), output_field=CharField()
                 )
+            )
+            .annotate(
+                before_weight_float=Cast("before_weight", output_field=FloatField())
             )
             .annotate(single_effectiveness=cow_effectiveness_formula)
             .aggregate(result=Avg("single_effectiveness"))["result"]
