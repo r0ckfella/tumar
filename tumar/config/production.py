@@ -4,6 +4,8 @@ import dj_database_url
 
 from .common import Common
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 
 class Production(Common):
     INSTALLED_APPS = Common.INSTALLED_APPS
@@ -51,6 +53,13 @@ class Production(Common):
     LOGGING = {
         "version": 1,
         "disable_existing_loggers": False,
+        "formatters": {
+            "verbose": {
+                "format": "%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d"
+                + " %(message)s"
+            },
+            "simple": {"format": "[%(levelname)s] %(message)s"},
+        },
         "filters": {
             "require_debug_false": {"()": "django.utils.log.RequireDebugFalse"}
         },
@@ -60,13 +69,19 @@ class Production(Common):
                 "filters": ["require_debug_false"],
                 "class": "django_log_to_telegram.log.AdminTelegramHandler",
                 "bot_token": LOG_TO_TELEGRAM_BOT_TOKEN,
-            }
+            },
+            "file": {
+                "level": "INFO",
+                "filters": ["require_debug_false"],
+                "class": "logging.handlers.RotatingFileHandler",
+                "filename": os.path.join(os.path.dirname(BASE_DIR), "info.log"),
+                "maxBytes": 1024 * 1024 * 5,  # 5MB
+                "backupCount": 5,
+                "formatter": "verbose",
+            },
+            "console": {"class": "logging.StreamHandler", "formatter": "simple"},
         },
         "loggers": {
-            "django.request": {
-                "handlers": ["telegram_log"],
-                "level": "ERROR",
-                "propagate": True,
-            },
+            "": {"handlers": ["file", "console", "telegram_log"], "level": "INFO"},
         },
     }

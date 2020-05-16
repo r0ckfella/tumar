@@ -3,9 +3,3 @@
 # Developer Tools
 flake8==3.7.5
 black=19.10b0
-
-# Testing
-mock==2.0.0
-django-nose==1.4.6
-nose-progressive==1.5.2
-coverage==4.5.2
