@@ -32,7 +32,7 @@ services:
     volumes:
       - "/nfs/storage/imgback_rasters:/imgback_rasters"
       - ".:/code"
-      - tumar-static:/static
+      - tumar-static:/code/static
       - media:/code/media
     environment:
       - "DEFAULT_DB_HOST=db_default"
