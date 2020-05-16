@@ -266,7 +266,7 @@ class BreedingStockManager(models.Manager):
                 )
             )
             .annotate(skt_float=Cast("skt", output_field=FloatField()))
-            .aggregate(result=Avg("skt"))["result"]
+            .aggregate(result=Avg("skt_float"))["result"]
         )
 
         return avg_cow_skt
@@ -394,8 +394,9 @@ class CalfManager(models.Manager):
         wean_date_query = Subquery(wean_event.values("completion_date")[:1])
 
         avg_205_day_weight_formula = ExpressionWrapper(
-            ((F("wean_weight") - F("birth_weight")) * Value(205.0)) / F("wean_age")
-            + F("birth_weight"),
+            ((F("wean_weight_float") - F("birth_weight_float")) * Value(205.0))
+            / F("wean_age")
+            + F("birth_weight_float"),
             output_field=FloatField(),
         )
 
