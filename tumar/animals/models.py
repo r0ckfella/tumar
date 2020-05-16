@@ -260,7 +260,8 @@ class BreedingStockManager(models.Manager):
             self.get_queryset()
             .annotate(
                 skt=Cast(
-                    Coalesce(cow_skt_event_query, Value(0)), output_field=FloatField()
+                    Coalesce(cow_skt_event_query, Value("0.0")),
+                    output_field=FloatField(),
                 )
             )
             .aggregate(result=Avg("skt"))["result"]
@@ -353,7 +354,7 @@ class CalfManager(models.Manager):
             .filter(active=True)
             .annotate(
                 birth_weight=Cast(
-                    Coalesce(ann_query, Value(0)), output_field=FloatField()
+                    Coalesce(ann_query, Value("0.0")), output_field=FloatField()
                 )
             )
             .aggregate(total_sum=Sum("birth_weight"))["total_sum"]
@@ -398,12 +399,13 @@ class CalfManager(models.Manager):
             .filter(active=True)
             .annotate(
                 birth_weight=Cast(
-                    Coalesce(birth_weight_query, Value(0)), output_field=FloatField()
+                    Coalesce(birth_weight_query, Value("0.0")),
+                    output_field=FloatField(),
                 )
             )
             .annotate(
                 wean_weight=Cast(
-                    Coalesce(wean_weight_query, Value(0)), output_field=FloatField()
+                    Coalesce(wean_weight_query, Value("0.0")), output_field=FloatField()
                 )
             )
             .annotate(
@@ -460,12 +462,13 @@ class CalfManager(models.Manager):
             .filter(active=True)
             .annotate(
                 day_205_weight=Cast(
-                    Coalesce(day_205_event_query, Value(0)), output_field=FloatField()
+                    Coalesce(day_205_event_query, Value("0.0")),
+                    output_field=FloatField(),
                 )
             )
             .annotate(
                 before_weight=Cast(
-                    Coalesce(birth_event_query, Value(1)), output_field=FloatField()
+                    Coalesce(birth_event_query, Value("1.0")), output_field=FloatField()
                 )
             )
             .annotate(single_effectiveness=cow_effectiveness_formula)
