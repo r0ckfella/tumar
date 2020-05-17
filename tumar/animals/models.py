@@ -259,12 +259,8 @@ class BreedingStockManager(models.Manager):
 
         avg_cow_skt = (
             self.get_queryset()
-            .annotate(
-                skt=Cast(
-                    Coalesce(cow_skt_event_query, Value("0.0")),
-                    output_field=CharField(),
-                )
-            )
+            .annotate(skt=Cast(cow_skt_event_query, output_field=CharField()))
+            .exclude(skt__isnull=True)
             .annotate(skt_float=Cast("skt", output_field=FloatField()))
             .aggregate(result=Avg("skt_float"))["result"]
         )
@@ -355,12 +351,11 @@ class CalfManager(models.Manager):
             self.get_queryset()
             .filter(active=True)
             .annotate(
-                birth_weight=Cast(
-                    Coalesce(birth_event_query, Value("0.0")), output_field=CharField()
-                )
+                birth_weight_json=Cast(birth_event_query, output_field=CharField())
             )
+            .exclude(birth_weight_json__isnull=True)
             .annotate(
-                birth_weight_float=Cast("birth_weight", output_field=FloatField())
+                birth_weight_float=Cast("birth_weight_json", output_field=FloatField())
             )
             .aggregate(total_sum=Sum("birth_weight_float"))["total_sum"]
         )
@@ -404,19 +399,14 @@ class CalfManager(models.Manager):
             self.get_queryset()
             .filter(active=True)
             .annotate(
-                birth_weight=Cast(
-                    Coalesce(birth_weight_query, Value("0.0")),
-                    output_field=CharField(),
-                )
+                birth_weight_json=Cast(birth_weight_query, output_field=CharField())
             )
+            .exclude(birth_weight_json__isnull=True)
             .annotate(
-                birth_weight_float=Cast("birth_weight", output_field=FloatField())
+                birth_weight_float=Cast("birth_weight_json", output_field=FloatField())
             )
-            .annotate(
-                wean_weight=Cast(
-                    Coalesce(wean_weight_query, Value("0.0")), output_field=CharField()
-                )
-            )
+            .annotate(wean_weight=Cast(wean_weight_query, output_field=CharField()))
+            .exclude(wean_weight__isnull=True)
             .annotate(wean_weight_float=Cast("wean_weight", output_field=FloatField()))
             .annotate(
                 wean_event_date=Cast(
@@ -435,6 +425,9 @@ class CalfManager(models.Manager):
             .annotate(predicted_weight=avg_205_day_weight_formula)
             .aggregate(result=Avg("predicted_weight"))["result"]
         )
+
+        if not avg_205_day_predicted_weight:
+            avg_205_day_predicted_weight = 0
 
         return avg_205_day_predicted_weight
 
@@ -472,19 +465,14 @@ class CalfManager(models.Manager):
             self.get_queryset()
             .filter(active=True)
             .annotate(
-                day_205_weight=Cast(
-                    Coalesce(day_205_event_query, Value("0.0")),
-                    output_field=CharField(),
-                )
+                day_205_weight=Cast(day_205_event_query, output_field=CharField(),)
             )
+            .exclude(day_205_weight__isnull=True)
             .annotate(
                 day_205_weight_float=Cast("day_205_weight", output_field=FloatField())
             )
-            .annotate(
-                before_weight=Cast(
-                    Coalesce(birth_event_query, Value("1.0")), output_field=CharField()
-                )
-            )
+            .annotate(before_weight=Cast(birth_event_query, output_field=CharField()))
+            .exclude(before_weight__isnull=True)
             .annotate(
                 before_weight_float=Cast("before_weight", output_field=FloatField())
             )
