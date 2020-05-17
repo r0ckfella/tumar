@@ -52,7 +52,7 @@ class RequestIndicatorsView(APIView):
         disable_check = False
         more_than_3_requests = False
         if "disable_check" in request.data:
-            disable_check = request.data["diable_check"]
+            disable_check = request.data["disable_check"]
 
         # query num of rows
         try:

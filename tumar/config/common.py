@@ -186,7 +186,7 @@ class Common(Configuration):
         "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
         "DEFAULT_AUTHENTICATION_CLASSES": (
             "rest_framework.authentication.TokenAuthentication",
-            'rest_framework.authentication.SessionAuthentication',
+            "rest_framework.authentication.SessionAuthentication",
         ),
     }
 
@@ -217,3 +217,5 @@ class Common(Configuration):
     GET_BATTERY_CHARGE_URL = os.getenv("GET_BATTERY_CHARGE_URL")
     CHINESE_LOGIN_URL = os.getenv("CHINESE_LOGIN_URL")
     STANDARD_LOGIN_PASSWORD = os.getenv("STANDARD_LOGIN_PASSWORD")
+
+    DAYS_BETWEEN_IMAGERY_REQUESTS = 5

@@ -143,12 +143,14 @@ class FarmSerializer(serializers.ModelSerializer):
             "breedingstock_count",
             "breedingbull_count",
             "storecattle_count",
+            "total_pastures_area_in_ha",
         )
         read_only_fields = (
             "calf_count",
             "breedingstock_count",
             "breedingbull_count",
             "storecattle_count",
+            "total_pastures_area_in_ha",
         )
 
 

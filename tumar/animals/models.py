@@ -265,6 +265,9 @@ class BreedingStockManager(models.Manager):
             .aggregate(result=Avg("skt_float"))["result"]
         )
 
+        if not avg_cow_skt:
+            avg_cow_skt = 0.0
+
         return avg_cow_skt
 
     def get_cows_count_by_year(self, years_old):
