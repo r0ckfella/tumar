@@ -17,6 +17,7 @@ from django.db.models import (
     Value,
     DateField,
     CharField,
+    Count,
 )
 from django.db.models.functions import ExtractDay, Coalesce
 from django.core.validators import RegexValidator
@@ -97,6 +98,14 @@ class Farm(models.Model):
     class Meta:
         verbose_name = _("Farm")
         verbose_name_plural = _("Farms")
+
+    def has_free_request(self):
+        return (
+            self.cadastres.annotate(ir_count=Count("imagery_requests__pk")).aggregate(
+                total_count=Sum("ir_count")
+            )["total_count"]
+            < 3
+        )
 
     def __str__(self):
         if self.iin and self.legal_person:
