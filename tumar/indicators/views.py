@@ -49,7 +49,7 @@ class RequestIndicatorsView(APIView):
 class LatestIndicatorsView(APIView):
     def get(self, request, cadastre_id):
         the_cadastre = get_object_or_404(
-            Cadastre, farm__user=request.user, cadastre_id=cadastre_id
+            Cadastre, farm__user=request.user, pk=cadastre_id
         )
         response_data = []
 
