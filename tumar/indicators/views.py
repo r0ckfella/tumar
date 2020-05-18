@@ -35,7 +35,7 @@ class RequestIndicatorsView(APIView):
                         "Imagery Request for this requested date {} already exists."
                     ).format(ir.requested_date)
                 },
-                status=status.HTTP_404_NOT_FOUND,
+                status=status.HTTP_409_CONFLICT,
             )
 
         return Response(

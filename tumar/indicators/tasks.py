@@ -5,9 +5,39 @@ from django.db.models import Q
 from celery import shared_task
 
 from ..celery import app
-from .models import FAILED, FINISHED, WAITING, ImageryRequest, FREE_EXPIRED
+from .choices import FAILED, FINISHED, WAITING, FREE_EXPIRED
+from .models import ImageryRequest
 
 logger = logging.getLogger(__name__)
+
+
+def run_image_processing_task(imagery_request, egistic_cadastre_pk):
+    target_dates = [
+        imagery_request.requested_date,
+    ]
+
+    result = app.signature(
+        "process_cadastres",
+        kwargs={
+            "param_values": dict(param="id", values=[egistic_cadastre_pk]),
+            "target_dates": target_dates,
+            "days_range": 14,
+        },
+        queue="process_cadastres",
+        priority=5,
+    )
+
+    result_handler_task_name = "tumar_handler_process_cadastres"
+    handler_task = app.signature(
+        result_handler_task_name,
+        kwargs={"imageryrequest_id": imagery_request.id},
+        queue=result_handler_task_name,
+    )
+
+    (
+        result.on_error(log_error.s(imageryrequest_id=imagery_request.id))
+        | handler_task
+    ).delay()
 
 
 @app.task

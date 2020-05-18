@@ -11,17 +11,17 @@ class ImageryRequestAdmin(admin.ModelAdmin):
         "id",
         "cadastre",
         "status",
-        "created_date",
+        "created_at",
         "requested_date",
-        "actual_date",
+        "finished_at",
     )
     list_filter = (
-        "process_status",
-        "created_date",
+        "status",
+        "created_at",
         "requested_date",
-        "actual_date",
+        "finished_at",
     )
-    date_hierarchy = "created_date"
+    date_hierarchy = "created_at"
     search_fields = (
         "id",
         "cadastre",
@@ -38,6 +38,6 @@ class ImageryRequestAdmin(admin.ModelAdmin):
     readonly_fields = (
         "results_dir",
         "status",
-        "created_date",
-        "actual_date",
+        "created_at",
+        "finished_at",
     )

@@ -10,8 +10,7 @@ from django.utils.translation import gettext_lazy as _
 
 from tumar.animals.models import Cadastre
 
-from ..celery import app
-from .tasks import log_error
+from .choices import STATUS_CHOICES, PENDING, FREE_EXPIRED, FAILED, PROCESSING
 from .exceptions import (
     QueryImageryFromEgisticError,
     FreeRequestsExpiredError,
@@ -22,22 +21,6 @@ from .exceptions import (
 logger = logging.getLogger(__name__)
 
 # Create your models here.
-
-PENDING = "PE"
-WAITING = "WA"
-PROCESSING = "PR"
-FINISHED = "FI"
-FAILED = "FA"
-FREE_EXPIRED = "FE"
-
-STATUS_CHOICES = [
-    (PENDING, _("Pending")),
-    (WAITING, _("Waiting for new imagery")),
-    (PROCESSING, _("Processing")),
-    (FINISHED, _("Finished")),
-    (FAILED, _("Failed")),
-    (FREE_EXPIRED, _("Free requests expired")),
-]
 
 
 class ImageryRequest(models.Model):
@@ -76,23 +59,11 @@ class ImageryRequest(models.Model):
         verbose_name = _("Imagery Request")
         verbose_name_plural = _("Imagery Requests")
 
-    def start_task(self, disable_check=False):
+    def start_image_processing(self, disable_check=False):
         if not disable_check and self.cadastre.farm.has_free_request():
             self.status = FREE_EXPIRED
             self.save()
             raise FreeRequestsExpiredError(farm_pk=self.cadastre.farm.pk)
-
-        # if not self.has_available_imagery():
-        #     logger.warning(
-        #         "The cadastre {} has been put into the queue for imagery.".format(
-        #             self.cadastre
-        #         )
-        #     )
-        #     self.status = WAITING
-        #     self.save()
-        #     return False
-
-        egistic_cadastre_pk = None
 
         egistic_cadastre_pk = self.cadastre.get_pk_in_egistic_db()
         if egistic_cadastre_pk == -1:
@@ -100,38 +71,12 @@ class ImageryRequest(models.Model):
             self.save()
             raise CadastreNotInEgisticError(cadastre_pk=self.cadastre.pk)
 
-        target_dates = [
-            self.requested_date,
-        ]
-
         self.status = PROCESSING
         self.save()
 
-        result = app.signature(
-            "process_cadastres",
-            kwargs={
-                "param_values": dict(param="id", values=[egistic_cadastre_pk]),
-                "target_dates": target_dates,
-                "days_range": 14,
-            },
-            queue="process_cadastres",
-            priority=5,
-        )
+        from .tasks import run_image_processing_task
 
-        # TODO a django-celery task that monitors status and changes it.
-        # FINISHED, WAITING, FAILED are set here. When FINISHED, WAITING, FAILED, it
-        # sends a notification to a new notification queue which is triggered when the
-        # user logs in. When WAITING, increases requested time one day further.
-        result_handler_task_name = "tumar_handler_process_cadastres"
-        handler_task = app.signature(
-            result_handler_task_name,
-            kwargs={"imageryrequest_id": self.id},
-            queue=result_handler_task_name,
-        )
-
-        (result.on_error(log_error.s(imageryrequest_id=self.id)) | handler_task).delay()
-
-        return True
+        run_image_processing_task(self, egistic_cadastre_pk)
 
     def has_enough_time_diff(self):
         if ImageryRequest.objects.filter(
@@ -212,4 +157,4 @@ class ImageryRequest(models.Model):
         super().save(*args, **kwargs)
 
         if self._state.adding is True:
-            self.start_task()
+            self.start_image_processing()
