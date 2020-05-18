@@ -56,7 +56,12 @@ class ImageryRequest(models.Model):
     finished_at = models.DateTimeField(
         blank=True, null=True, verbose_name=_("Request finish time")
     )
-    results_dir = models.TextField(blank=True, null=True)
+    results_dir = models.CharField(max_length=120, blank=True, null=True)
+    ndvi_dir = models.CharField(max_length=120, blank=True, null=True)
+    gndvi_dir = models.CharField(max_length=120, blank=True, null=True)
+    clgreen_dir = models.CharField(max_length=120, blank=True, null=True)
+    ndmi_dir = models.CharField(max_length=120, blank=True, null=True)
+    rgb_dir = models.CharField(max_length=120, blank=True, null=True)
     is_layer_created = models.BooleanField(blank=True, null=True)
     status = models.CharField(
         max_length=2, choices=STATUS_CHOICES, default=PENDING, verbose_name=_("Status"),
@@ -149,6 +154,73 @@ class ImageryRequest(models.Model):
             return False
 
         return True
+
+    def fetch_result_after_success(self):
+        egistic_cadastre_pk = self.cadastre.get_pk_in_egistic_db()
+        if egistic_cadastre_pk == -1:
+            self.status = FAILED
+            self.save()
+            raise Exception(
+                "Cadastre number was not found in the egistic database."
+                + " Imagery for custom geometries is not supported yet."
+            )
+
+        cadastre_result_pk = None
+
+        # Fetch imagery data
+        try:
+            with connections["egistic_2"].cursor() as cursor:
+                cursor.execute(
+                    "SELECT * FROM tumar_cadastreresult WHERE cadastre_id = %s ORDER BY"
+                    + " actual_date DESC",
+                    [egistic_cadastre_pk],
+                )
+                row = cursor.fetchone()
+                cadastre_result_pk = row[0]
+                self.ndvi = row[1]
+                self.gndvi = row[2]
+                self.clgreen = row[3]
+                self.ndmi = row[4]
+                self.ndsi = row[5]
+                self.finished_at = row[6]
+                self.results_dir = row[7]
+                self.is_layer_created = row[9]
+                self.save()
+
+        except TypeError:
+            logger.critical(
+                "Imagery tiffs was not found in the database or not finished"
+            )
+            self.status = FAILED
+            self.save()
+            raise Exception(
+                "Imagery tiffs was not found in the database or not finished"
+            )
+
+        # Fetch PNGs
+        try:
+            with connections["egistic_2"].cursor() as cursor:
+                cursor.execute(
+                    "SELECT * FROM tumar_cadastreresultimage WHERE"
+                    + " cadastreresult_id = %s",
+                    [cadastre_result_pk],
+                )
+                row = cursor.fetchone()
+                self.ndvi_dir = row[1]
+                self.gndvi_dir = row[2]
+                self.clgreen_dir = row[3]
+                self.ndmi_dir = row[4]
+                self.rgb_dir = row[5]
+                self.save()
+        except TypeError:
+            logger.critical(
+                "Imagery PNGs were not found in the database or not finished"
+            )
+            self.status = FAILED
+            self.save()
+            raise Exception(
+                "Imagery PNGs were not found in the database or not finished"
+            )
 
     def save(self, *args, **kwargs):
         if not self.requested_date:

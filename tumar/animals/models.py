@@ -615,6 +615,24 @@ class Cadastre(models.Model):
             return "cad-number:" + str(self.cad_number) + "; farm:" + str(self.farm)
         return "cad-id:" + str(self.id) + "; farm:" + str(self.farm)
 
+    def get_pk_in_egistic_db(self):
+        """
+            If the cadastre does not exist in the egistic db, the method returns -1.
+            Else returns primary key of the cadastre in the egistic db.
+        """
+        try:
+            with connections["egistic_2"].cursor() as cursor:
+                cursor.execute(
+                    "SELECT id FROM cadastres_cadastre WHERE kad_nomer = %s",
+                    [self.cad_number],
+                )
+                row = cursor.fetchone()
+                egistic_cadastre_pk = row[0]
+        except TypeError:
+            return -1
+        else:
+            return egistic_cadastre_pk
+
     def save(self, *args, **kwargs):
         if self.cad_number and not self.geom:
             try:

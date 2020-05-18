@@ -48,7 +48,7 @@ def handle_process_request(result, imageryrequest_id):
 
     if result == "FINISHED":
         # Send notification that this imagery request has finished
-
+        imagery_request.fetch_result_after_success()
         imagery_request.status = FINISHED
         imagery_request.save()
     elif result == "WAITING":
