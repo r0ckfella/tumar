@@ -80,6 +80,9 @@ class LatestIndicatorsView(APIView):
             response_data.append(
                 dict(
                     id=ir.id,
+                    requested_date=ir.requested_date,
+                    created_at=ir.created_at,
+                    status=ir.status,
                     finished_at=ir.finished_at,
                     results_dir=ir.results_dir,
                     is_layer_created=ir.is_layer_created,
