@@ -3,8 +3,10 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import ImageryRequest
 from tumar.animals.models import Cadastre
+
+from .exceptions import ImageryRequestAlreadyExistsError
+from .models import ImageryRequest
 
 # Create your views here.
 
@@ -21,12 +23,20 @@ class RequestIndicatorsView(APIView):
         )
 
         ir = None
-        if "requested_date" in request.data:
-            ir = ImageryRequest.objects.create(
-                cadastre=the_cadastre, requested_date=request.data["requested_date"]
+        try:
+            ir = ImageryRequest(cadastre=the_cadastre)
+            if "requested_date" in request.data:
+                ir.requested_date = request.data["requested_date"]
+            ir.save()
+        except ImageryRequestAlreadyExistsError:
+            Response(
+                {
+                    "error": (
+                        "Imagery Request for this requested date {} already exists."
+                    ).format(ir.requested_date)
+                },
+                status=status.HTTP_404_NOT_FOUND,
             )
-        else:
-            ir = ImageryRequest.objects.create(cadastre=the_cadastre)
 
         return Response(
             {"imageryrequest_id": ir.pk, "requested_date": ir.requested_date},

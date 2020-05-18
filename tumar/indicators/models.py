@@ -1,18 +1,23 @@
 import logging
-import traceback
-
 from datetime import timedelta
 
-from django.contrib.postgres.fields import JSONField
 from django.conf import settings
-from django.db import models, connections
+from django.contrib.postgres.fields import JSONField
+from django.db import connections, models
 from django.db.models import Q
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
+from tumar.animals.models import Cadastre
+
 from ..celery import app
 from .tasks import log_error
-from tumar.animals.models import Cadastre
+from .exceptions import (
+    QueryImageryFromEgisticError,
+    FreeRequestsExpiredError,
+    CadastreNotInEgisticError,
+    ImageryRequestAlreadyExistsError,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -73,12 +78,9 @@ class ImageryRequest(models.Model):
 
     def start_task(self, disable_check=False):
         if not disable_check and self.cadastre.farm.has_free_request():
-            logger.warning(
-                "{} farm's free requests have expired.".format(self.cadastre.farm.pk)
-            )
             self.status = FREE_EXPIRED
             self.save()
-            return False
+            raise FreeRequestsExpiredError(farm_pk=self.cadastre.farm.pk)
 
         # if not self.has_available_imagery():
         #     logger.warning(
@@ -90,27 +92,13 @@ class ImageryRequest(models.Model):
         #     self.save()
         #     return False
 
-        egistic_cadastre_id = None
+        egistic_cadastre_pk = None
 
-        try:
-            with connections["egistic_2"].cursor() as cursor:
-                cursor.execute(
-                    "SELECT id FROM cadastres_cadastre WHERE kad_nomer = %s",
-                    [self.cadastre.cad_number],
-                )
-                row = cursor.fetchone()
-                egistic_cadastre_id = row[0]
-        except Exception as e:  # noqa
-            logger.error(traceback.format_exc())
-            logger.error(
-                "Cadastre number {} was not found in the egistic db."
-                + "Or imagery for custom cadastres is not supported yet.".format(
-                    self.cadastre.cad_number
-                )
-            )
+        egistic_cadastre_pk = self.cadastre.get_pk_in_egistic_db()
+        if egistic_cadastre_pk == -1:
             self.status = FAILED
             self.save()
-            return False
+            raise CadastreNotInEgisticError(cadastre_pk=self.cadastre.pk)
 
         target_dates = [
             self.requested_date,
@@ -122,7 +110,7 @@ class ImageryRequest(models.Model):
         result = app.signature(
             "process_cadastres",
             kwargs={
-                "param_values": dict(param="id", values=[egistic_cadastre_id]),
+                "param_values": dict(param="id", values=[egistic_cadastre_pk]),
                 "target_dates": target_dates,
                 "days_range": 14,
             },
@@ -160,10 +148,7 @@ class ImageryRequest(models.Model):
         if egistic_cadastre_pk == -1:
             self.status = FAILED
             self.save()
-            raise Exception(
-                "Cadastre number was not found in the egistic database."
-                + " Imagery for custom geometries is not supported yet."
-            )
+            raise CadastreNotInEgisticError(cadastre_pk=self.cadastre.pk)
 
         cadastre_result_pk = None
 
@@ -186,16 +171,10 @@ class ImageryRequest(models.Model):
                 self.results_dir = row[7]
                 self.is_layer_created = row[9]
                 self.save()
-
-        except TypeError:
-            logger.critical(
-                "Imagery tiffs was not found in the database or not finished"
-            )
+        except Exception:
             self.status = FAILED
             self.save()
-            raise Exception(
-                "Imagery tiffs was not found in the database or not finished"
-            )
+            raise QueryImageryFromEgisticError(cadastre_pk=self.cadastre.pk)
 
         # Fetch PNGs
         try:
@@ -212,15 +191,10 @@ class ImageryRequest(models.Model):
                 self.ndmi_dir = row[4]
                 self.rgb_dir = row[5]
                 self.save()
-        except TypeError:
-            logger.critical(
-                "Imagery PNGs were not found in the database or not finished"
-            )
+        except Exception:
             self.status = FAILED
             self.save()
-            raise Exception(
-                "Imagery PNGs were not found in the database or not finished"
-            )
+            raise QueryImageryFromEgisticError(cadastre_pk=self.cadastre.pk)
 
     def save(self, *args, **kwargs):
         if not self.requested_date:
@@ -233,12 +207,7 @@ class ImageryRequest(models.Model):
             .exclude(Q(status__exact=FAILED) | Q(status__exact=FREE_EXPIRED))
             .exists()
         ):
-            logger.info(
-                "The cadastre {} is already in the queue for image processing.".format(
-                    self.cadastre.pk
-                )
-            )
-            return
+            raise ImageryRequestAlreadyExistsError(cadastre_pk=self.cadastre.pk)
 
         super().save(*args, **kwargs)
 
