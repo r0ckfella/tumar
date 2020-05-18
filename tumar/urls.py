@@ -75,6 +75,7 @@ from .dashboard.views import (
     CowSKTAverageView,
     CowCountByYearView,
 )
+from .notify.views import NotificationListView
 
 router = DefaultRouter()
 
@@ -194,6 +195,7 @@ urlpatterns = i18n_patterns(
                 ),
                 path("dashboard/cow-skt-average/", CowSKTAverageView.as_view()),
                 path("dashboard/cow-count-by-year/", CowCountByYearView.as_view()),
+                path("notifications/latest/", NotificationListView.as_view()),
             ]
             + router.urls
         ),
