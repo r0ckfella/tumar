@@ -10,8 +10,9 @@ from django.db.models import Q
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from tumar.animals.models import Cadastre
 from ..celery import app
+from .tasks import log_error
+from tumar.animals.models import Cadastre
 
 logger = logging.getLogger(__name__)
 
@@ -20,16 +21,16 @@ logger = logging.getLogger(__name__)
 PENDING = "PE"
 WAITING = "WA"
 PROCESSING = "PR"
-SUCCESS = "SU"
-FAILURE = "FA"
+FINISHED = "FI"
+FAILED = "FA"
 FREE_EXPIRED = "FE"
 
 STATUS_CHOICES = [
     (PENDING, _("Pending")),
     (WAITING, _("Waiting for new imagery")),
     (PROCESSING, _("Processing")),
-    (SUCCESS, _("Success")),
-    (FAILURE, _("Failure")),
+    (FINISHED, _("Finished")),
+    (FAILED, _("Failed")),
     (FREE_EXPIRED, _("Free requests expired")),
 ]
 
@@ -68,21 +69,21 @@ class ImageryRequest(models.Model):
     def start_task(self, disable_check=False):
         if not disable_check and self.cadastre.farm.has_free_request():
             logger.warning(
-                "{} farm's free requests have expired.".format(self.cadastre.farm)
+                "{} farm's free requests have expired.".format(self.cadastre.farm.pk)
             )
             self.status = FREE_EXPIRED
             self.save()
             return False
 
-        if not self.has_available_imagery():
-            logger.warning(
-                "The cadastre {} has been put into the queue for imagery.".format(
-                    self.cadastre
-                )
-            )
-            self.status = WAITING
-            self.save()
-            return False
+        # if not self.has_available_imagery():
+        #     logger.warning(
+        #         "The cadastre {} has been put into the queue for imagery.".format(
+        #             self.cadastre
+        #         )
+        #     )
+        #     self.status = WAITING
+        #     self.save()
+        #     return False
 
         egistic_cadastre_id = None
 
@@ -102,7 +103,7 @@ class ImageryRequest(models.Model):
                     self.cadastre.cad_number
                 )
             )
-            self.status = FAILURE
+            self.status = FAILED
             self.save()
             return False
 
@@ -113,10 +114,6 @@ class ImageryRequest(models.Model):
         self.status = PROCESSING
         self.save()
 
-        # TODO move this to a django-celery task that monitors status and changes it.
-        # SUCCESS and FAILURE are set here. When Success or Failure, it sends
-        # a notification to a new notification queue which is triggered when the user
-        # logs in
         result = app.signature(
             "process_cadastres",
             kwargs={
@@ -127,14 +124,21 @@ class ImageryRequest(models.Model):
             queue="process_cadastres",
             priority=5,
         )
-        result.delay()
+
+        # TODO a django-celery task that monitors status and changes it.
+        # FINISHED, WAITING, FAILED are set here. When FINISHED, WAITING, FAILED, it
+        # sends a notification to a new notification queue which is triggered when the
+        # user logs in. When WAITING, increases requested time one day further.
+        result_handler_task_name = "tumar_handler_process_cadastres"
+        handler_task = app.signature(
+            result_handler_task_name,
+            kwargs={"imageryrequest_id": self.id},
+            queue=result_handler_task_name,
+        )
+
+        (result.on_error(log_error.s(imageryrequest_id=self.id)) | handler_task).delay()
 
         return True
-
-    def has_available_imagery(self):
-        # TODO alter imagination for this functionality
-        # a simple check if there is enough imagery products to provide the indicators
-        pass
 
     def has_enough_time_diff(self):
         if ImageryRequest.objects.filter(
@@ -147,19 +151,24 @@ class ImageryRequest(models.Model):
         return True
 
     def save(self, *args, **kwargs):
+        if not self.requested_date:
+            self.requested_date = timezone.now().date()
         if (
-            ImageryRequest.objects.filter(
+            self._state.adding is True
+            and ImageryRequest.objects.filter(
                 cadastre=self.cadastre, requested_date=self.requested_date
             )
-            .exclude(Q(status__exact=FAILURE) | Q(status__exact=FREE_EXPIRED))
+            .exclude(Q(status__exact=FAILED) | Q(status__exact=FREE_EXPIRED))
             .exists()
         ):
             logger.info(
                 "The cadastre {} is already in the queue for image processing.".format(
-                    self.cadastre
+                    self.cadastre.pk
                 )
             )
             return
 
         super().save(*args, **kwargs)
-        self.start_task()
+
+        if self._state.adding is True:
+            self.start_task()

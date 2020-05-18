@@ -1,3 +1,5 @@
+import logging
+
 # from allauth.socialaccount.models import SocialAccount
 # from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 # from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
@@ -22,6 +24,8 @@ from .permissions import IsUserOrReadOnly
 
 # from .services import create_user_account
 from .serializers import CreateUserSerializer, UserSerializer
+
+logger = logging.getLogger(__name__)
 
 
 class UserViewSet(
@@ -188,6 +192,8 @@ class CheckCodeView(APIView):
                 activated=False,
                 type=request.data["type"],
             ).latest("created_at")
+        except SMSVerification.DoesNotExist:
+            logger.error("SMSVerification.DoesNotExist: {}".format(request.data))
 
         is_same = verification.check_code(request.data["code"])
 
