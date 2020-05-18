@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-19 00:16+0600\n"
+"POT-Creation-Date: 2020-05-19 00:30+0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -389,9 +389,11 @@ msgid "Active"
 msgstr "Активный?"
 
 #: tumar/community/models.py:50 tumar/community/models.py:59
-#: tumar/community/models.py:110
+#: tumar/community/models.py:80 tumar/community/models.py:110
+#, fuzzy
+#| msgid "Posts"
 msgid "Post"
-msgstr "Пост"
+msgstr "Посты"
 
 #: tumar/community/models.py:51
 msgid "Posts"
@@ -404,12 +406,6 @@ msgstr "Изображение Поста"
 #: tumar/community/models.py:65
 msgid "Post Images"
 msgstr "Изображения Поста"
-
-#: tumar/community/models.py:80
-#, fuzzy
-#| msgid "Post"
-msgid "Post"
-msgstr "Пост"
 
 #: tumar/community/models.py:86 tumar/community/models.py:107
 #: tumar/community/models.py:185 tumar/users/models.py:54
