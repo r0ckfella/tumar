@@ -60,7 +60,7 @@ class ImageryRequest(models.Model):
         verbose_name_plural = _("Imagery Requests")
 
     def start_image_processing(self, disable_check=False):
-        if not disable_check and self.cadastre.farm.has_free_request():
+        if not disable_check and not self.cadastre.farm.has_free_request():
             self.status = FREE_EXPIRED
             self.save()
             raise FreeRequestsExpiredError(farm_pk=self.cadastre.farm.pk)

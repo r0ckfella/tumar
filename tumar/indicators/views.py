@@ -5,7 +5,11 @@ from rest_framework.views import APIView
 
 from tumar.animals.models import Cadastre
 
-from .exceptions import ImageryRequestAlreadyExistsError
+from .exceptions import (
+    ImageryRequestAlreadyExistsError,
+    FreeRequestsExpiredError,
+    CadastreNotInEgisticError,
+)
 from .models import ImageryRequest
 
 # Create your views here.
@@ -38,7 +42,22 @@ class RequestIndicatorsView(APIView):
                 status=status.HTTP_409_CONFLICT,
             )
 
-        ir.start_image_processing()
+        try:
+            ir.start_image_processing()
+        except FreeRequestsExpiredError:
+            Response(
+                {"error": "You used all free requests for image processing."},
+                status=status.HTTP_409_CONFLICT,
+            )
+        except CadastreNotInEgisticError:
+            Response(
+                {
+                    "error": (
+                        "This cadastre with cad_number {}" " is not in egistic db"
+                    ).format(the_cadastre.cad_number)
+                },
+                status=status.HTTP_409_CONFLICT,
+            )
 
         return Response(
             {"imageryrequest_id": ir.pk, "requested_date": ir.requested_date},
