@@ -45,9 +45,9 @@ class RequestIndicatorsView(APIView):
 
 
 class LatestIndicatorsView(APIView):
-    def get(self, request, cad_number):
+    def get(self, request, cadastre_id):
         the_cadastre = get_object_or_404(
-            Cadastre, farm__user=self.request.user, cad_number=cad_number
+            Cadastre, farm__user=request.user, cadastre_id=cadastre_id
         )
         response_data = []
 
