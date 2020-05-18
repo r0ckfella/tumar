@@ -37,6 +37,11 @@ class ImageryRequestAdmin(admin.ModelAdmin):
         "is_layer_created",
     )
     readonly_fields = (
+        "ndvi_dir",
+        "gndvi_dir",
+        "clgreen_dir",
+        "ndmi_dir",
+        "rgb_dir",
         "results_dir",
         "status",
         "created_at",
