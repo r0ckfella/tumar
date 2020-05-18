@@ -5,6 +5,7 @@ from django.db.models import Q
 from celery import shared_task
 
 from ..celery import app
+from ..notify.models import Notification
 from .choices import FAILED, FINISHED, WAITING, FREE_EXPIRED
 from .models import ImageryRequest
 
@@ -78,12 +79,26 @@ def handle_process_request(result, imageryrequest_id):
 
     if result == "FINISHED":
         # Send notification that this imagery request has finished
+        Notification.objects.create(
+            receiver=imagery_request.cadastre.farm.user,
+            content=(
+                "Запроса №{}: снимки для кадастра с номером {} успешно обработаны!"
+            ).format(imagery_request.pk, imagery_request.cadastre.cad_number),
+        )
+
         imagery_request.fetch_result_after_success()
         imagery_request.status = FINISHED
         imagery_request.save()
     elif result == "WAITING":
         # Send notification that this cadastre is scheduled to download when an imagery
         # is available
+        Notification.objects.create(
+            receiver=imagery_request.cadastre.farm.user,
+            content=(
+                "Запрос №{}: Нет доступных снимков для кадастра с номером {}! Каждый"
+                " день мы будем проверять наличие новых снимков на данный кадастр."
+            ).format(imagery_request.pk, imagery_request.cadastre.cad_number),
+        )
 
         imagery_request.status = WAITING
         imagery_request.requested_date += datetime.timedelta(days=1)
