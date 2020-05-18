@@ -1,6 +1,7 @@
 from django.contrib import admin
 
 from .models import ImageryRequest
+from .choices import PENDING
 
 # Register your models here.
 
@@ -40,4 +41,27 @@ class ImageryRequestAdmin(admin.ModelAdmin):
         "status",
         "created_at",
         "finished_at",
+    )
+    actions = [
+        "start_image_processing",
+    ]
+
+    def start_image_processing(self, request, queryset):
+        started = []
+        not_started = []
+
+        for ir in queryset:
+            if ir.status == PENDING:
+                ir.start_image_processing(disable_check=True)
+                started.append(ir.pk)
+            else:
+                not_started.append(ir.pk)
+
+        self.message_user(
+            request,
+            "{} успешно запущены.\n{} не запущены.".format(started, not_started),
+        )
+
+    start_image_processing.short_description = (
+        "Start image processing for selected requests"
     )

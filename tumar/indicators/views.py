@@ -38,6 +38,8 @@ class RequestIndicatorsView(APIView):
                 status=status.HTTP_409_CONFLICT,
             )
 
+        ir.start_image_processing()
+
         return Response(
             {"imageryrequest_id": ir.pk, "requested_date": ir.requested_date},
             status=status.HTTP_201_CREATED,

@@ -77,7 +77,7 @@ class PostImage(models.Model):
 
 class PostVote(models.Model):
     post = models.ForeignKey(
-        Post, on_delete=models.CASCADE, related_name="votes", verbose_name=_("VPost")
+        Post, on_delete=models.CASCADE, related_name="votes", verbose_name=_("Post")
     )
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,

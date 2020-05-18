@@ -144,6 +144,7 @@ class ImageryRequest(models.Model):
     def save(self, *args, **kwargs):
         if not self.requested_date:
             self.requested_date = timezone.now().date()
+
         if (
             self._state.adding is True
             and ImageryRequest.objects.filter(
@@ -155,6 +156,3 @@ class ImageryRequest(models.Model):
             raise ImageryRequestAlreadyExistsError(cadastre_pk=self.cadastre.pk)
 
         super().save(*args, **kwargs)
-
-        if self._state.adding is True:
-            self.start_image_processing()

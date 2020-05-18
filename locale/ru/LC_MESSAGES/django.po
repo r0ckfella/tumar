@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-04-04 17:50+0600\n"
+"POT-Creation-Date: 2020-05-19 00:16+0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -28,225 +28,225 @@ msgstr "Tumar Панель Управления"
 msgid "Farms, Animals"
 msgstr "Фермы, Животные"
 
-#: tumar/animals/models.py:26
+#: tumar/animals/models.py:44
 msgid "IIN/BIN"
 msgstr "ИИН/БИН"
 
-#: tumar/animals/models.py:28
+#: tumar/animals/models.py:46
 msgid "Legal person"
 msgstr "Юридическое Лицо"
 
-#: tumar/animals/models.py:30
+#: tumar/animals/models.py:48
 msgid "IIK"
 msgstr "ИИК"
 
-#: tumar/animals/models.py:31
+#: tumar/animals/models.py:49
 msgid "BANK"
 msgstr "Банк"
 
-#: tumar/animals/models.py:32
+#: tumar/animals/models.py:50
 msgid "BIN"
 msgstr "БИН"
 
-#: tumar/animals/models.py:33
+#: tumar/animals/models.py:51
 msgid "Address"
 msgstr "Адрес"
 
-#: tumar/animals/models.py:37
+#: tumar/animals/models.py:55
 msgid "Chinese API key"
 msgstr "Логин для GPS системы"
 
-#: tumar/animals/models.py:59 tumar/animals/models.py:85
-#: tumar/animals/models.py:106 tumar/animals/models.py:282
+#: tumar/animals/models.py:98 tumar/animals/models.py:127
+#: tumar/animals/models.py:148 tumar/animals/models.py:597
 msgid "Farm"
 msgstr "Ферма"
 
-#: tumar/animals/models.py:60
+#: tumar/animals/models.py:99
 msgid "Farms"
 msgstr "Фермы"
 
-#: tumar/animals/models.py:88
+#: tumar/animals/models.py:130
 msgid "Type of machinery"
 msgstr "Тип техники"
 
-#: tumar/animals/models.py:91
+#: tumar/animals/models.py:133
 msgid "Identification code of the machinery"
 msgstr "ИК техники"
 
-#: tumar/animals/models.py:95 tumar/animals/models.py:96
+#: tumar/animals/models.py:137 tumar/animals/models.py:138
 msgid "Machinery"
 msgstr "Техника"
 
-#: tumar/animals/models.py:108
+#: tumar/animals/models.py:150
 msgid "Animal tag number"
 msgstr "Номер бирки"
 
-#: tumar/animals/models.py:110
+#: tumar/animals/models.py:152
 msgid "Animal name"
 msgstr "Кличка"
 
-#: tumar/animals/models.py:111
+#: tumar/animals/models.py:153
 msgid "Date of birth"
 msgstr "Дата рождения"
 
-#: tumar/animals/models.py:117
+#: tumar/animals/models.py:159
 msgid "Photo of the animal"
 msgstr "Фото животного"
 
-#: tumar/animals/models.py:145
+#: tumar/animals/models.py:197
 msgid "IMEI of the tracker"
 msgstr "ID устройства (IMEI)"
 
-#: tumar/animals/models.py:147
+#: tumar/animals/models.py:199
 msgid "IMSI number"
 msgstr "Номер IMSI"
 
-#: tumar/animals/models.py:149
+#: tumar/animals/models.py:205
 msgid "Battery charge"
 msgstr "Заряд батареи"
 
-#: tumar/animals/models.py:151
+#: tumar/animals/models.py:207
 msgid "Last updated"
 msgstr "Последнее обновление"
 
-#: tumar/animals/models.py:154 tumar/animals/models.py:261
+#: tumar/animals/models.py:210 tumar/animals/models.py:568
 msgid "Animal"
 msgstr "Животное"
 
-#: tumar/animals/models.py:155
+#: tumar/animals/models.py:211
 msgid "Animals"
 msgstr "Животные"
 
-#: tumar/animals/models.py:174
+#: tumar/animals/models.py:230
 msgid "Казахская белоголовая"
 msgstr ""
 
-#: tumar/animals/models.py:175
+#: tumar/animals/models.py:231
 msgid "Герефорд"
 msgstr ""
 
-#: tumar/animals/models.py:176
+#: tumar/animals/models.py:232
 msgid "Ангус"
 msgstr ""
 
-#: tumar/animals/models.py:177
+#: tumar/animals/models.py:233
 msgid "Калмыцкая"
 msgstr ""
 
-#: tumar/animals/models.py:178
+#: tumar/animals/models.py:234
 msgid "Аулиекольская"
 msgstr ""
 
-#: tumar/animals/models.py:179
+#: tumar/animals/models.py:235
 msgid "Симментал"
 msgstr ""
 
-#: tumar/animals/models.py:180
+#: tumar/animals/models.py:236
 msgid "Молочные породы"
 msgstr ""
 
-#: tumar/animals/models.py:181
+#: tumar/animals/models.py:237
 msgid "Беспородная"
 msgstr ""
 
-#: tumar/animals/models.py:182
+#: tumar/animals/models.py:238
 msgid "Кросс"
 msgstr ""
 
-#: tumar/animals/models.py:183
+#: tumar/animals/models.py:239
 msgid "Другое"
 msgstr ""
 
-#: tumar/animals/models.py:192 tumar/animals/models.py:215
-#: tumar/animals/models.py:238
+#: tumar/animals/models.py:306 tumar/animals/models.py:503
+#: tumar/animals/models.py:543
 msgid "Breed of the animal"
 msgstr "Порода животного"
 
-#: tumar/animals/models.py:196 tumar/animals/models.py:197
+#: tumar/animals/models.py:310 tumar/animals/models.py:311
 msgid "Breeding Stock"
 msgstr "Маточное поголовье"
 
-#: tumar/animals/models.py:203
+#: tumar/animals/models.py:319
 msgid "Бычок"
 msgstr ""
 
-#: tumar/animals/models.py:203
+#: tumar/animals/models.py:319
 msgid "Телочка"
 msgstr ""
 
-#: tumar/animals/models.py:207 tumar/animals/models.py:248
+#: tumar/animals/models.py:494 tumar/animals/models.py:555
 msgid "Date of weaning"
 msgstr "Дата отъема"
 
-#: tumar/animals/models.py:209
+#: tumar/animals/models.py:497
 msgid "Gender"
 msgstr "Пол"
 
-#: tumar/animals/models.py:221
+#: tumar/animals/models.py:509
 msgid "Mother"
 msgstr "Мать"
 
-#: tumar/animals/models.py:223
+#: tumar/animals/models.py:511
 msgid "Active?"
 msgstr "Активный?"
 
-#: tumar/animals/models.py:226
+#: tumar/animals/models.py:525
 msgid "Calf"
 msgstr "Телёнок"
 
-#: tumar/animals/models.py:227
+#: tumar/animals/models.py:526
 msgid "Calves"
 msgstr "Телята"
 
-#: tumar/animals/models.py:232
+#: tumar/animals/models.py:537
 msgid "Birth Place"
 msgstr "Место рождения"
 
-#: tumar/animals/models.py:242
+#: tumar/animals/models.py:547
 msgid "Breeding Bull"
 msgstr "Племенной бык"
 
-#: tumar/animals/models.py:243
+#: tumar/animals/models.py:548
 msgid "Breeding Bulls"
 msgstr "Племенные быки"
 
-#: tumar/animals/models.py:252 tumar/animals/models.py:253
+#: tumar/animals/models.py:559 tumar/animals/models.py:560
 msgid "Store Cattle"
 msgstr "Скот на откорме"
 
-#: tumar/animals/models.py:263
+#: tumar/animals/models.py:570
 msgid "Position"
 msgstr "Локация"
 
-#: tumar/animals/models.py:264
+#: tumar/animals/models.py:571
 msgid "Time"
 msgstr "Время"
 
-#: tumar/animals/models.py:273
+#: tumar/animals/models.py:580
 msgid "Geo-location"
 msgstr "Геолокация"
 
-#: tumar/animals/models.py:274
+#: tumar/animals/models.py:581
 msgid "Geo-locations"
 msgstr "Геолокации"
 
-#: tumar/animals/models.py:292
+#: tumar/animals/models.py:600
 msgid "Cadastre Number"
 msgstr "Кадастровый номер"
 
-#: tumar/animals/models.py:295
+#: tumar/animals/models.py:603
 msgid "Geometry"
 msgstr "Геометрия"
 
-#: tumar/animals/models.py:297 tumar/ecalendar/models.py:25
+#: tumar/animals/models.py:605 tumar/ecalendar/models.py:23
 msgid "Title"
 msgstr "Название"
 
-#: tumar/animals/models.py:300
+#: tumar/animals/models.py:608 tumar/indicators/models.py:31
 msgid "Cadastre"
 msgstr "Кадастр"
 
-#: tumar/animals/models.py:301
+#: tumar/animals/models.py:609
 msgid "Cadastres"
 msgstr "Кадастры"
 
@@ -262,87 +262,93 @@ msgstr "Недостаточно геолокаций чтобы состави�
 msgid "Catalog"
 msgstr "Каталог"
 
-#: tumar/catalog/models.py:12
+#: tumar/catalog/models.py:14
 msgid "Продажа"
 msgstr ""
 
-#: tumar/catalog/models.py:13
+#: tumar/catalog/models.py:15
 msgid "Приобретение"
 msgstr ""
 
-#: tumar/catalog/models.py:14
+#: tumar/catalog/models.py:16
 msgid "Аренда"
 msgstr ""
 
-#: tumar/catalog/models.py:19
+#: tumar/catalog/models.py:21
 msgid "Name of the City"
 msgstr "Название Города"
 
-#: tumar/catalog/models.py:22
+#: tumar/catalog/models.py:24
 msgid "City"
 msgstr "Город"
 
-#: tumar/catalog/models.py:23
+#: tumar/catalog/models.py:25
 msgid "Cities"
 msgstr "Города"
 
-#: tumar/catalog/models.py:30
+#: tumar/catalog/models.py:32
 msgid "Title of the Direction"
 msgstr "Название Направления"
 
-#: tumar/catalog/models.py:33
+#: tumar/catalog/models.py:35
 msgid "Direction of the Company"
 msgstr "Направление Компании"
 
-#: tumar/catalog/models.py:34 tumar/catalog/models.py:44
+#: tumar/catalog/models.py:36 tumar/catalog/models.py:46
 msgid "Directions of the Company"
 msgstr "Направления Компаний"
 
-#: tumar/catalog/models.py:50
+#: tumar/catalog/models.py:52
 msgid "Category of the Company"
 msgstr "Категория Компании"
 
-#: tumar/catalog/models.py:53
+#: tumar/catalog/models.py:55
 msgid "Cities of the Company"
 msgstr "Города Компании"
 
-#: tumar/catalog/models.py:55
+#: tumar/catalog/models.py:57
 msgid "Title of the Company"
 msgstr "Название Компании"
 
-#: tumar/catalog/models.py:57
+#: tumar/catalog/models.py:59
 msgid "Product Description"
 msgstr "Описании Продукта"
 
-#: tumar/catalog/models.py:60
+#: tumar/catalog/models.py:62
 msgid "Short Company Description"
 msgstr "Описание Компании"
 
-#: tumar/catalog/models.py:63
+#: tumar/catalog/models.py:65
 msgid "Phone Numbers"
 msgstr "Телефонные Номера"
 
-#: tumar/catalog/models.py:65
+#: tumar/catalog/models.py:67
 msgid "Emails"
 msgstr "Эл. Почты"
 
-#: tumar/catalog/models.py:66
+#: tumar/catalog/models.py:68
 msgid "Websites"
 msgstr "Сайты"
 
-#: tumar/catalog/models.py:68
+#: tumar/catalog/models.py:70
 msgid "Instagram"
 msgstr "Инстаграм"
 
-#: tumar/catalog/models.py:71
+#: tumar/catalog/models.py:73
 msgid "Facebook"
 msgstr "Фэйсбук"
 
-#: tumar/catalog/models.py:75
+#: tumar/catalog/models.py:80
+#, fuzzy
+#| msgid "Company"
+msgid "Company Logo"
+msgstr "Компания"
+
+#: tumar/catalog/models.py:84
 msgid "Company"
 msgstr "Компания"
 
-#: tumar/catalog/models.py:76
+#: tumar/catalog/models.py:85
 msgid "Companies"
 msgstr "Компании"
 
@@ -350,154 +356,244 @@ msgstr "Компании"
 msgid "Community"
 msgstr "Сообщество"
 
-#: tumar/community/models.py:9
+#: tumar/community/models.py:11
 msgid "Name of the Category"
 msgstr "Название Категории"
 
-#: tumar/community/models.py:12
+#: tumar/community/models.py:14
 msgid "Post Category"
 msgstr "Категория Поста"
 
-#: tumar/community/models.py:13
+#: tumar/community/models.py:15
 msgid "Post Categories"
 msgstr "Категории Поста"
 
-#: tumar/community/models.py:24
+#: tumar/community/models.py:26
 msgid "Author"
 msgstr "Автор"
 
-#: tumar/community/models.py:27
+#: tumar/community/models.py:29
 msgid "Categories of the Post"
 msgstr "Категории Поста"
 
-#: tumar/community/models.py:29
+#: tumar/community/models.py:31
 msgid "Title of the Post"
 msgstr "Название Поста"
 
-#: tumar/community/models.py:30
+#: tumar/community/models.py:32
 msgid "Content of the Post"
 msgstr "Текст Поста"
 
-#: tumar/community/models.py:31 tumar/community/models.py:75
+#: tumar/community/models.py:33 tumar/community/models.py:121
 msgid "Active"
 msgstr "Активный?"
 
-#: tumar/community/models.py:37 tumar/community/models.py:46
-#: tumar/community/models.py:64
+#: tumar/community/models.py:50 tumar/community/models.py:59
+#: tumar/community/models.py:110
 msgid "Post"
 msgstr "Пост"
 
-#: tumar/community/models.py:38
+#: tumar/community/models.py:51
 msgid "Posts"
 msgstr "Посты"
 
-#: tumar/community/models.py:51
+#: tumar/community/models.py:64
 msgid "Post Image"
 msgstr "Изображение Поста"
 
-#: tumar/community/models.py:52
+#: tumar/community/models.py:65
 msgid "Post Images"
 msgstr "Изображения Поста"
 
-#: tumar/community/models.py:61 tumar/users/models.py:49
+#: tumar/community/models.py:80
+#, fuzzy
+#| msgid "Post"
+msgid "Post"
+msgstr "Пост"
+
+#: tumar/community/models.py:86 tumar/community/models.py:107
+#: tumar/community/models.py:185 tumar/users/models.py:54
 msgid "User"
 msgstr "Пользователь"
 
-#: tumar/community/models.py:72
+#: tumar/community/models.py:90 tumar/community/models.py:189
+msgid "Upvote"
+msgstr "Лайк"
+
+#: tumar/community/models.py:90 tumar/community/models.py:189
+msgid "Downvote"
+msgstr "Дизлайк"
+
+#: tumar/community/models.py:92 tumar/community/models.py:191
+#, fuzzy
+#| msgid "Type of the event"
+msgid "Type of the Vote"
+msgstr "Тип Мероприятия"
+
+#: tumar/community/models.py:97 tumar/community/models.py:196
+msgid "Upvote/Downvote"
+msgstr "Лайк/Дизлайк"
+
+#: tumar/community/models.py:98 tumar/community/models.py:197
+msgid "Upvotes/Downvotes"
+msgstr "Лайки/Дизлайки"
+
+#: tumar/community/models.py:118
 msgid "Object of the Reply"
 msgstr "Объект ответа"
 
-#: tumar/community/models.py:74
+#: tumar/community/models.py:120
 msgid "Content of the Comment"
 msgstr "Текст комментария"
 
-#: tumar/community/models.py:81 tumar/community/models.py:102
+#: tumar/community/models.py:134 tumar/community/models.py:155
+#: tumar/community/models.py:179
 msgid "Comment"
 msgstr "Комментарий"
 
-#: tumar/community/models.py:82
+#: tumar/community/models.py:135
 msgid "Comments"
 msgstr "Комментарии"
 
-#: tumar/community/models.py:107
+#: tumar/community/models.py:160
 msgid "Comment Image"
 msgstr "Изображение Комментария"
 
-#: tumar/community/models.py:108
+#: tumar/community/models.py:161
 msgid "Comment Images"
 msgstr "Изображения Комментария"
 
-#: tumar/config/common.py:88
+#: tumar/config/common.py:91
 msgid "English"
 msgstr "Английский"
 
-#: tumar/config/common.py:89
+#: tumar/config/common.py:92
 msgid "Russian"
 msgstr "Русский"
+
+#: tumar/dashboard/apps.py:7
+msgid "Dashboard"
+msgstr "Дэшборд"
 
 #: tumar/ecalendar/apps.py:7
 msgid "Animals Calendar"
 msgstr "Календарь Мероприятий"
 
-#: tumar/ecalendar/models.py:17
+#: tumar/ecalendar/models.py:15
 msgid "Управление"
 msgstr ""
 
-#: tumar/ecalendar/models.py:18
+#: tumar/ecalendar/models.py:16
 msgid "Здоровье"
 msgstr ""
 
-#: tumar/ecalendar/models.py:19
+#: tumar/ecalendar/models.py:17
 msgid "Кормление"
 msgstr ""
 
-#: tumar/ecalendar/models.py:20
+#: tumar/ecalendar/models.py:18
 msgid "Остальное"
 msgstr ""
 
-#: tumar/ecalendar/models.py:27
-msgid "Scheduled date of the event"
+#: tumar/ecalendar/models.py:25
+#, fuzzy
+#| msgid "Scheduled date of the event"
+msgid "Scheduled date range of the event"
 msgstr "Запланированная Дата Мероприятия"
 
-#: tumar/ecalendar/models.py:30
-msgid "Date of the event completion"
-msgstr "Дата Завершения Мероприятия"
-
-#: tumar/ecalendar/models.py:36
+#: tumar/ecalendar/models.py:31
 msgid "Type of the event"
 msgstr "Тип Мероприятия"
 
-#: tumar/ecalendar/models.py:38
+#: tumar/ecalendar/models.py:33
 msgid "Report"
 msgstr "Репорт"
 
-#: tumar/ecalendar/models.py:39
-msgid "Completed?"
-msgstr "Завершено?"
-
-#: tumar/ecalendar/models.py:50
+#: tumar/ecalendar/models.py:44
 msgid "Cow Animal of the event"
 msgstr "Корова Мероприятия"
 
-#: tumar/ecalendar/models.py:54
+#: tumar/ecalendar/models.py:48
 msgid "Cow Event"
 msgstr "Мероприятие Коровы"
 
-#: tumar/ecalendar/models.py:55
+#: tumar/ecalendar/models.py:49
 msgid "Cow Events"
 msgstr "Мероприятия Коровы"
 
-#: tumar/ecalendar/models.py:66
+#: tumar/ecalendar/models.py:58 tumar/ecalendar/models.py:84
+msgid "Completed?"
+msgstr "Завершено?"
+
+#: tumar/ecalendar/models.py:60 tumar/ecalendar/models.py:86
+msgid "Date of the event completion"
+msgstr "Дата Завершения Мероприятия"
+
+#: tumar/ecalendar/models.py:70
 msgid "Calf Animal of the event"
 msgstr "Телёнок Мероприятия"
 
-#: tumar/ecalendar/models.py:70
+#: tumar/ecalendar/models.py:74
 msgid "Calf Event"
 msgstr "Мероприятие Телёнка"
 
-#: tumar/ecalendar/models.py:71
+#: tumar/ecalendar/models.py:75
 msgid "Calf Events"
 msgstr "Мероприятия Телёнка"
+
+#: tumar/indicators/apps.py:7 tumar/indicators/models.py:60
+msgid "Imagery Requests"
+msgstr "Запросы на Снимки"
+
+#: tumar/indicators/choices.py:12
+msgid "Pending"
+msgstr "Начинается"
+
+#: tumar/indicators/choices.py:13
+msgid "Waiting for new imagery"
+msgstr "Ожидает новых снимков"
+
+#: tumar/indicators/choices.py:14
+msgid "Processing"
+msgstr "В Обработке"
+
+#: tumar/indicators/choices.py:15
+msgid "Finished"
+msgstr "Завершен"
+
+#: tumar/indicators/choices.py:16
+msgid "Failed"
+msgstr "Неудавшийся"
+
+#: tumar/indicators/choices.py:17
+msgid "Free requests expired"
+msgstr "Бесплатные запросы закончены"
+
+#: tumar/indicators/models.py:39
+msgid "Request creation date"
+msgstr "Дата создания запроса"
+
+#: tumar/indicators/models.py:42
+msgid "Request scheduled time"
+msgstr "Запланированная дата снимков"
+
+#: tumar/indicators/models.py:45
+msgid "Request finish time"
+msgstr "Дата завершения обработки снимков"
+
+#: tumar/indicators/models.py:55
+msgid "Status"
+msgstr "Статус"
+
+#: tumar/indicators/models.py:59
+msgid "Imagery Request"
+msgstr "Запрос на Снимки"
+
+#: tumar/notify/apps.py:7
+#, fuzzy
+#| msgid "Geo-locations"
+msgid "Notifications"
+msgstr "Геолокации"
 
 #: tumar/users/admin.py:32
 msgid "Personal info"
@@ -511,15 +607,15 @@ msgstr "Права"
 msgid "Important dates"
 msgstr "Важные Даты"
 
-#: tumar/users/apps.py:7 tumar/users/models.py:50
+#: tumar/users/apps.py:7 tumar/users/models.py:55
 msgid "Users"
 msgstr "Пользователи"
 
-#: tumar/users/models.py:29
+#: tumar/users/models.py:34 tumar/users/models.py:102
 msgid "Phone Number"
 msgstr "Номер Телефона"
 
-#: tumar/users/models.py:34
+#: tumar/users/models.py:39 tumar/users/models.py:106
 msgid ""
 "Required. Phone number must be entered in the format: '+77076143537'. Up to "
 "15 digits allowed."
@@ -527,10 +623,36 @@ msgstr ""
 "Обязательно. Номер телефона должен быть текущего формата: '+77076143537'. "
 "Разрешено до 15 чисел."
 
-#: tumar/users/models.py:38
+#: tumar/users/models.py:43
 msgid "A user with that phone number already exists."
 msgstr "Пользователь с таким номером телефона уже существует."
 
-#: tumar/users/models.py:45
+#: tumar/users/models.py:50
 msgid "Profile Picture"
 msgstr "Фото Профиля"
+
+#: tumar/users/models.py:77
+msgid "New Account Activation"
+msgstr "Активация Нового Аккаунта"
+
+#: tumar/users/models.py:78
+msgid "Reset Password"
+msgstr "Сброс Пароля"
+
+#: tumar/users/models.py:79
+#, fuzzy
+#| msgid "Phone Number"
+msgid "New Phone Number"
+msgstr "Новый Номер Телефона"
+
+#: tumar/users/models.py:80
+#, fuzzy
+#| msgid "Phone Number"
+msgid "Old Phone Number"
+msgstr "Старый Номер Телефона"
+
+#: tumar/users/models.py:98
+#, fuzzy
+#| msgid "Title of the Direction"
+msgid "Type of the SMS Verification"
+msgstr "Тип СМС Валидации"
