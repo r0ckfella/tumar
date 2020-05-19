@@ -41,7 +41,10 @@ def run_image_processing_task(imagery_request, egistic_cadastre_pk):
     ).delay()
 
 
-@app.task
+@app.task(
+    name="tumar_error_handler_process_cadastres",
+    queue="tumar_handler_process_cadastres",
+)
 def log_error(request, exc, traceback, imageryrequest_id):
     try:
         imagery_request = ImageryRequest.objects.get(pk=imageryrequest_id)
