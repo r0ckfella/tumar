@@ -4,6 +4,7 @@ services:
   web:
     image: "hub.egistic.kz/nginx:latest"
     restart: "always"
+    # user: ${CURRENT_UID}
     expose:
       - "80"
     environment:
@@ -22,6 +23,7 @@ services:
   app:
     image: "hub.egistic.kz/tumar:latest"
     restart: "always"
+    user: ${CURRENT_UID}
     expose:
       - "3000"
     networks:
@@ -49,7 +51,7 @@ services:
   worker:
     image: "hub.egistic.kz/tumar:latest"
     restart: "always"
-    #user: "1000:1000"
+    user: ${CURRENT_UID}
     expose:
       - "80"
     networks:
@@ -72,7 +74,7 @@ services:
   celerybeat:
     image: "hub.egistic.kz/tumar:latest"
     restart: "always"
-    #user: "1000:1000"
+    user: ${CURRENT_UID}
     expose:
       - "80"
     networks:
