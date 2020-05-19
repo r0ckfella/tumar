@@ -128,8 +128,8 @@ class CalfAdmin(admin.ModelAdmin):
         "id",
         "tag_number",
         "name",
-        "farm",
         "mother",
+        "farm",
     )
 
 
@@ -147,12 +147,6 @@ class StoreCattleAdmin(admin.ModelAdmin):
 @admin.register(Cadastre)
 class CadastreAdmin(admin.ModelAdmin):
     list_filter = ("farm",)
-    list_display = (
-        "id",
-        "tag_number",
-        "name",
-        "farm",
-    )
 
 
 admin.site.site_header = _("Tumar Control Panel")
