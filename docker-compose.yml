@@ -108,4 +108,3 @@ networks:
 
 volumes:
   media:
-  tumar-static:
