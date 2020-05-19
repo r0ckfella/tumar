@@ -85,7 +85,7 @@ def handle_process_request(result, imageryrequest_id):
         Notification.objects.create(
             receiver=imagery_request.cadastre.farm.user,
             content=(
-                "Запроса №{}: снимки для кадастра с номером {} успешно обработаны!"
+                "Запрос №{}: снимки для кадастра с номером {} успешно обработаны!"
             ).format(imagery_request.pk, imagery_request.cadastre.cad_number),
         )
 
