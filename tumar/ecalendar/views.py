@@ -33,7 +33,7 @@ class BreedingStockEventViewSet(viewsets.ModelViewSet):
         if self.request.user.is_superuser:
             return BreedingStockEvent.objects.all().order_by("-scheduled_date_range")
         return (
-            BreedingStockEvent.objects.filter(animals__farm__user=self.request.user)
+            BreedingStockEvent.objects.filter(farm__user=self.request.user)
             .distinct()
             .order_by("-scheduled_date_range")
         )
@@ -94,7 +94,7 @@ class CalfEventViewSet(viewsets.ModelViewSet):
         if self.request.user.is_superuser:
             return CalfEvent.objects.all().order_by("-scheduled_date_range")
         return (
-            CalfEvent.objects.filter(animals__farm__user=self.request.user)
+            CalfEvent.objects.filter(farm__user=self.request.user)
             .distinct()
             .order_by("-scheduled_date_range")
         )

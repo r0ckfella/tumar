@@ -19,12 +19,9 @@ TYPE_CHOICES = [
 
 
 class Event(models.Model):
-    # farm = models.ForeignKey(
-    #     "animals.Farm",
-    #     on_delete=models.CASCADE,
-    #     related_name="events",
-    #     verbose_name=_("Farm"),
-    # )
+    farm = models.ForeignKey(
+        "animals.Farm", on_delete=models.CASCADE, verbose_name=_("Farm"),
+    )
     title = models.CharField(max_length=80, verbose_name=_("Title"))
     scheduled_date_range = DateRangeField(
         verbose_name=_("Scheduled date range of the event")

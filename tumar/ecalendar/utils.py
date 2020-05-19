@@ -10,7 +10,7 @@ def merge_events(event_cls, single_event_cls, instance, farm):
         title__icontains=instance.title[: len(instance.title) // 2],
         type=instance.type,
         scheduled_date_range__overlap=instance.scheduled_date_range,
-        animals__farm=farm,
+        farm=farm,
     )
 
     for event in overlapping_events:
