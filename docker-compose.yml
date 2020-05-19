@@ -46,7 +46,7 @@ services:
               ./manage.py compilemessages &&
               uwsgi --ini config/uwsgi.ini"
 
-  celerybeat_worker:
+  worker:
     image: "hub.egistic.kz/tumar:latest"
     restart: "always"
     #user: "1000:1000"
@@ -67,7 +67,7 @@ services:
       - "DEFAULT_DB_USER=docker"
       - "DEFAULT_DB_PASSWORD=docker"
     command: >
-      bash -c "celery -A tumar worker -Q tumar_celerybeat, tumar_handler_process_cadastres -c 3 -n tumar_worker -l INFO"
+      bash -c "celery -A tumar worker -Q tumar_celerybeat,tumar_handler_process_cadastres -c 3 -n tumar_worker -l INFO"
 
   celerybeat:
     image: "hub.egistic.kz/tumar:latest"
