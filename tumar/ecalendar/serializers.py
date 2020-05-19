@@ -1,4 +1,3 @@
-from psycopg2.extras import DateRange
 from rest_framework import serializers
 
 from .models import (
@@ -86,9 +85,10 @@ class BreedingStockEventSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         animals_list = validated_data.pop("animals_list", [])
+        the_farm = self.context["request"].user.farm
         bs_event = BreedingStockEvent(**validated_data)
 
-        merge_events(BreedingStockEvent, SingleBreedingStockEvent, bs_event)
+        merge_events(BreedingStockEvent, SingleBreedingStockEvent, bs_event, the_farm)
 
         # Create additional animals for bs_event
         for pk in animals_list:
@@ -98,6 +98,7 @@ class BreedingStockEventSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         animals_list = validated_data.pop("animals_list", None)
+        the_farm = self.context["request"].user.farm
 
         if "id" in validated_data:
             validated_data.pop("id")  # remove id, since we already have instance obj
@@ -114,7 +115,7 @@ class BreedingStockEventSerializer(serializers.ModelSerializer):
                     event=instance, animal=animal_pk
                 )
 
-        merge_events(BreedingStockEvent, SingleBreedingStockEvent, instance)
+        merge_events(BreedingStockEvent, SingleBreedingStockEvent, instance, the_farm)
 
         return instance
 
@@ -149,9 +150,10 @@ class CalfEventSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         animals_list = validated_data.pop("animals_list", [])
+        the_farm = self.context["request"].user.farm
         calf_event = CalfEvent(**validated_data)
 
-        merge_events(CalfEvent, SingleCalfEvent, calf_event)
+        merge_events(CalfEvent, SingleCalfEvent, calf_event, the_farm)
 
         for pk in animals_list:
             SingleCalfEvent.objects.get_or_create(event=calf_event, animal=pk)
@@ -160,6 +162,7 @@ class CalfEventSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         animals_list = validated_data.pop("animals_list", None)
+        the_farm = self.context["request"].user.farm
 
         if "id" in validated_data:
             validated_data.pop("id")  # remove id, since we already have instance obj
@@ -173,6 +176,6 @@ class CalfEventSerializer(serializers.ModelSerializer):
                 # instance.animals.add(animals_list)
                 SingleCalfEvent.objects.get_or_create(event=instance, animal=animal_pk)
 
-        merge_events(CalfEvent, SingleCalfEvent, instance)
+        merge_events(CalfEvent, SingleCalfEvent, instance, the_farm)
 
         return instance

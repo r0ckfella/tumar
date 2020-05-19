@@ -2,7 +2,6 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.contrib.postgres.fields import DateRangeField, JSONField
 
-
 # Create your models here.
 
 
@@ -20,6 +19,12 @@ TYPE_CHOICES = [
 
 
 class Event(models.Model):
+    # farm = models.ForeignKey(
+    #     "animals.Farm",
+    #     on_delete=models.CASCADE,
+    #     related_name="events",
+    #     verbose_name=_("Farm"),
+    # )
     title = models.CharField(max_length=80, verbose_name=_("Title"))
     scheduled_date_range = DateRangeField(
         verbose_name=_("Scheduled date range of the event")
