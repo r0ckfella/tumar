@@ -104,7 +104,7 @@ class Farm(models.Model):
             self.cadastres.annotate(ir_count=Count("imagery_requests__pk")).aggregate(
                 total_count=Sum("ir_count")
             )["total_count"]
-            < 3
+            <= 3
         )
 
     def __str__(self):
