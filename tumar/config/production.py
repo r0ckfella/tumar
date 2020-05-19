@@ -36,10 +36,10 @@ class Production(Common):
     CELERY_RESULT_BACKEND = "rpc://"
 
     # Celery Data Format
-    CELERY_ACCEPT_CONTENT = ["application/json"]
+    CELERY_ACCEPT_CONTENT = ["application/json", "pickle"]
     CELERY_TASK_SERIALIZER = "json"
     CELERY_RESULT_SERIALIZER = "json"
-    CELERY_TIMEZONE = "UTC"
+    CELERY_TIMEZONE = "Asia/Almaty"
     imports = ("indicators.tasks",)
 
     CELERY_TASK_ACKS_LATE = False
