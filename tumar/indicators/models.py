@@ -142,11 +142,13 @@ class ImageryRequest(models.Model):
             raise QueryImageryFromEgisticError(cadastre_pk=self.cadastre.pk)
 
     def save(self, *args, **kwargs):
+        is_new = self._state.adding
+
         if not self.requested_date:
             self.requested_date = timezone.now().date()
 
         if (
-            self._state.adding is True
+            is_new
             and ImageryRequest.objects.filter(
                 cadastre=self.cadastre, requested_date=self.requested_date
             )

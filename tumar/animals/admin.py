@@ -32,6 +32,12 @@ class FarmAdmin(admin.OSMGeoAdmin):
     default_zoom = 4
     modifiable = False
 
+    list_display = (
+        "id",
+        "legal_person",
+        "user",
+    )
+
 
 @admin.register(Geolocation)
 class GeolocationAdmin(admin.OSMGeoAdmin):
@@ -84,6 +90,7 @@ class GeolocationAdmin(admin.OSMGeoAdmin):
 @admin.register(Animal)
 class AnimalAdmin(admin.ModelAdmin):
     list_display = (
+        "id",
         "imei",
         "tag_number",
         "name",
@@ -94,27 +101,58 @@ class AnimalAdmin(admin.ModelAdmin):
 
 @admin.register(BreedingStock)
 class BreedingStockAdmin(admin.ModelAdmin):
-    pass
+    list_filter = ("farm",)
+    list_display = (
+        "id",
+        "tag_number",
+        "name",
+        "farm",
+    )
 
 
 @admin.register(BreedingBull)
 class BreedingBullAdmin(admin.ModelAdmin):
-    pass
+    list_filter = ("farm",)
+    list_display = (
+        "id",
+        "tag_number",
+        "name",
+        "farm",
+    )
 
 
 @admin.register(Calf)
 class CalfAdmin(admin.ModelAdmin):
-    pass
+    list_filter = ("farm",)
+    list_display = (
+        "id",
+        "tag_number",
+        "name",
+        "farm",
+        "mother",
+    )
 
 
 @admin.register(StoreCattle)
 class StoreCattleAdmin(admin.ModelAdmin):
-    pass
+    list_filter = ("farm",)
+    list_display = (
+        "id",
+        "tag_number",
+        "name",
+        "farm",
+    )
 
 
 @admin.register(Cadastre)
 class CadastreAdmin(admin.ModelAdmin):
-    pass
+    list_filter = ("farm",)
+    list_display = (
+        "id",
+        "tag_number",
+        "name",
+        "farm",
+    )
 
 
 admin.site.site_header = _("Tumar Control Panel")

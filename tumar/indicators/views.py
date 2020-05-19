@@ -33,7 +33,7 @@ class RequestIndicatorsView(APIView):
                 ir.requested_date = request.data["requested_date"]
             ir.save()
         except ImageryRequestAlreadyExistsError:
-            Response(
+            return Response(
                 {
                     "error": (
                         "Imagery Request for this requested date {} already exists."
@@ -45,12 +45,12 @@ class RequestIndicatorsView(APIView):
         try:
             ir.start_image_processing()
         except FreeRequestsExpiredError:
-            Response(
+            return Response(
                 {"error": "You used all free requests for image processing."},
                 status=status.HTTP_409_CONFLICT,
             )
         except CadastreNotInEgisticError:
-            Response(
+            return Response(
                 {
                     "error": (
                         "This cadastre with cad_number {}" " is not in egistic db"
