@@ -86,6 +86,7 @@ class BreedingStockEventSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         animals_list = validated_data.pop("animals_list", [])
         the_farm = self.context["request"].user.farm
+        validated_data["farm"] = the_farm
         bs_event = BreedingStockEvent(**validated_data)
 
         merge_events(BreedingStockEvent, SingleBreedingStockEvent, bs_event, the_farm)
@@ -151,6 +152,7 @@ class CalfEventSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         animals_list = validated_data.pop("animals_list", [])
         the_farm = self.context["request"].user.farm
+        validated_data["farm"] = the_farm
         calf_event = CalfEvent(**validated_data)
 
         merge_events(CalfEvent, SingleCalfEvent, calf_event, the_farm)

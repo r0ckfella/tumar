@@ -12,7 +12,7 @@ services:
       - "PROXY_PASS=http://app:80"
     volumes:
       - "./config/:/etc/nginx/conf.d/"
-      - tumar-static:/static
+      - ./static:/static
       - media:/media
     networks:
       - "arys"
@@ -34,7 +34,7 @@ services:
     volumes:
       - "/nfs/storage/imgback_rasters:/imgback_rasters"
       - ".:/code"
-      - tumar-static:/code/static
+      - ./static:/code/static
       - media:/code/media
     environment:
       - "DEFAULT_DB_HOST=db_default"
