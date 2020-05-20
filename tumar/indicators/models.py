@@ -10,7 +10,7 @@ from django.utils.translation import gettext_lazy as _
 
 from tumar.animals.models import Cadastre
 
-from .choices import STATUS_CHOICES, PENDING, FREE_EXPIRED, FAILED, PROCESSING
+from .choices import STATUS_CHOICES, PENDING, FREE_EXPIRED, FAILED, PROCESSING, WAITING
 from .exceptions import (
     QueryImageryFromEgisticError,
     FreeRequestsExpiredError,
@@ -71,7 +71,11 @@ class ImageryRequest(models.Model):
             self.save()
             raise CadastreNotInEgisticError(cadastre_pk=self.cadastre.pk)
 
-        self.status = PROCESSING
+        if not immediate:
+            self.status = WAITING
+        else:
+            self.status = PROCESSING
+
         self.save()
 
         from .tasks import run_image_processing_task
