@@ -10,7 +10,7 @@ class Notification(models.Model):
         on_delete=models.CASCADE,
         related_name="notifications",
     )
-    content = models.CharField(max_length=120, blank=True)
+    content = models.CharField(max_length=255, blank=True)
     read = models.BooleanField(default=False)
     created_at = models.DateField(auto_now_add=True)
 
