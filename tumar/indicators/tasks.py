@@ -12,7 +12,7 @@ from .models import ImageryRequest
 logger = logging.getLogger(__name__)
 
 
-def run_image_processing_task(imagery_request, egistic_cadastre_pk):
+def run_image_processing_task(imagery_request, egistic_cadastre_pk, immediate=True):
     target_dates = [
         imagery_request.requested_date,
     ]
@@ -35,10 +35,16 @@ def run_image_processing_task(imagery_request, egistic_cadastre_pk):
         queue=result_handler_task_name,
     )
 
-    (
-        result.on_error(log_error.s(imageryrequest_id=imagery_request.id))
-        | handler_task
-    ).delay()
+    if immediate:
+        (
+            result.on_error(log_error.s(imageryrequest_id=imagery_request.id))
+            | handler_task
+        ).delay()
+    else:
+        (
+            result.on_error(log_error.s(imageryrequest_id=imagery_request.id))
+            | handler_task
+        ).apply_async(eta=imagery_request.requested_date)
 
 
 @app.task(
@@ -93,18 +99,9 @@ def handle_process_request(result, imageryrequest_id):
         imagery_request.status = FINISHED
         imagery_request.save()
     elif result == "WAITING":
-        # Send notification that this cadastre is scheduled to download when an imagery
-        # is available
-        Notification.objects.create(
-            receiver=imagery_request.cadastre.farm.user,
-            content=(
-                "Запрос №{}: Нет доступных снимков для кадастра с номером {}! Каждый"
-                " день мы будем проверять наличие новых снимков на данный кадастр."
-            ).format(imagery_request.pk, imagery_request.cadastre.cad_number),
-        )
-
         imagery_request.status = WAITING
         imagery_request.requested_date += datetime.timedelta(days=1)
+        imagery_request.save()
 
         if (
             ImageryRequest.objects.filter(
@@ -119,11 +116,26 @@ def handle_process_request(result, imageryrequest_id):
                     imagery_request.cadastre.pk
                 )
             )
+            Notification.objects.create(
+                receiver=imagery_request.cadastre.farm.user,
+                content=(
+                    "Запрос №{} удален: кадастр с номером {}"
+                    " уже на очереди в обработке."
+                ).format(imagery_request.pk, imagery_request.cadastre.cad_number),
+            )
             imagery_request.delete()
             return
 
-        imagery_request.save()
-        imagery_request.start_task()
+        Notification.objects.create(
+            receiver=imagery_request.cadastre.farm.user,
+            content=(
+                "Запрос №{}: Нет доступных снимков для кадастра с номером {}! Каждый"
+                " день мы будем проверять наличие новых снимков на данный кадастр."
+            ).format(imagery_request.pk, imagery_request.cadastre.cad_number),
+        )
+
+        imagery_request.start_image_processing(immediate=False)
+
     else:
         logger.critical("Imagery Request #{} FAILED!".format(imagery_request.pk))
         imagery_request.status = FAILED

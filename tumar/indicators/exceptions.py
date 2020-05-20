@@ -1,11 +1,15 @@
 class QueryImageryFromEgisticError(Exception):
     def __init__(self, message=None, cadastre_pk=None):
         if cadastre_pk and message:
-            message += "\nImage processing result for cadastre_pk {}"
-            " was not found in the database or not finished".format(cadastre_pk)
+            message += (
+                "\nImage processing result for cadastre_pk {}"
+                " was not found in the database or not finished"
+            ).format(cadastre_pk)
         elif cadastre_pk and not message:
-            message = "Image processing result for cadastre_pk {}"
-            " was not found in the database or not finished".format(cadastre_pk)
+            message = (
+                "Image processing result for cadastre_pk {}"
+                " was not found in the database or not finished"
+            ).format(cadastre_pk)
 
         # Call the base class constructor with the parameters it needs
         super().__init__(message)
@@ -48,11 +52,13 @@ class CadastreNotInEgisticError(Exception):
 class ImageryRequestAlreadyExistsError(Exception):
     def __init__(self, message=None, cadastre_pk=None):
         if cadastre_pk and message:
-            message += "\nThe cadastre {} is already in the queue"
-            " for image processing.".format(cadastre_pk)
+            message += (
+                "\nThe cadastre {} is already in the queue for image processing."
+            ).format(cadastre_pk)
         elif cadastre_pk and not message:
-            message = "The cadastre {} is already in the queue"
-            " for image processing.".format(cadastre_pk)
+            message = (
+                "The cadastre {} is already in the queue for image processing."
+            ).format(cadastre_pk)
 
         # Call the base class constructor with the parameters it needs
         super().__init__(message)

@@ -59,7 +59,7 @@ class ImageryRequest(models.Model):
         verbose_name = _("Imagery Request")
         verbose_name_plural = _("Imagery Requests")
 
-    def start_image_processing(self, disable_check=False):
+    def start_image_processing(self, disable_check=False, immediate=True):
         if not disable_check and not self.cadastre.farm.has_free_request():
             self.status = FREE_EXPIRED
             self.save()
@@ -76,7 +76,7 @@ class ImageryRequest(models.Model):
 
         from .tasks import run_image_processing_task
 
-        run_image_processing_task(self, egistic_cadastre_pk)
+        run_image_processing_task(self, egistic_cadastre_pk, immediate)
 
     def has_enough_time_diff(self):
         if ImageryRequest.objects.filter(
