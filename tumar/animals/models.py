@@ -338,6 +338,12 @@ class CalfManager(models.Manager):
             .count()
         )
 
+    def females(self):
+        return self.get_queryset().filter(active=True, gender=FEMALE)
+
+    def males(self):
+        return self.get_queryset().filter(active=True, gender=MALE)
+
     def greater_12_months_count(self):
         time_threshold = datetime.date.today() - relativedelta(months=12)
         return (

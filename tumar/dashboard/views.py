@@ -11,10 +11,12 @@ class AnimalCountByTypeView(APIView):
 
         response_data = {
             "Коровы": the_farm.breedingstock_count,
-            "Молодняк до 12 месяцев": the_farm.calf_set.less_12_months_count(),
-            "Молодняк после 12 месяцев": the_farm.calf_set.greater_12_months_count(),
+            "Телочки": the_farm.calf_set.females().count(),
+            "Бычки": the_farm.calf_set.males().count(),
+            # "Молодняк до 12 месяцев": the_farm.calf_set.less_12_months_count(),
+            # "Молодняк после 12 месяцев": the_farm.calf_set.greater_12_months_count(),
             "Племенные быки": the_farm.breedingbull_count,
-            "Нетели (беременные телки)": the_farm.breedingstock_set.pregnant_count(),
+            # "Нетели (беременные телки)": the_farm.breedingstock_set.pregnant_count(),
         }
 
         return Response(response_data, status=status.HTTP_200_OK)
@@ -106,13 +108,13 @@ class CowCountByYearView(APIView):
         response_data = {
             "Структура поголовья по возрасту (%)": {
                 str(i): the_farm.breedingstock_set.get_cows_count_by_year(i)
-                for i in range(2, 14)
-                if i not in range(5, 10)
+                for i in range(1, 13)
+                # if i not in range(5, 10)
             }
         }
 
-        response_data["Структура поголовья по возрасту (%)"][
-            "5-9"
-        ] = the_farm.breedingstock_set.get_cows_count_by_year_range(5, 9)
+        # response_data["Структура поголовья по возрасту (%)"][
+        #     "5-9"
+        # ] = the_farm.breedingstock_set.get_cows_count_by_year_range(5, 9)
 
         return Response(response_data, status=status.HTTP_200_OK)
