@@ -109,6 +109,7 @@ def handle_process_request(result, imageryrequest_id):
                 requested_date=imagery_request.requested_date,
             )
             .exclude(Q(status__exact=FAILED) | Q(status__exact=FREE_EXPIRED))
+            .exclude(pk=imagery_request.pk)
             .exists()
         ):
             logger.info(
