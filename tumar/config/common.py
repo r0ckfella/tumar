@@ -25,6 +25,7 @@ class Common(Configuration):
         "django_filters",  # for filtering rest endpoints
         "rest_auth",
         "admin_reorder",
+        "memcache_status",
         # Registration related
         "django.contrib.sites",
         "allauth",

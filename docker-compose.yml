@@ -48,6 +48,16 @@ services:
               ./manage.py compilemessages &&
               uwsgi --ini config/uwsgi.ini"
 
+  memcached:
+    image: memcached:1.6.5
+    ports:
+      - "11211:11211"
+    networks:
+      - "arys"
+    # entrypoint:
+    #   - memcached
+    #   - -m 64
+
   worker:
     image: "hub.egistic.kz/tumar:latest"
     restart: "always"

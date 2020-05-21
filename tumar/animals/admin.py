@@ -150,3 +150,4 @@ class CadastreAdmin(admin.ModelAdmin):
 
 
 admin.site.site_header = _("Tumar Control Panel")
+admin.site.index_template = "memcache_status/admin_index.html"

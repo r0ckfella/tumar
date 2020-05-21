@@ -1,6 +1,7 @@
 import datetime
 
 
+from django.core.cache import cache
 from django.contrib.auth import get_user_model
 from django.contrib.gis.geos import Point, Polygon, GEOSGeometry
 from django.contrib.gis.measure import Distance as d
@@ -328,11 +329,8 @@ class SimpleGroupedGeolocationsView(APIView):
                 status=status.HTTP_404_NOT_FOUND,
             )
 
-        current_user = get_object_or_404(User, username=request.user)
-
-        if current_user.is_superuser:
-            user_id = request.query_params.get("user_id")
-            current_user = get_object_or_404(User, pk=user_id)
+        user_id = request.query_params.get("user_id", request.user.pk)
+        current_user = get_object_or_404(User, pk=user_id)
 
         the_farm = get_object_or_404(Farm, user=current_user)
         # animal_pks = the_farm.animals.values_list('pk', flat=True)
@@ -344,6 +342,12 @@ class SimpleGroupedGeolocationsView(APIView):
 
         if zoom_level is None or int(zoom_level) < 11:
             zoom_level = 11
+
+        # Caching
+        key = f"sgg_{the_farm.pk}_{zoom_level}"
+        cached_response = cache.get(key)
+        if cached_response:
+            return Response(cached_response)
 
         qs = (
             Geolocation.geolocations.filter(animal__farm=the_farm)
@@ -382,6 +386,9 @@ class SimpleGroupedGeolocationsView(APIView):
                     single_animal = Geolocation.geolocations.get(pk=group.pop())
                     serializer = GeolocationAnimalSerializer(single_animal)
                     response_json["animals"].append(serializer.data)
+
+        if not cached_response:
+            cache.set(key, response_json, 60 * 10)
 
         return Response(response_json)
 

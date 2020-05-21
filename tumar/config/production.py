@@ -85,3 +85,10 @@ class Production(Common):
             "": {"handlers": ["file", "console", "telegram_log"], "level": "INFO"},
         },
     }
+
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.memcached.MemcachedCache",
+            "LOCATION": "memcached:11211",
+        }
+    }
