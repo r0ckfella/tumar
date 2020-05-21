@@ -93,7 +93,17 @@ class BreedingStockEventSerializer(serializers.ModelSerializer):
 
         # Create additional animals for bs_event
         for pk in animals_list:
-            SingleBreedingStockEvent.objects.get_or_create(event=bs_event, animal=pk)
+            sb1 = SingleBreedingStockEvent.objects.filter(event=bs_event).last()
+
+            if sb1:
+                if sb1.animal.farm == BreedingStock.objects.get(pk=pk).farm:
+                    SingleBreedingStockEvent.objects.get_or_create(
+                        event=bs_event, animal=pk
+                    )
+            else:
+                SingleBreedingStockEvent.objects.get_or_create(
+                    event=bs_event, animal=pk
+                )
 
         return bs_event
 
@@ -107,14 +117,23 @@ class BreedingStockEventSerializer(serializers.ModelSerializer):
             instance, validated_data
         )
 
-        if animals_list is not None:
+        if animals_list:
             SingleBreedingStockEvent.objects.filter(event=instance).exclude(
                 animal__in=animals_list
             ).delete()
-            for animal_pk in animals_list:
-                SingleBreedingStockEvent.objects.get_or_create(
-                    event=instance, animal=animal_pk
-                )
+
+            for pk in animals_list:
+                sb1 = SingleBreedingStockEvent.objects.filter(event=instance).last()
+
+                if sb1:
+                    if sb1.animal.farm == BreedingStock.objects.get(pk=pk).farm:
+                        SingleBreedingStockEvent.objects.get_or_create(
+                            event=instance, animal=pk
+                        )
+                else:
+                    SingleBreedingStockEvent.objects.get_or_create(
+                        event=instance, animal=pk
+                    )
 
         merge_events(BreedingStockEvent, SingleBreedingStockEvent, instance, the_farm)
 
@@ -158,7 +177,13 @@ class CalfEventSerializer(serializers.ModelSerializer):
         merge_events(CalfEvent, SingleCalfEvent, calf_event, the_farm)
 
         for pk in animals_list:
-            SingleCalfEvent.objects.get_or_create(event=calf_event, animal=pk)
+            sc1 = SingleCalfEvent.objects.filter(event=calf_event).last()
+
+            if sc1:
+                if sc1.animal.farm == Calf.objects.get(pk=pk).farm:
+                    SingleCalfEvent.objects.get_or_create(event=calf_event, animal=pk)
+            else:
+                SingleCalfEvent.objects.get_or_create(event=calf_event, animal=pk)
 
         return calf_event
 
@@ -170,13 +195,19 @@ class CalfEventSerializer(serializers.ModelSerializer):
             validated_data.pop("id")  # remove id, since we already have instance obj
         instance = super(CalfEventSerializer, self).update(instance, validated_data)
 
-        if animals_list is not None:
+        if animals_list:
             SingleCalfEvent.objects.filter(event=instance).exclude(
                 animal__in=animals_list
             ).delete()
-            for animal_pk in animals_list:
-                # instance.animals.add(animals_list)
-                SingleCalfEvent.objects.get_or_create(event=instance, animal=animal_pk)
+
+            for pk in animals_list:
+                sc1 = SingleCalfEvent.objects.filter(event=instance).last()
+
+                if sc1:
+                    if sc1.animal.farm == Calf.objects.get(pk=pk).farm:
+                        SingleCalfEvent.objects.get_or_create(event=instance, animal=pk)
+                else:
+                    SingleCalfEvent.objects.get_or_create(event=instance, animal=pk)
 
         merge_events(CalfEvent, SingleCalfEvent, instance, the_farm)
 

@@ -44,7 +44,7 @@ class PastureToAnimalRatioView(APIView):
 
         try:
             res = the_farm.total_pastures_area_in_ha / the_farm.total_animal_count
-        except ZeroDivisionError:
+        except (ZeroDivisionError, AttributeError):
             res = 0
 
         response_data = {

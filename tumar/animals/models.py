@@ -623,6 +623,10 @@ class Cadastre(models.Model):
         verbose_name = _("Cadastre")
         verbose_name_plural = _("Cadastres")
 
+    @property
+    def area(self):
+        return f"{self.geom.area / 10000} га"
+
     def __str__(self):
         if self.title:
             return "cad-title:" + str(self.title) + "; farm:" + str(self.farm)

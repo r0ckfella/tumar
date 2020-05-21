@@ -121,10 +121,7 @@ urlpatterns = i18n_patterns(
                 # ),
                 path("cadastres/search-cadastre/", SearchCadastreView.as_view()),
                 path("myfarm/", MyFarmView.as_view()),
-                path(
-                    "indicators/latest/<int:cadastre_id>/",
-                    LatestIndicatorsView.as_view(),
-                ),
+                path("indicators/latest/", LatestIndicatorsView.as_view()),
                 path("indicators/request/", RequestIndicatorsView.as_view()),
                 path(
                     "events/breedingstock/<int:event_pk>/toggle/<uuid:animal_pk>/",

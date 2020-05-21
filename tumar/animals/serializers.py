@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from rest_framework_gis import serializers as geo_serializers
 
+from ..indicators.serializers import ImageryRequestSerializer
 from .models import (
     Farm,
     Animal,
@@ -113,6 +114,24 @@ class CadastreSerializer(serializers.ModelSerializer):
             "cad_number",
             "geometry",
             "farm",
+            "area",
+        )
+
+
+class CadastreImageryRequestSerializer(serializers.ModelSerializer):
+    # since drf has a bug with required=True
+    geometry = geo_serializers.GeometryField(source="geom", required=False)
+    imagery_requests = ImageryRequestSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Cadastre
+        fields = (
+            "id",
+            "title",
+            "cad_number",
+            "geometry",
+            "area",
+            "imagery_requests",
         )
 
 

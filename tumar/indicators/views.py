@@ -5,6 +5,7 @@ from rest_framework.views import APIView
 
 from tumar.animals.models import Cadastre
 
+from ..animals.serializers import CadastreImageryRequestSerializer
 from .exceptions import (
     ImageryRequestAlreadyExistsError,
     FreeRequestsExpiredError,
@@ -66,37 +67,26 @@ class RequestIndicatorsView(APIView):
 
 
 class LatestIndicatorsView(APIView):
-    def get(self, request, cadastre_id):
-        the_cadastre = get_object_or_404(
-            Cadastre, farm__user=request.user, pk=cadastre_id
-        )
-        response_data = []
+    def get(self, request):
+        valid_query_params = ("cadastre_id",)
 
-        qs = ImageryRequest.objects.filter(cadastre=the_cadastre).order_by(
-            "-requested_date"
-        )
-
-        for ir in qs:
-            response_data.append(
-                dict(
-                    id=ir.id,
-                    requested_date=ir.requested_date,
-                    created_at=ir.created_at,
-                    status=ir.status,
-                    finished_at=ir.finished_at,
-                    results_dir=ir.results_dir,
-                    is_layer_created=ir.is_layer_created,
-                    ndvi=ir.ndvi,
-                    gndvi=ir.gndvi,
-                    clgreen=ir.clgreen,
-                    ndmi=ir.ndmi,
-                    ndsi=ir.ndsi,
-                    ndvi_dir=ir.ndvi_dir,
-                    gndvi_dir=ir.gndvi_dir,
-                    clgreen_dir=ir.clgreen_dir,
-                    ndmi_dir=ir.ndmi_dir,
-                    rgb_dir=ir.rgb_dir,
-                )
+        if not all(
+            param in valid_query_params for param in tuple(request.query_params.keys())
+        ):
+            return Response(
+                {"valid query params": valid_query_params},
+                status=status.HTTP_404_NOT_FOUND,
             )
 
-        return Response(response_data, status=status.HTTP_200_OK)
+        cadastre_id = request.query_params.get("cadastre_id", None)
+        the_farm = request.user.farm
+
+        qs = None
+        if cadastre_id:
+            qs = Cadastre.objects.filter(farm=the_farm, pk=cadastre_id)
+        else:
+            qs = Cadastre.objects.filter(farm=the_farm)
+
+        serializer = CadastreImageryRequestSerializer(qs, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
