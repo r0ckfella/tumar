@@ -23,18 +23,10 @@ class Common(Configuration):
         "rest_framework_gis",
         "rest_framework.authtoken",  # token authentication
         "django_filters",  # for filtering rest endpoints
-        "rest_auth",
         "admin_reorder",
         "memcache_status",
         # Registration related
         "django.contrib.sites",
-        "allauth",
-        # "allauth.account",
-        # "rest_auth.registration",
-        # Social Auth
-        "allauth.socialaccount",
-        # "allauth.socialaccount.providers.facebook",
-        # "allauth.socialaccount.providers.google",
         # Your apps
         "tumar.users.apps.UsersConfig",
         "tumar.animals.apps.AnimalsConfig",
@@ -192,19 +184,9 @@ class Common(Configuration):
         ),
     }
 
-    # django-rest-auth
-    SITE_ID = 1
-    OLD_PASSWORD_FIELD_ENABLED = True
-    LOGOUT_ON_PASSWORD_CHANGE = False
-
-    # ACCOUNT_EMAIL_REQUIRED = True
-    # ACCOUNT_UNIQUE_EMAIL = True
-    # ACCOUNT_USERNAME_REQUIRED = False
-    # USER_MODEL_USERNAME_FIELD = None
     USERNAME_VALIDATORS = [
         "tumar.users.models.main_validator",
     ]
-    ACCOUNT_ADAPTER = "tumar.users.adapter.MyAccountAdapter"
 
     ADMIN_REORDER = (
         "animals",
@@ -221,3 +203,10 @@ class Common(Configuration):
     STANDARD_LOGIN_PASSWORD = os.getenv("STANDARD_LOGIN_PASSWORD")
 
     DAYS_BETWEEN_IMAGERY_REQUESTS = 5
+
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.memcached.MemcachedCache",
+            "LOCATION": os.getenv("MEMCACHED_ADDRESS"),
+        }
+    }

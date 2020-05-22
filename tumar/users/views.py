@@ -1,28 +1,20 @@
 import logging
 
-# from allauth.socialaccount.models import SocialAccount
-# from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
-# from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
-# from django.utils.translation import gettext_lazy as _
-
 from rest_framework import viewsets, mixins, status
 from rest_framework.authtoken.models import Token
 
 from rest_framework.authtoken.views import ObtainAuthToken
 
-# from rest_framework.exceptions import NotFound
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import AllowAny  # , IsAuthenticated
 from rest_framework.response import Response
 
 from rest_framework.views import APIView
 
-# from rest_auth.registration.views import SocialLoginView
 
 from .models import User, NEW_ACCOUNT, SMSVerification, NEW_PHONE_NUM, OLD_PHONE_NUM
 from .permissions import IsUserOrReadOnly
 
-# from .services import create_user_account
 from .serializers import CreateUserSerializer, UserSerializer
 
 logger = logging.getLogger(__name__)
@@ -48,26 +40,6 @@ class UserCreateViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     queryset = User.objects.all()
     serializer_class = CreateUserSerializer
     permission_classes = (AllowAny,)
-
-
-# class SocialAccountExtraView(APIView):
-#     """
-#     Retrieve
-#     """
-
-#     permission_classes = (IsAuthenticated,)
-
-#     def get(self, request, format=None):
-#         social_accounts = SocialAccount.objects.filter(
-#             user=request.user, socialaccount_extra__has_phone_number=True
-#         )
-
-#         if not social_accounts:
-#             raise NotFound(
-#                 detail="No associated social accounts with this Tumar account"
-#             )
-
-#         return Response({"has_phone_number": True})
 
 
 class CustomAuthToken(ObtainAuthToken):
@@ -231,11 +203,3 @@ class SendSMSView(APIView):
             return Response({"sent?": False}, status=status.HTTP_404_NOT_FOUND)
 
         return Response({"sent?": True}, status=status.HTTP_200_OK)
-
-
-# class FacebookLogin(SocialLoginView):
-#     adapter_class = FacebookOAuth2Adapter
-
-
-# class GoogleLogin(SocialLoginView):
-#     adapter_class = GoogleOAuth2Adapter

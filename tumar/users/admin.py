@@ -1,6 +1,5 @@
 from typing import Set
 
-from allauth.socialaccount.models import SocialAccount, SocialApp, SocialToken
 
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.gis import admin
@@ -87,7 +86,4 @@ class UserAdmin(UserAdmin):
         return form
 
 
-admin.site.unregister(SocialAccount)
-admin.site.unregister(SocialApp)
-admin.site.unregister(SocialToken)
 admin.site.unregister(Site)

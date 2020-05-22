@@ -5,10 +5,6 @@ from django.contrib import admin
 from django.urls import path, re_path, include, reverse_lazy
 from django.views.generic.base import RedirectView
 
-# from rest_auth.registration.views import (
-#     SocialAccountListView,
-#     SocialAccountDisconnectView,
-# )
 from rest_framework.routers import DefaultRouter
 
 from .animals.views import (
@@ -35,9 +31,6 @@ from .users.views import (
     ResetPasswordView,
     ChangePhoneNumberView,
     CheckCodeView,
-    # FacebookLogin,
-    # GoogleLogin,
-    # SocialAccountExtraView,
 )
 from .indicators.views import LatestIndicatorsView, RequestIndicatorsView
 from .ecalendar.views import (
@@ -115,10 +108,6 @@ urlpatterns = i18n_patterns(
                     SimpleGroupedGeolocationsView.as_view(),
                     name="latest_grouped_geolocations",
                 ),
-                # path(
-                #     "users/social-account-has-phone-number/",
-                #     SocialAccountExtraView.as_view(),
-                # ),
                 path("cadastres/search-cadastre/", SearchCadastreView.as_view()),
                 path("myfarm/", MyFarmView.as_view()),
                 path("indicators/latest/", LatestIndicatorsView.as_view()),
@@ -199,21 +188,6 @@ urlpatterns = i18n_patterns(
     ),
     path("api-token-auth/", CustomAuthToken.as_view()),
     path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),
-    # django-rest-auth
-    path("rest-auth/", include("rest_auth.urls")),
-    # path("rest-auth/facebook/", FacebookLogin.as_view(), name="fb_login"),
-    # path("rest-auth/google/", GoogleLogin.as_view(), name="ggl_login"),
-    # path("accounts/", include("allauth.urls"), name="socialaccount_signup"),
-    # path(
-    #     "socialaccounts/", SocialAccountListView.as_view(), name="social_account_list"
-    # ),
-    # path(
-    #     "socialaccounts/<int:pk>/disconnect/",
-    #     SocialAccountDisconnectView.as_view(),
-    #     name="social_account_disconnect",
-    # ),
-    # the 'api-root' from django rest-frameworks default router
-    # http://www.django-rest-framework.org/api-guide/routers/#defaultrouter
     re_path(r"^$", RedirectView.as_view(url=reverse_lazy("api-root"), permanent=False)),
     # If no prefix is given, use the default language
     prefix_default_language=False,

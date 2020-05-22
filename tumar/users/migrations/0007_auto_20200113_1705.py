@@ -8,7 +8,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("socialaccount", "0003_extra_data_default_dict"),
+        # ("socialaccount", "0003_extra_data_default_dict"),
         ("users", "0006_auto_20200110_1955"),
     ]
 
