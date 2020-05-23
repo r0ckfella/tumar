@@ -284,7 +284,7 @@ class GetAnimalPathView(APIView):
 
         filtered_data = AnimalPathFilter(request.GET, queryset=queryset)
 
-        if filtered_data.qs.count() > 1:
+        if filtered_data.qs.count() >= 2:
             geometry = utils.get_linestring_from_geolocations(filtered_data.qs)
         else:
             modified_get = request.GET.copy()
@@ -295,9 +295,12 @@ class GetAnimalPathView(APIView):
 
             modified_get.pop("time_after")
             filtered_data = AnimalPathFilter(modified_get, queryset=queryset)
-            geometry = utils.get_linestring_from_geolocations(
-                filtered_data.qs[filtered_data.qs.count() - 2 :]
-            )
+            if filtered_data.qs.count() >= 2:
+                geometry = utils.get_linestring_from_geolocations(
+                    filtered_data.qs[filtered_data.qs.count() - 2 :]
+                )
+            else:
+                geometry = filtered_data.first().geom.geojson
 
         return Response(
             geometry.geojson
