@@ -52,12 +52,20 @@ User = get_user_model()
 # Create your views here.
 
 
+class FilterByUserMixin(object):
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        if self.request.user.is_superuser:
+            return queryset.all()
+        return queryset.filter(farm__user=self.request.user)
+
+
 class FarmViewSet(viewsets.ModelViewSet):
     """
     Lists, retrieves, creates, and deletes farms
     """
 
-    queryset = Farm.objects.all().order_by("iin")
+    # queryset = Farm.objects.all().order_by("iin")
     model = Farm
 
     def get_serializer_class(self):
@@ -68,108 +76,84 @@ class FarmViewSet(viewsets.ModelViewSet):
         return serializers_class_map.get(self.action, serializers_class_map["default"])
 
 
-class CadastreFarmViewSet(viewsets.ModelViewSet):
+class CadastreViewSet(FilterByUserMixin, viewsets.ModelViewSet):
     """
-    Lists, retrieves, creates, and deletes cadastres and their farm
+    Lists, retrieves, creates, and deletes cadastres
     """
 
-    # queryset = Cadastre.objects.all().order_by('id')
+    model = Cadastre
     serializer_class = CadastreSerializer
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_fields = ("cad_number",)
 
-    def get_queryset(self):
-        if self.request.user.is_superuser:
-            return Cadastre.objects.all().order_by("id")
-        return Cadastre.objects.filter(farm__user=self.request.user).order_by("id")
 
-
-class AnimalFarmViewSet(viewsets.ModelViewSet):
+class AnimalViewSet(FilterByUserMixin, viewsets.ModelViewSet):
     """
-    Lists, retrieves, creates, and deletes animals and their farm
+    Lists, retrieves, creates, and deletes animals
     """
 
     # queryset = Animal.objects.all().order_by('imei')
+    model = Animal
     serializer_class = AnimalSerializer
     filter_backends = (filters.DjangoFilterBackend,)
     filter_class = AnimalNameTagNumberImeiFilter
 
-    def get_queryset(self):
-        if self.request.user.is_superuser:
-            return Animal.objects.all().order_by("imei")
-        return Animal.objects.filter(farm__user=self.request.user).order_by("imei")
 
-
-class BreedingStockFarmViewSet(viewsets.ModelViewSet):
+class BreedingStockViewSet(FilterByUserMixin, viewsets.ModelViewSet):
     """
-    Lists, retrieves, creates, and deletes breeding stock and their farm
+    Lists, retrieves, creates, and deletes breeding stock
     """
 
     # queryset = Animal.objects.all().order_by('imei')
+    model = BreedingStock
     serializer_class = BreedingStockSerializer
     filter_backends = (filters.DjangoFilterBackend,)
     filter_class = AnimalNameOrTagNumberFilter
 
-    def get_queryset(self):
-        if self.request.user.is_superuser:
-            return BreedingStock.objects.all().order_by("id")
-        return BreedingStock.objects.filter(farm__user=self.request.user).order_by("id")
 
-
-class BreedingBullFarmViewSet(viewsets.ModelViewSet):
+class BreedingBullViewSet(FilterByUserMixin, viewsets.ModelViewSet):
     """
-    Lists, retrieves, creates, and deletes breeding bulls and their farm
+    Lists, retrieves, creates, and deletes breeding bulls
     """
 
     # queryset = Animal.objects.all().order_by('imei')
+    model = BreedingBull
     serializer_class = BreedingBullSerializer
     filter_backends = (filters.DjangoFilterBackend,)
     filter_class = AnimalNameOrTagNumberFilter
 
-    def get_queryset(self):
-        if self.request.user.is_superuser:
-            return BreedingBull.objects.all().order_by("id")
-        return BreedingBull.objects.filter(farm__user=self.request.user).order_by("id")
 
-
-class CalfFarmViewSet(viewsets.ModelViewSet):
+class CalfViewSet(FilterByUserMixin, viewsets.ModelViewSet):
     """
-    Lists, retrieves, creates, and deletes calves and their farm
+    Lists, retrieves, creates, and deletes calves
     """
 
     # queryset = Animal.objects.all().order_by('imei')
+    model = Calf
     serializer_class = CalfSerializer
     filter_backends = (filters.DjangoFilterBackend,)
     filter_class = AnimalNameOrTagNumberFilter
 
-    def get_queryset(self):
-        if self.request.user.is_superuser:
-            return Calf.objects.all().order_by("id")
-        return Calf.objects.filter(farm__user=self.request.user).order_by("id")
 
-
-class StoreCattleFarmViewSet(viewsets.ModelViewSet):
+class StoreCattleViewSet(FilterByUserMixin, viewsets.ModelViewSet):
     """
-    Lists, retrieves, creates, and deletes store cattle and their farm
+    Lists, retrieves, creates, and deletes store cattle
     """
 
     # queryset = Animal.objects.all().order_by('imei')
+    model = StoreCattle
     serializer_class = StoreCattleSerializer
     filter_backends = (filters.DjangoFilterBackend,)
     filter_class = AnimalNameOrTagNumberFilter
 
-    def get_queryset(self):
-        if self.request.user.is_superuser:
-            return StoreCattle.objects.all().order_by("id")
-        return StoreCattle.objects.filter(farm__user=self.request.user).order_by("id")
 
-
-class MachineryFarmViewSet(viewsets.ReadOnlyModelViewSet):
+class MachineryViewSet(FilterByUserMixin, viewsets.ReadOnlyModelViewSet):
     """
     Lists and retrieves machinery and their farm
     """
 
-    queryset = Machinery.objects.all().order_by("machinery_code")
+    # queryset = Machinery.objects.all().order_by("machinery_code")
+    model = Machinery
     serializer_class = MachinerySerializer
 
 
@@ -178,7 +162,7 @@ class GeolocationAnimalViewSet(viewsets.ReadOnlyModelViewSet):
     Lists and retrieves geolocations and their animal
     """
 
-    queryset = Geolocation.geolocations.all().order_by("animal__imei", "-time")
+    # queryset = Geolocation.geolocations.all().order_by("animal__imei", "-time")
     serializer_class = GeolocationAnimalSerializer
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_fields = (

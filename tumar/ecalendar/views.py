@@ -1,20 +1,23 @@
 import datetime
 
+from django.db.models import Q
 from django_filters import rest_framework as filters
 from rest_framework import viewsets, status
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from tumar.animals.models import BreedingStock, Calf, FEMALE, MALE
 from .models import (
     CalfEvent,
     BreedingStockEvent,
     SingleBreedingStockEvent,
     SingleCalfEvent,
 )
-from .serializers import CalfEventSerializer, BreedingStockEventSerializer
-from .utils import create_mother_cow_events_next_year
+from .serializers import (
+    CalfEventSerializer,
+    BreedingStockEventSerializer,
+    SKTWeightMeasurementSerializer,
+)
 
 # Create your views here.
 
@@ -140,81 +143,50 @@ class ToggleCalfEventView(APIView):
         )
 
 
-class NextYearBreedingStockEventView(APIView):
-    def post(self, request):
-        cow = get_object_or_404(BreedingStock, id=request.data["id"])
+class WeightSKTMeasurementsView(APIView):
+    def get(self, request):
+        animal_pk = request.query_params.get("animal_pk", None)
 
-        try:
-            create_mother_cow_events_next_year(cow)
-        except Exception as e:
-            print(e)
+        if not animal_pk:
             return Response(
-                {"error": "found the cow, but could not create events for it"},
-                status=status.HTTP_201_CREATED,
+                {"error": "?animal_pk=<id> should be set in the URL"},
+                status=status.HTTP_400_BAD_REQUEST,
             )
-        return Response(
-            {"success": "standard next year events for cow created"},
-            status=status.HTTP_400_BAD_REQUEST,
+
+        queryset = (
+            SingleBreedingStockEvent.objects.filter(animal=animal_pk)
+            .filter(
+                Q(event__title__icontains="скт")
+                | Q(event__title__icontains="взвешивание")
+            )
+            .order_by("-completion_date", "event__title")
         )
 
+        serializer = SKTWeightMeasurementSerializer(queryset, many=True)
 
-class AllBreedingStockEventView(APIView):
-    def get(self, request, pk):
-        if self.request.user.is_superuser:
-            cow = get_object_or_404(BreedingStock, id=pk)
-        else:
-            cow = get_object_or_404(BreedingStock, id=pk, farm__user=self.request.user)
-        serializer = BreedingStockEventSerializer(cow.events, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
-        return Response(serializer.data)
+    def post(self, request):
+        serializer = SKTWeightMeasurementSerializer(data=request.data)
 
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class AllCalfEventView(APIView):
-    def get(self, request, pk):
-        if self.request.user.is_superuser:
-            calf = get_object_or_404(Calf, id=pk)
-        else:
-            calf = get_object_or_404(Calf, id=pk, farm__user=self.request.user)
-        serializer = CalfEventSerializer(calf.events, many=True)
+    def patch(self, request, single_event_pk):
+        s_event = get_object_or_404(SingleBreedingStockEvent, pk=single_event_pk)
 
-        return Response(serializer.data)
-
-
-class CalendarView(APIView):
-    def get(self, request, pk):
-        if self.request.user.is_superuser:
-            cow = get_object_or_404(BreedingStock, id=pk)
-        else:
-            cow = get_object_or_404(BreedingStock, id=pk, farm__user=self.request.user)
-
-        female_calves = cow.calves.filter(gender=FEMALE)
-        male_calves = cow.calves.filter(gender=MALE)
-
-        data = {
-            "cow": {"id": cow.id, "name": cow.name, "events": []},
-            "male_calves": [],
-            "female_calves": [],
-        }
-
-        cow_serializer = BreedingStockEventSerializer(
-            cow.events.order_by("scheduled_date_range"), many=True
+        serializer = SKTWeightMeasurementSerializer(
+            s_event, data=request.data, partial=True
         )
-        data["cow"]["events"] = cow_serializer.data
 
-        for calf in female_calves:
-            calf_serializer = CalfEventSerializer(
-                calf.events.order_by("scheduled_date_range"), many=True
-            )
-            data["female_calves"].append(
-                {"id": calf.id, "name": calf.name, "events": []}
-            )
-            data["female_calves"][-1]["events"] = calf_serializer.data
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        for calf in male_calves:
-            calf_serializer = CalfEventSerializer(
-                calf.events.order_by("scheduled_date_range"), many=True
-            )
-            data["male_calves"].append({"id": calf.id, "name": calf.name, "events": []})
-            data["male_calves"][-1]["events"] = calf_serializer.data
-
-        return Response(data)
+    def delete(self, request, single_event_pk):
+        s_event = get_object_or_404(SingleBreedingStockEvent, pk=single_event_pk)
+        s_event.delete()
+        return Response({"deleted": True}, status=status.HTTP_204_NO_CONTENT)

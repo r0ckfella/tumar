@@ -1,3 +1,6 @@
+import datetime
+
+from psycopg2.extras import DateRange
 from rest_framework import serializers
 
 from .models import (
@@ -32,6 +35,51 @@ class SingleBreedingStockEventSerializer(serializers.ModelSerializer):
             "completion_date",
             "attributes",
         )
+
+
+class SKTWeightMeasurementSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SingleBreedingStockEvent
+        fields = (
+            "id",
+            "event",
+            "animal",
+            "completed",
+            "completion_date",
+            "attributes",
+        )
+        extra_kwargs = {"event": {"required": False}}
+
+    def create(self, validated_data):
+        return SingleBreedingStockEvent.objects.create(**validated_data)
+
+    def update(self, instance, validated_data):
+        instance = super().update(instance, validated_data)
+        return instance
+
+    def validate(self, data):
+        if not data.get("event", None) and not self.instance:
+            the_farm = BreedingStock.objects.get(pk=data["animal"].pk).farm
+            title = None
+            if data["attributes"]["skt"]:
+                title = "скт"
+            elif data["attributes"]["weight"]:
+                title = "взвешивание"
+
+            data["event"] = BreedingStockEvent.objects.filter(
+                title__icontains="скт", farm=the_farm
+            ).last()
+
+            if not data.get("event", None):
+                data["event"] = BreedingStockEvent.objects.create(
+                    farm=the_farm,
+                    title=title,
+                    scheduled_date_range=DateRange(
+                        datetime.date(2020, 1, 1), datetime.datetime.now().date()
+                    ),
+                )
+
+        return data
 
 
 class CalfNestedSerializer(serializers.ModelSerializer):

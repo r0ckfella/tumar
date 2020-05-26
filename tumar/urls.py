@@ -10,17 +10,17 @@ from rest_framework.routers import DefaultRouter
 from .animals.views import (
     FarmViewSet,
     GeolocationAnimalViewSet,
-    AnimalFarmViewSet,
+    AnimalViewSet,
     GetAnimalPathView,
-    MachineryFarmViewSet,
-    CadastreFarmViewSet,
+    MachineryViewSet,
+    CadastreViewSet,
     MyFarmView,
     SearchCadastreView,
     SimpleGroupedGeolocationsView,
-    BreedingStockFarmViewSet,
-    BreedingBullFarmViewSet,
-    CalfFarmViewSet,
-    StoreCattleFarmViewSet,
+    BreedingStockViewSet,
+    BreedingBullViewSet,
+    CalfViewSet,
+    StoreCattleViewSet,
 )
 from .users.views import (
     UserViewSet,
@@ -36,12 +36,9 @@ from .indicators.views import LatestIndicatorsView, RequestIndicatorsView
 from .ecalendar.views import (
     CalfEventViewSet,
     BreedingStockEventViewSet,
-    NextYearBreedingStockEventView,
-    AllBreedingStockEventView,
-    AllCalfEventView,
-    CalendarView,
     ToggleBreedingStockEventView,
     ToggleCalfEventView,
+    WeightSKTMeasurementsView,
 )
 from .catalog.views import CompanyDirectionListView, CompanyViewSet
 from .community.views import (
@@ -74,19 +71,19 @@ router = DefaultRouter()
 
 router.register(r"users", UserViewSet)
 router.register(r"users", UserCreateViewSet)
-router.register(r"farms", FarmViewSet)
-router.register(r"animals", AnimalFarmViewSet, basename="Animal")
-router.register(r"breedingstock", BreedingStockFarmViewSet, basename="BreedingStock")
-router.register(r"calf", CalfFarmViewSet, basename="Calf")
-router.register(r"breedingbull", BreedingBullFarmViewSet, basename="BreedingBull")
-router.register(r"storecattle", StoreCattleFarmViewSet, basename="StoreCattle")
-router.register(r"geolocations", GeolocationAnimalViewSet)
-router.register(r"machinery", MachineryFarmViewSet)
+router.register(r"farms", FarmViewSet, basename="Farm")
+router.register(r"animals", AnimalViewSet, basename="Animal")
+router.register(r"breedingstock", BreedingStockViewSet, basename="BreedingStock")
+router.register(r"calf", CalfViewSet, basename="Calf")
+router.register(r"breedingbull", BreedingBullViewSet, basename="BreedingBull")
+router.register(r"storecattle", StoreCattleViewSet, basename="StoreCattle")
+router.register(r"geolocations", GeolocationAnimalViewSet, basename="Geolocation")
+router.register(r"machinery", MachineryViewSet, basename="Machinery")
 router.register(r"events/calf", CalfEventViewSet, basename="CalfEvent")
 router.register(
     r"events/breedingstock", BreedingStockEventViewSet, basename="BreedingStockEvent"
 )
-router.register(r"cadastres", CadastreFarmViewSet, basename="Cadastre")
+router.register(r"cadastres", CadastreViewSet, basename="Cadastre")
 router.register(r"catalog", CompanyViewSet, basename="Catalog")
 router.register(r"community/posts", PostReadOnlyViewSet, basename="Community")
 
@@ -121,15 +118,13 @@ urlpatterns = i18n_patterns(
                     ToggleCalfEventView.as_view(),
                 ),
                 path(
-                    "events/breedingstock/next-year/",
-                    NextYearBreedingStockEventView.as_view(),
+                    "events/breedingstock/measurements/<int:single_event_pk>/",
+                    WeightSKTMeasurementsView.as_view(),
                 ),
                 path(
-                    "breedingstock/<uuid:pk>/events/",
-                    AllBreedingStockEventView.as_view(),
+                    "events/breedingstock/measurements/",
+                    WeightSKTMeasurementsView.as_view(),
                 ),
-                path("calf/<uuid:pk>/events/", AllCalfEventView.as_view()),
-                path("events/calendar/<uuid:pk>/", CalendarView.as_view()),
                 path("catalog/directions/", CompanyDirectionListView.as_view()),
                 path("community/categories/", PostCategoryListView.as_view()),
                 path("community/posts/create/", PostCreateView.as_view()),
