@@ -65,7 +65,7 @@ class FarmViewSet(viewsets.ModelViewSet):
     Lists, retrieves, creates, and deletes farms
     """
 
-    # queryset = Farm.objects.all().order_by("iin")
+    queryset = Farm.objects.all().order_by("iin")
     model = Farm
 
     def get_serializer_class(self):
@@ -81,6 +81,7 @@ class CadastreViewSet(FilterByUserMixin, viewsets.ModelViewSet):
     Lists, retrieves, creates, and deletes cadastres
     """
 
+    queryset = Cadastre.objects.all().order_by("id")
     model = Cadastre
     serializer_class = CadastreSerializer
     filter_backends = (filters.DjangoFilterBackend,)
@@ -92,7 +93,7 @@ class AnimalViewSet(FilterByUserMixin, viewsets.ModelViewSet):
     Lists, retrieves, creates, and deletes animals
     """
 
-    # queryset = Animal.objects.all().order_by('imei')
+    queryset = Animal.objects.all().order_by("imei")
     model = Animal
     serializer_class = AnimalSerializer
     filter_backends = (filters.DjangoFilterBackend,)
@@ -104,7 +105,7 @@ class BreedingStockViewSet(FilterByUserMixin, viewsets.ModelViewSet):
     Lists, retrieves, creates, and deletes breeding stock
     """
 
-    # queryset = Animal.objects.all().order_by('imei')
+    queryset = BreedingStock.objects.all().order_by("id")
     model = BreedingStock
     serializer_class = BreedingStockSerializer
     filter_backends = (filters.DjangoFilterBackend,)
@@ -116,7 +117,7 @@ class BreedingBullViewSet(FilterByUserMixin, viewsets.ModelViewSet):
     Lists, retrieves, creates, and deletes breeding bulls
     """
 
-    # queryset = Animal.objects.all().order_by('imei')
+    queryset = BreedingBull.objects.all().order_by("id")
     model = BreedingBull
     serializer_class = BreedingBullSerializer
     filter_backends = (filters.DjangoFilterBackend,)
@@ -128,7 +129,7 @@ class CalfViewSet(FilterByUserMixin, viewsets.ModelViewSet):
     Lists, retrieves, creates, and deletes calves
     """
 
-    # queryset = Animal.objects.all().order_by('imei')
+    queryset = Calf.objects.all().order_by("id")
     model = Calf
     serializer_class = CalfSerializer
     filter_backends = (filters.DjangoFilterBackend,)
@@ -140,7 +141,7 @@ class StoreCattleViewSet(FilterByUserMixin, viewsets.ModelViewSet):
     Lists, retrieves, creates, and deletes store cattle
     """
 
-    # queryset = Animal.objects.all().order_by('imei')
+    queryset = StoreCattle.objects.all().order_by("id")
     model = StoreCattle
     serializer_class = StoreCattleSerializer
     filter_backends = (filters.DjangoFilterBackend,)
@@ -152,7 +153,7 @@ class MachineryViewSet(FilterByUserMixin, viewsets.ReadOnlyModelViewSet):
     Lists and retrieves machinery and their farm
     """
 
-    # queryset = Machinery.objects.all().order_by("machinery_code")
+    queryset = Machinery.objects.all().order_by("id")
     model = Machinery
     serializer_class = MachinerySerializer
 
