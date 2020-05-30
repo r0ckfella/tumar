@@ -61,9 +61,9 @@ class SKTWeightMeasurementSerializer(serializers.ModelSerializer):
         if not data.get("event", None) and not self.instance:
             the_farm = BreedingStock.objects.get(pk=data["animal"].pk).farm
             title = None
-            if data["attributes"]["skt"]:
+            if "skt" in data["attributes"]:
                 title = "скт"
-            elif data["attributes"]["weight"]:
+            elif "weight" in data["attributes"]:
                 title = "взвешивание"
 
             data["event"] = BreedingStockEvent.objects.filter(
