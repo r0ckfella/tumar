@@ -25,8 +25,9 @@ class Common(Configuration):
         "django_filters",  # for filtering rest endpoints
         "admin_reorder",
         "memcache_status",
+        "drf_yasg",
         # Registration related
-        "django.contrib.sites",
+        # "django.contrib.sites",
         # Your apps
         "tumar.users.apps.UsersConfig",
         "tumar.animals.apps.AnimalsConfig",
@@ -208,5 +209,11 @@ class Common(Configuration):
         "default": {
             "BACKEND": "django.core.cache.backends.memcached.MemcachedCache",
             "LOCATION": os.getenv("MEMCACHED_ADDRESS"),
+        }
+    }
+
+    SWAGGER_SETTINGS = {
+        "SECURITY_DEFINITIONS": {
+            "DRF Token": {"type": "apiKey", "name": "Authorization", "in": "header"}
         }
     }

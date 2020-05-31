@@ -3,7 +3,6 @@ from typing import Set
 
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.gis import admin
-from django.contrib.sites.models import Site
 from django.utils.translation import gettext_lazy as _
 
 from .models import User
@@ -84,6 +83,3 @@ class UserAdmin(UserAdmin):
                 form.base_fields[f].disabled = True
 
         return form
-
-
-admin.site.unregister(Site)

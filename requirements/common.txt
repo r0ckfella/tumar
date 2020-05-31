@@ -23,6 +23,7 @@ django-memcache-status==2.2
 djangorestframework==3.9.1
 Markdown==3.0.1
 django-filter==2.1.0
+drf-yasg==1.17.1
 
 # Outlook
 django-modeladmin-reorder==0.3.1
