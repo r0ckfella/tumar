@@ -146,11 +146,11 @@ class BreedingStockEventSerializer(serializers.ModelSerializer):
             if sb1:
                 if sb1.animal.farm == the_bs.farm:
                     SingleBreedingStockEvent.objects.get_or_create(
-                        event=bs_event, animal=the_bs.pk
+                        event=bs_event, animal=the_bs
                     )
             else:
                 SingleBreedingStockEvent.objects.get_or_create(
-                    event=bs_event, animal=the_bs.pk
+                    event=bs_event, animal=the_bs
                 )
 
         return bs_event
@@ -176,11 +176,11 @@ class BreedingStockEventSerializer(serializers.ModelSerializer):
                 if sb1:
                     if sb1.animal.farm == the_bs.farm:
                         SingleBreedingStockEvent.objects.get_or_create(
-                            event=instance, animal=the_bs.pk
+                            event=instance, animal=the_bs
                         )
                 else:
                     SingleBreedingStockEvent.objects.get_or_create(
-                        event=instance, animal=the_bs.pk
+                        event=instance, animal=the_bs
                     )
 
         merge_events(BreedingStockEvent, SingleBreedingStockEvent, instance, the_farm)
@@ -230,12 +230,10 @@ class CalfEventSerializer(serializers.ModelSerializer):
             if sc1:
                 if sc1.animal.farm == the_calf.farm:
                     SingleCalfEvent.objects.get_or_create(
-                        event=calf_event, animal=the_calf.pk
+                        event=calf_event, animal=the_calf
                     )
             else:
-                SingleCalfEvent.objects.get_or_create(
-                    event=calf_event, animal=the_calf.pk
-                )
+                SingleCalfEvent.objects.get_or_create(event=calf_event, animal=the_calf)
 
         return calf_event
 
@@ -258,11 +256,11 @@ class CalfEventSerializer(serializers.ModelSerializer):
                 if sc1:
                     if sc1.animal.farm == the_calf.farm:
                         SingleCalfEvent.objects.get_or_create(
-                            event=instance, animal=the_calf.pk
+                            event=instance, animal=the_calf
                         )
                 else:
                     SingleCalfEvent.objects.get_or_create(
-                        event=instance, animal=the_calf.pk
+                        event=instance, animal=the_calf
                     )
 
         merge_events(CalfEvent, SingleCalfEvent, instance, the_farm)
