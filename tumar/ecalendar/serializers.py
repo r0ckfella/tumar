@@ -8,6 +8,7 @@ from .models import (
     CalfEvent,
     SingleBreedingStockEvent,
     SingleCalfEvent,
+    FEEDING,
 )
 from ..animals.models import BreedingStock, Calf
 from .utils import merge_events
@@ -61,13 +62,16 @@ class SKTWeightMeasurementSerializer(serializers.ModelSerializer):
         if not data.get("event", None) and not self.instance:
             the_farm = BreedingStock.objects.get(pk=data["animal"].pk).farm
             title = None
+            query_title = None
             if "skt" in data["attributes"]:
-                title = "скт"
+                query_title = "скт"
+                title = "Измерение СКТ Коровы"
             elif "weight" in data["attributes"]:
-                title = "взвешивание"
+                query_title = "взвешивание"
+                title = "Взвешивание"
 
             data["event"] = BreedingStockEvent.objects.filter(
-                title__icontains="скт", farm=the_farm
+                title__icontains=query_title, farm=the_farm
             ).last()
 
             if not data.get("event", None):
@@ -77,6 +81,7 @@ class SKTWeightMeasurementSerializer(serializers.ModelSerializer):
                     scheduled_date_range=DateRange(
                         datetime.date(2020, 1, 1), datetime.datetime.now().date()
                     ),
+                    type=FEEDING,
                 )
 
         return data
