@@ -10,7 +10,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 class Production(Common):
     INSTALLED_APPS = Common.INSTALLED_APPS
     SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
-    ALLOWED_HOSTS = ["arys.egistic.kz"]
+    ALLOWED_HOSTS = ["arys.egistic.kz", "tumarb.winext.kz"]
     INSTALLED_APPS += ("django_log_to_telegram",)
     # STATIC_ROOT = "/static/"
 
