@@ -2,9 +2,8 @@ version: "3"
 services:
 
   web:
-    image: "hub.egistic.kz/nginx:latest"
+    image: "tumar/nginx:latest"
     restart: "always"
-    # user: ${CURRENT_UID}
     expose:
       - "80"
     environment:
@@ -13,35 +12,26 @@ services:
     volumes:
       - "./config/:/etc/nginx/conf.d/"
       - ./static:/static
-      - media:/media
+      - ./media:/media
     networks:
-      - "arys"
+      - "tumar"
     labels:
       - "traefik.frontend.rule=Host:${DOMAIN_NAME}"
     command: /bin/bash -c "nginx -g 'daemon off;'"
 
   app:
-    image: "hub.egistic.kz/tumar:latest"
+    image: "tumar/app:latest"
     restart: "always"
     user: ${CURRENT_UID}
     expose:
       - "3000"
     networks:
-      - "arys"
-      - "postgis"
-      - "rabbit"
-      - "geoserver"
+      - "tumar"
+      - "main_db"
     volumes:
-      - "/nfs/storage/imgback_rasters:/imgback_rasters"
       - ".:/code"
       - ./static:/code/static
-      - media:/code/media
-    environment:
-      - "DEFAULT_DB_HOST=db_default"
-      - "DEFAULT_DB_PORT=5432"
-      - "DEFAULT_DB_NAME=tumar"
-      - "DEFAULT_DB_USER=docker"
-      - "DEFAULT_DB_PASSWORD=docker"
+      - ./media:/code/media
     command: >
       bash -c "./manage.py collectstatic --noinput &&
               ./manage.py migrate &&
@@ -50,71 +40,37 @@ services:
 
   memcached:
     image: memcached:1.6.5
-    ports:
-      - "11211:11211"
+    expose:
+      - "11211"
     networks:
-      - "arys"
-    # entrypoint:
-    #   - memcached
-    #   - -m 64
+      - "tumar"
 
   worker:
-    image: "hub.egistic.kz/tumar:latest"
+    image: "tumar/app:latest"
     restart: "always"
     user: ${CURRENT_UID}
-    expose:
-      - "80"
     networks:
-      - "arys"
-      - "postgis"
-      - "rabbit"
-      - "geoserver"
+      - "tumar"
+      - "main_db"
     volumes:
-      - "/nfs/storage/imgback_rasters:/imgback_rasters"
       - ".:/code"
-    environment:
-      - "DEFAULT_DB_HOST=db_default"
-      - "DEFAULT_DB_PORT=5432"
-      - "DEFAULT_DB_NAME=tumar"
-      - "DEFAULT_DB_USER=docker"
-      - "DEFAULT_DB_PASSWORD=docker"
     command: >
       bash -c "celery -A tumar worker -Q tumar_celerybeat,tumar_handler_process_cadastres -c 3 -n tumar_worker -l INFO"
-
+  
   celerybeat:
-    image: "hub.egistic.kz/tumar:latest"
+    image: "tumar/app:latest"
     restart: "always"
     user: ${CURRENT_UID}
-    expose:
-      - "80"
     networks:
-      - "arys"
-      - "postgis"
-      - "rabbit"
-      - "geoserver"
+      - "tumar"
+      - "main_db"
     volumes:
-      - "/nfs/storage/imgback_rasters:/imgback_rasters"
       - ".:/code"
-    environment:
-      - "DEFAULT_DB_HOST=db_default"
-      - "DEFAULT_DB_PORT=5432"
-      - "DEFAULT_DB_NAME=tumar"
-      - "DEFAULT_DB_USER=docker"
-      - "DEFAULT_DB_PASSWORD=docker"
     command: >
       bash -c "celery beat -A tumar -l INFO --pidfile /tmp/celerybeat.pid -s /tmp/celerybeat-schedule"
 
 networks:
-  arys:
+  tumar:
     external: true
-  postgis:
+  main_db:
     external: true
-  rabbit:
-    external:
-      name: "rabbit"
-  geoserver:
-    external:
-      name: "geoserver"
-
-volumes:
-  media:

@@ -30,6 +30,6 @@ RUN pip install -r ./requirements/prod.txt
 # Adds our application code to the image
 COPY . .
 
-EXPOSE 8088
+# EXPOSE 8088
 
-RUN mkdir /imgback_rasters /static
+RUN mkdir /static
