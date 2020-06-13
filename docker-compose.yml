@@ -6,6 +6,8 @@ services:
     restart: "always"
     expose:
       - "80"
+    ports:
+      - "80:80"
     environment:
       - "DOMAIN_NAME=${DOMAIN_NAME}"
       - "PROXY_PASS=http://app:80"
