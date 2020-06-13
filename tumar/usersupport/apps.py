@@ -1,5 +1,7 @@
 from django.apps import AppConfig
+from django.utils.translation import gettext_lazy as _
 
 
 class UsersupportConfig(AppConfig):
-    name = 'usersupport'
+    name = "tumar.usersupport"
+    verbose_name = _("User Support System")

@@ -38,6 +38,7 @@ class Common(Configuration):
         "tumar.community.apps.CommunityConfig",
         "tumar.dashboard.apps.DashboardConfig",
         "tumar.notify.apps.NotifyConfig",
+        "tumar.usersupport.apps.UsersupportConfig",
     )
 
     # https://docs.djangoproject.com/en/2.0/topics/http/middleware/

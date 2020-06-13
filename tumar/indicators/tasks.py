@@ -94,7 +94,7 @@ def handle_process_request(result, imageryrequest_id):
                 "Запрос №{}: снимки для кадастра с номером {} успешно обработаны!"
             ).format(imagery_request.pk, imagery_request.cadastre.cad_number),
         )
-        ntfcn.send()
+        ntfcn.send_push_notification()
 
         imagery_request.fetch_result_after_success()
         imagery_request.status = FINISHED
@@ -125,7 +125,7 @@ def handle_process_request(result, imageryrequest_id):
                     " уже на очереди в обработке."
                 ).format(imagery_request.pk, imagery_request.cadastre.cad_number),
             )
-            ntfcn.send()
+            ntfcn.send_push_notification()
 
             imagery_request.delete()
             return
@@ -137,7 +137,7 @@ def handle_process_request(result, imageryrequest_id):
                 " день мы будем проверять наличие новых снимков на данный кадастр."
             ).format(imagery_request.pk, imagery_request.cadastre.cad_number),
         )
-        ntfcn.send()
+        ntfcn.send_push_notification()
 
         imagery_request.start_image_processing(immediate=False)
     else:
@@ -152,4 +152,4 @@ def handle_process_request(result, imageryrequest_id):
                 " неудачей. Наша техническая команда рассмотрит данную проблему."
             ).format(imagery_request.pk, imagery_request.cadastre.cad_number),
         )
-        ntfcn.send()
+        ntfcn.send_push_notification()

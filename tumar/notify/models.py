@@ -18,5 +18,5 @@ class Notification(models.Model):
         self.read = True
         self.save()
 
-    def send(self):
+    def send_push_notification(self):
         self.receiver.device_set.send_message(self.content)
