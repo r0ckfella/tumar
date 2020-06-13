@@ -3,6 +3,10 @@ from django.utils.translation import gettext_lazy as _
 from django.conf import settings
 
 from ..users.utils import compress
+from .tasks import (
+    task_send_push_notification_new_comment_on_post,
+    task_send_push_notification_new_vote_on_comment,
+)
 
 # Create your models here.
 
@@ -137,6 +141,17 @@ class Comment(models.Model):
     def __str__(self):
         return str(self.pk) + " of " + str(self.post)
 
+    def send_push_notification(self):
+        task_send_push_notification_new_comment_on_post(self)
+
+    def save(self, *args, **kwargs):
+        is_new = self._state.adding
+
+        if is_new:
+            self.send_push_notification()
+
+        super().save(*args, **kwargs)
+
     def delete(self, *args, **kwargs):
 
         if self.replies.all().exists():
@@ -195,3 +210,14 @@ class CommentVote(models.Model):
         unique_together = ("comment", "user")
         verbose_name = _("Upvote/Downvote")
         verbose_name_plural = _("Upvotes/Downvotes")
+
+    def send_push_notification(self):
+        task_send_push_notification_new_vote_on_comment(self)
+
+    def save(self, *args, **kwargs):
+        is_new = self._state.adding
+
+        if is_new:
+            self.send_push_notification()
+
+        super().save(*args, **kwargs)
