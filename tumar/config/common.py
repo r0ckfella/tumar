@@ -26,6 +26,7 @@ class Common(Configuration):
         "admin_reorder",
         "memcache_status",
         "drf_yasg",
+        "push_notifications",
         # Registration related
         # "django.contrib.sites",
         # Your apps
@@ -216,4 +217,8 @@ class Common(Configuration):
         "SECURITY_DEFINITIONS": {
             "DRF Token": {"type": "apiKey", "name": "Authorization", "in": "header"}
         }
+    }
+
+    PUSH_NOTIFICATIONS_SETTINGS = {
+        "FCM_API_KEY": "[your api key]",
     }

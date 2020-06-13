@@ -17,3 +17,6 @@ class Notification(models.Model):
     def mark_as_read(self):
         self.read = True
         self.save()
+
+    def send(self):
+        self.receiver.device_set.send_message(self.content)

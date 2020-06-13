@@ -88,12 +88,13 @@ def handle_process_request(result, imageryrequest_id):
 
     if result == "FINISHED":
         # Send notification that this imagery request has finished
-        Notification.objects.create(
+        ntfcn = Notification.objects.create(
             receiver=imagery_request.cadastre.farm.user,
             content=(
                 "Запрос №{}: снимки для кадастра с номером {} успешно обработаны!"
             ).format(imagery_request.pk, imagery_request.cadastre.cad_number),
         )
+        ntfcn.send()
 
         imagery_request.fetch_result_after_success()
         imagery_request.status = FINISHED
@@ -117,27 +118,38 @@ def handle_process_request(result, imageryrequest_id):
                     imagery_request.cadastre.pk
                 )
             )
-            Notification.objects.create(
+            ntfcn = Notification.objects.create(
                 receiver=imagery_request.cadastre.farm.user,
                 content=(
                     "Запрос №{} удален: кадастр с номером {}"
                     " уже на очереди в обработке."
                 ).format(imagery_request.pk, imagery_request.cadastre.cad_number),
             )
+            ntfcn.send()
+
             imagery_request.delete()
             return
 
-        Notification.objects.create(
+        ntfcn = Notification.objects.create(
             receiver=imagery_request.cadastre.farm.user,
             content=(
                 "Запрос №{}: Нет доступных снимков для кадастра с номером {}! Каждый"
                 " день мы будем проверять наличие новых снимков на данный кадастр."
             ).format(imagery_request.pk, imagery_request.cadastre.cad_number),
         )
+        ntfcn.send()
 
         imagery_request.start_image_processing(immediate=False)
-
     else:
         logger.critical("Imagery Request #{} FAILED!".format(imagery_request.pk))
         imagery_request.status = FAILED
         imagery_request.save()
+
+        ntfcn = Notification.objects.create(
+            receiver=imagery_request.cadastre.farm.user,
+            content=(
+                "Запрос №{}: Данный запрос для кадастра с номером {} закончился"
+                " неудачей. Наша техническая команда рассмотрит данную проблему."
+            ).format(imagery_request.pk, imagery_request.cadastre.cad_number),
+        )
+        ntfcn.send()

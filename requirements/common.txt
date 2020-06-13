@@ -30,6 +30,7 @@ django-modeladmin-reorder==0.3.1
 
 # Additional Added Packages
 requests==2.22.0
+django-push-notifications==2.0.0
 
 # Async/Scheduling
 celery==4.4.0
