@@ -38,7 +38,7 @@ class SingleBreedingStockEventSerializer(serializers.ModelSerializer):
         )
 
 
-class SKTWeightMeasurementSerializer(serializers.ModelSerializer):
+class BreedingStockMeasurementSerializer(serializers.ModelSerializer):
     class Meta:
         model = SingleBreedingStockEvent
         fields = (
@@ -61,23 +61,68 @@ class SKTWeightMeasurementSerializer(serializers.ModelSerializer):
     def validate(self, data):
         if not data.get("event", None) and not self.instance:
             the_farm = BreedingStock.objects.get(pk=data["animal"].pk).farm
-            title = None
-            query_title = None
-            if "skt" in data["attributes"]:
-                query_title = "скт"
-                title = "Измерение СКТ Коровы"
-            elif "weight" in data["attributes"]:
-                query_title = "взвешивание"
-                title = "Взвешивание"
+            titles = {
+                "weight": {"query_title": "взвешивание", "title": "Взвешивание"},
+                "birth_weight": {"query_title": "отел", "title": "Отел Коровы"},
+                "skt": {"query_title": "скт", "title": "Измерение СКТ Коровы"},
+            }
+            title = titles.get(data["attributes"], None)
 
             data["event"] = BreedingStockEvent.objects.filter(
-                title__icontains=query_title, farm=the_farm
+                title__icontains=title.get("query_title", None), farm=the_farm
             ).last()
 
             if not data.get("event", None):
                 data["event"] = BreedingStockEvent.objects.create(
                     farm=the_farm,
-                    title=title,
+                    title=title.get("title", None),
+                    scheduled_date_range=DateRange(
+                        datetime.date(2020, 1, 1), datetime.datetime.now().date()
+                    ),
+                    type=FEEDING,
+                )
+
+        return data
+
+
+class CalfMeasurementSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SingleCalfEvent
+        fields = (
+            "id",
+            "event",
+            "animal",
+            "completed",
+            "completion_date",
+            "attributes",
+        )
+        extra_kwargs = {"event": {"required": False}}
+
+    def create(self, validated_data):
+        return SingleCalfEvent.objects.create(**validated_data)
+
+    def update(self, instance, validated_data):
+        instance = super().update(instance, validated_data)
+        return instance
+
+    def validate(self, data):
+        if not data.get("event", None) and not self.instance:
+            the_farm = Calf.objects.get(pk=data["animal"].pk).farm
+            titles = {
+                "weight": {"query_title": "взвешивание", "title": "Взвешивание"},
+                "wean_weight": {"query_title": "отъем", "title": "Отъем Телят"},
+                "birth_weight": {"query_title": "отел", "title": "Отел Коровы"},
+            }
+            title = titles.get(data["attributes"], None)
+
+            data["event"] = CalfEvent.objects.filter(
+                title__icontains=title.get("query_title", None), farm=the_farm
+            ).last()
+
+            if not data.get("event", None):
+                data["event"] = CalfEvent.objects.create(
+                    farm=the_farm,
+                    title=title.get("title", None),
                     scheduled_date_range=DateRange(
                         datetime.date(2020, 1, 1), datetime.datetime.now().date()
                     ),

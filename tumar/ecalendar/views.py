@@ -16,7 +16,8 @@ from .models import (
 from .serializers import (
     CalfEventSerializer,
     BreedingStockEventSerializer,
-    SKTWeightMeasurementSerializer,
+    BreedingStockMeasurementSerializer,
+    CalfMeasurementSerializer,
 )
 
 # Create your views here.
@@ -143,7 +144,7 @@ class ToggleCalfEventView(APIView):
         )
 
 
-class WeightSKTMeasurementsView(APIView):
+class BreedingStockMeasurementView(APIView):
     def get(self, request):
         animal_pk = request.query_params.get("animal_pk", None)
 
@@ -158,16 +159,17 @@ class WeightSKTMeasurementsView(APIView):
             .filter(
                 Q(event__title__icontains="скт")
                 | Q(event__title__icontains="взвешивание")
+                | Q(event__title__icontains="отел")
             )
             .order_by("-completion_date", "event__title")
         )
 
-        serializer = SKTWeightMeasurementSerializer(queryset, many=True)
+        serializer = BreedingStockMeasurementSerializer(queryset, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request):
-        serializer = SKTWeightMeasurementSerializer(data=request.data)
+        serializer = BreedingStockMeasurementSerializer(data=request.data)
 
         if serializer.is_valid():
             serializer.save()
@@ -177,7 +179,7 @@ class WeightSKTMeasurementsView(APIView):
     def patch(self, request, single_event_pk):
         s_event = get_object_or_404(SingleBreedingStockEvent, pk=single_event_pk)
 
-        serializer = SKTWeightMeasurementSerializer(
+        serializer = BreedingStockMeasurementSerializer(
             s_event, data=request.data, partial=True
         )
 
@@ -188,5 +190,53 @@ class WeightSKTMeasurementsView(APIView):
 
     def delete(self, request, single_event_pk):
         s_event = get_object_or_404(SingleBreedingStockEvent, pk=single_event_pk)
+        s_event.delete()
+        return Response({"deleted": True}, status=status.HTTP_204_NO_CONTENT)
+
+
+class CalfMeasurementView(APIView):
+    def get(self, request):
+        animal_pk = request.query_params.get("animal_pk", None)
+
+        if not animal_pk:
+            return Response(
+                {"error": "?animal_pk=<id> should be set in the URL"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        queryset = (
+            SingleCalfEvent.objects.filter(animal=animal_pk)
+            .filter(
+                Q(event__title__icontains="скт")
+                | Q(event__title__icontains="отел")
+                | Q(event__title__icontains="отъем")
+            )
+            .order_by("-completion_date", "event__title")
+        )
+
+        serializer = CalfMeasurementSerializer(queryset, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        serializer = CalfMeasurementSerializer(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def patch(self, request, single_event_pk):
+        s_event = get_object_or_404(SingleCalfEvent, pk=single_event_pk)
+
+        serializer = CalfMeasurementSerializer(s_event, data=request.data, partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, single_event_pk):
+        s_event = get_object_or_404(SingleCalfEvent, pk=single_event_pk)
         s_event.delete()
         return Response({"deleted": True}, status=status.HTTP_204_NO_CONTENT)

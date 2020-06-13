@@ -40,7 +40,8 @@ from .ecalendar.views import (
     BreedingStockEventViewSet,
     ToggleBreedingStockEventView,
     ToggleCalfEventView,
-    WeightSKTMeasurementsView,
+    BreedingStockMeasurementView,
+    CalfMeasurementView,
 )
 from .catalog.views import CompanyDirectionListView, CompanyViewSet
 from .community.views import (
@@ -149,12 +150,17 @@ urlpatterns = i18n_patterns(
                 ),
                 path(
                     "events/breedingstock/measurements/<int:single_event_pk>/",
-                    WeightSKTMeasurementsView.as_view(),
+                    BreedingStockMeasurementView.as_view(),
                 ),
                 path(
                     "events/breedingstock/measurements/",
-                    WeightSKTMeasurementsView.as_view(),
+                    BreedingStockMeasurementView.as_view(),
                 ),
+                path(
+                    "events/calf/measurements/<int:single_event_pk>/",
+                    CalfMeasurementView.as_view(),
+                ),
+                path("events/calf/measurements/", CalfMeasurementView.as_view(),),
                 path("catalog/directions/", CompanyDirectionListView.as_view()),
                 path("community/categories/", PostCategoryListView.as_view()),
                 path("community/posts/create/", PostCreateView.as_view()),
