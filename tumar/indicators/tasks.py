@@ -86,7 +86,7 @@ def handle_process_request(result, imageryrequest_id):
             )
         )
 
-    if result == "FINISHED":
+    if type(result) == tuple and result[0] == "FINISHED":
         # Send notification that this imagery request has finished
         ntfcn = Notification.objects.create(
             receiver=imagery_request.cadastre.farm.user,
@@ -96,7 +96,7 @@ def handle_process_request(result, imageryrequest_id):
         )
         ntfcn.send()
 
-        imagery_request.fetch_result_after_success()
+        imagery_request.save_result_after_success(result[1])
         imagery_request.status = FINISHED
         imagery_request.save()
     elif result == "WAITING":

@@ -20,23 +20,11 @@ class Production(Common):
             default=os.getenv("TUMAR_DB"),
             conn_max_age=int(os.getenv("POSTGRES_CONN_MAX_AGE", 600)),
         ),
-        "egistic_2": dj_database_url.config(
-            default=os.getenv("EGISTIC_DB"),
-            conn_max_age=int(os.getenv("POSTGRES_CONN_MAX_AGE", 600)),
-        ),
     }
 
     # CELERY SETTIGS
-    RABBITMQ_DEFAULT_USER = os.getenv("RABBITMQ_DEFAULT_USER")
-    RABBITMQ_DEFAULT_PASS = os.getenv("RABBITMQ_DEFAULT_PASS")
-    RABBITMQ_IP = os.getenv("RABBITMQ_IP")
-    RABBITMQ_PORT = os.getenv("RABBITMQ_PORT")
-
-    CELERY_BROKER_URL = (
-        f"amqp://{RABBITMQ_DEFAULT_USER}:{RABBITMQ_DEFAULT_PASS}@"
-        f"{RABBITMQ_IP}:{RABBITMQ_PORT}//"
-    )
-    CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND", "rpc://")
+    CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL")
+    CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND")
 
     # Celery Data Format
     CELERY_ACCEPT_CONTENT = ["application/json", "pickle"]

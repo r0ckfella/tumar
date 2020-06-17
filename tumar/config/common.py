@@ -72,10 +72,6 @@ class Common(Configuration):
             default=os.getenv("TUMAR_DB"),
             conn_max_age=int(os.getenv("POSTGRES_CONN_MAX_AGE", 600)),
         ),
-        "egistic_2": dj_database_url.config(
-            default=os.getenv("EGISTIC_DB"),
-            conn_max_age=int(os.getenv("POSTGRES_CONN_MAX_AGE", 600)),
-        ),
     }
     # DATABASES['default']['ENGINE'] = 'django.contrib.gis.db.backends.postgis'
 

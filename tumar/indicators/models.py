@@ -92,58 +92,27 @@ class ImageryRequest(models.Model):
 
         return True
 
-    def fetch_result_after_success(self):
-        egistic_cadastre_pk = self.cadastre.get_pk_in_egistic_db()
-        if egistic_cadastre_pk == -1:
-            self.status = FAILED
-            self.save()
-            raise CadastreNotInEgisticError(cadastre_pk=self.cadastre.pk)
+    def save_result_after_success(self, imagination_result):
+        # Save imagery data into the db
+        self.ndvi = imagination_result["imagery_request"]["ndvi"]
+        self.gndvi = imagination_result["imagery_request"]["gndvi"]
+        self.clgreen = imagination_result["imagery_request"]["clgreen"]
+        self.ndmi = imagination_result["imagery_request"]["ndmi"]
+        self.ndsi = imagination_result["imagery_request"]["ndsi"]
+        self.finished_at = imagination_result["imagery_request"]["actual_date"]
+        self.results_dir = imagination_result["imagery_request"]["results_dir"]
+        self.is_layer_created = imagination_result["imagery_request"][
+            "is_layer_created"
+        ]
+        self.save()
 
-        cadastre_result_pk = None
-
-        # Fetch imagery data
-        try:
-            with connections["egistic_2"].cursor() as cursor:
-                cursor.execute(
-                    "SELECT * FROM tumar_cadastreresult WHERE cadastre_id = %s ORDER BY"
-                    + " actual_date DESC",
-                    [egistic_cadastre_pk],
-                )
-                row = cursor.fetchone()
-                cadastre_result_pk = row[0]
-                self.ndvi = row[1]
-                self.gndvi = row[2]
-                self.clgreen = row[3]
-                self.ndmi = row[4]
-                self.ndsi = row[5]
-                self.finished_at = row[6]
-                self.results_dir = row[7]
-                self.is_layer_created = row[9]
-                self.save()
-        except Exception:
-            self.status = FAILED
-            self.save()
-            raise QueryImageryFromEgisticError(cadastre_pk=self.cadastre.pk)
-
-        # Fetch PNGs
-        try:
-            with connections["egistic_2"].cursor() as cursor:
-                cursor.execute(
-                    "SELECT * FROM tumar_cadastreresultimage WHERE"
-                    + " cadastreresult_id = %s",
-                    [cadastre_result_pk],
-                )
-                row = cursor.fetchone()
-                self.ndvi_dir = row[1]
-                self.gndvi_dir = row[2]
-                self.clgreen_dir = row[3]
-                self.ndmi_dir = row[4]
-                self.rgb_dir = row[5]
-                self.save()
-        except Exception:
-            self.status = FAILED
-            self.save()
-            raise QueryImageryFromEgisticError(cadastre_pk=self.cadastre.pk)
+        # Save PNGs into the db
+        self.ndvi_dir = imagination_result["ir_pngs"]["ndvi"]
+        self.gndvi_dir = imagination_result["ir_pngs"]["gndvi"]
+        self.clgreen_dir = imagination_result["ir_pngs"]["clgreen"]
+        self.ndmi_dir = imagination_result["ir_pngs"]["ndmi"]
+        self.rgb_dir = imagination_result["ir_pngs"]["rgb"]
+        self.save()
 
     def save(self, *args, **kwargs):
         is_new = self._state.adding
