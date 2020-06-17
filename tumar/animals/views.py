@@ -205,7 +205,7 @@ class SearchCadastreView(APIView):
             "nearest_town": None,
         }
 
-        url = "{}{}".format(settings.EGISTIC_CADASTRE_QUERY_URL, self.cad_number)
+        url = "{}{}".format(settings.EGISTIC_CADASTRE_QUERY_URL, data["cad_number"])
         headers = {
             "Content-type": "application/json",
             "Accept": "application/json",
