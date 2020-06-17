@@ -3,7 +3,7 @@ from datetime import timedelta
 
 from django.conf import settings
 from django.contrib.postgres.fields import JSONField
-from django.db import connections, models
+from django.db import models
 from django.db.models import Q
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -12,7 +12,6 @@ from tumar.animals.models import Cadastre
 
 from .choices import STATUS_CHOICES, PENDING, FREE_EXPIRED, FAILED, PROCESSING, WAITING
 from .exceptions import (
-    QueryImageryFromEgisticError,
     FreeRequestsExpiredError,
     CadastreNotInEgisticError,
     ImageryRequestAlreadyExistsError,

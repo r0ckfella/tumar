@@ -21,6 +21,11 @@ class Local(Common):
     #     "--cover-package=tumar",
     # ]
 
+    Common.REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"] = (
+        "rest_framework.renderers.JSONRenderer",
+        "rest_framework.renderers.BrowsableAPIRenderer",
+    )
+
     # Mail
     EMAIL_HOST = "localhost"
     EMAIL_PORT = 1025

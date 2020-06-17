@@ -172,10 +172,7 @@ class Common(Configuration):
         "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
         "PAGE_SIZE": int(os.getenv("DJANGO_PAGINATION_LIMIT", 30)),
         "DATETIME_FORMAT": "%Y-%m-%dT%H:%M:%S%z",
-        "DEFAULT_RENDERER_CLASSES": (
-            "rest_framework.renderers.JSONRenderer",
-            "rest_framework.renderers.BrowsableAPIRenderer",
-        ),
+        "DEFAULT_RENDERER_CLASSES": ("rest_framework.renderers.JSONRenderer",),
         "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
         "DEFAULT_AUTHENTICATION_CLASSES": (
             "rest_framework.authentication.TokenAuthentication",
@@ -199,6 +196,8 @@ class Common(Configuration):
     DOWNLOAD_GEOLOCATIONS_URL = os.getenv("DOWNLOAD_GEOLOCATIONS_URL")
     GET_BATTERY_CHARGE_URL = os.getenv("GET_BATTERY_CHARGE_URL")
     CHINESE_LOGIN_URL = os.getenv("CHINESE_LOGIN_URL")
+    EGISTIC_CADASTRE_QUERY_URL = os.getenv("EGISTIC_CADASTRE_QUERY_URL")
+    EGISTIC_TOKEN = os.getenv("EGISTIC_TOKEN")
     STANDARD_LOGIN_PASSWORD = os.getenv("STANDARD_LOGIN_PASSWORD")
 
     DAYS_BETWEEN_IMAGERY_REQUESTS = 5

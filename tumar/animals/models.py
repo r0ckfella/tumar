@@ -21,7 +21,6 @@ from django.db.models import (
 )
 from django.db.models.functions import ExtractDay, Coalesce
 from django.core.validators import RegexValidator
-from django.db import connections
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
@@ -639,35 +638,41 @@ class Cadastre(models.Model):
             If the cadastre does not exist in the egistic db, the method returns -1.
             Else returns primary key of the cadastre in the egistic db.
         """
-        try:
-            with connections["egistic_2"].cursor() as cursor:
-                cursor.execute(
-                    "SELECT id FROM cadastres_cadastre WHERE kad_nomer = %s",
-                    [self.cad_number],
-                )
-                row = cursor.fetchone()
-                egistic_cadastre_pk = row[0]
-        except TypeError:
-            return -1
-        else:
-            return egistic_cadastre_pk
+        url = "{}{}".format(settings.EGISTIC_CADASTRE_QUERY_URL, self.cad_number)
+        headers = {
+            "Content-type": "application/json",
+            "Accept": "application/json",
+            "Authorization": "Token {}".format(settings.EGISTIC_TOKEN),
+        }
+
+        r = requests.get(url, headers=headers)
+
+        if r.status_code != requests.codes.ok:
+            r.raise_for_status(
+                "cadastre number was not specified or not found in the database"
+            )
+        response_data = r.json()
+        egistic_cadastre_pk = response_data["id"]
+
+        return egistic_cadastre_pk
 
     def save(self, *args, **kwargs):
         if self.cad_number and not self.geom:
-            try:
-                with connections["egistic_2"].cursor() as cursor:
-                    cursor.execute(
-                        "SELECT ST_AsText(ST_Transform(geom, 3857)) FROM"
-                        + " cadastres_cadastre WHERE kad_nomer = %s",
-                        [self.cad_number],
-                    )
-                    row = cursor.fetchone()
-                    self.geom = row[0]
-            except TypeError as err:
-                print(err)
-                raise ValidationError(
+            url = "{}{}".format(settings.EGISTIC_CADASTRE_QUERY_URL, self.cad_number)
+            headers = {
+                "Content-type": "application/json",
+                "Accept": "application/json",
+                "Authorization": "Token {}".format(settings.EGISTIC_TOKEN),
+            }
+
+            r = requests.get(url, headers=headers)
+
+            if r.status_code != requests.codes.ok:
+                r.raise_for_status(
                     "cadastre number was not specified or not found in the database"
                 )
+            response_data = r.json()
+            self.geom = response_data["geomjson"]
         elif not self.cad_number and not self.geom:
             raise ValidationError("Either cad_number or geometry must be sent")
         elif self.cad_number and self.geom:

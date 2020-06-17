@@ -1,12 +1,13 @@
 import datetime
+import requests
 
 
 from django.core.cache import cache
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.gis.geos import Point, Polygon, GEOSGeometry
 from django.contrib.gis.measure import Distance as d
 from django.contrib.gis.db.models import Extent
-from django.db import connections
 from django.utils.translation import gettext_lazy as _
 from django_filters import rest_framework as filters
 from geopy.geocoders import GeoNames
@@ -204,25 +205,22 @@ class SearchCadastreView(APIView):
             "nearest_town": None,
         }
 
-        try:
-            with connections["egistic_2"].cursor() as cursor:
-                cursor.execute(
-                    "SELECT id, ST_AsText(ST_Transform(geom, 3857)) FROM"
-                    + " cadastres_cadastre WHERE kad_nomer = %s",
-                    [data.get("cad_number")],
-                )
-                row = cursor.fetchone()
-                data["pk"] = row[0]
-                data["geom"] = row[1]
-        except TypeError as err:
-            print(err)
-            return Response(
-                {
-                    "error": "cadastre number was not specified or not found"
-                    + " in the database"
-                },
-                status=status.HTTP_404_NOT_FOUND,
+        url = "{}{}".format(settings.EGISTIC_CADASTRE_QUERY_URL, self.cad_number)
+        headers = {
+            "Content-type": "application/json",
+            "Accept": "application/json",
+            "Authorization": "Token {}".format(settings.EGISTIC_TOKEN),
+        }
+
+        r = requests.get(url, headers=headers)
+
+        if r.status_code != requests.codes.ok:
+            r.raise_for_status(
+                "cadastre number was not specified or not found in the database"
             )
+        response_data = r.json()
+        data["pk"] = response_data["id"]
+        data["geom"] = response_data["geomjson"]
 
         # find nearby town
         cadastre = GEOSGeometry(data["geom"], srid=3857)
