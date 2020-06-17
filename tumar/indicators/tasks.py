@@ -20,7 +20,7 @@ def run_image_processing_task(imagery_request, egistic_cadastre_pk, immediate=Tr
     result = app.signature(
         "process_cadastres",
         kwargs={
-            "param_values": {"param": "id", "values": [egistic_cadastre_pk]},
+            "param_values": dict(param="id", values=[egistic_cadastre_pk]),
             "target_dates": target_dates,
             "days_range": 14,
         },
