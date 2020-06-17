@@ -19,4 +19,5 @@ class Notification(models.Model):
         self.save()
 
     def send(self):
-        self.receiver.device_set.send_message(self.content)
+        if settings.PUSH_NOTIFICATIONS_SETTINGS.get("FCM_API_KEY", None):
+            self.receiver.device_set.send_message(self.content)

@@ -216,5 +216,5 @@ class Common(Configuration):
     }
 
     PUSH_NOTIFICATIONS_SETTINGS = {
-        "FCM_API_KEY": "[your api key]",
+        "FCM_API_KEY": None,
     }

@@ -13,7 +13,7 @@ def task_send_push_notification_new_comment_on_post(comment):
             comment.post.title[:10], comment.content[:10]
         ),
     )
-    # ntfcn.send()
+    ntfcn.send()
 
 
 @app.task(
@@ -28,7 +28,7 @@ def task_send_push_notification_new_vote_on_comment(comment_vote):
             "понравился" if comment_vote.type == "U" else "не понравился",
         ),
     )
-    # ntfcn.send()
+    ntfcn.send()
 
 
 @app.task(
