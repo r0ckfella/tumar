@@ -66,7 +66,8 @@ class BreedingStockMeasurementSerializer(serializers.ModelSerializer):
                 "birth_weight": {"query_title": "отел", "title": "Отел Коровы"},
                 "skt": {"query_title": "скт", "title": "Измерение СКТ Коровы"},
             }
-            title = titles.get(data["attributes"], None)
+            attribute_keys = [*data["attributes"].keys()]
+            title = titles.get(attribute_keys[0], None)
 
             data["event"] = BreedingStockEvent.objects.filter(
                 title__icontains=title.get("query_title", None), farm=the_farm
@@ -113,7 +114,8 @@ class CalfMeasurementSerializer(serializers.ModelSerializer):
                 "wean_weight": {"query_title": "отъем", "title": "Отъем Телят"},
                 "birth_weight": {"query_title": "отел", "title": "Отел Коровы"},
             }
-            title = titles.get(data["attributes"], None)
+            attribute_keys = [*data["attributes"].keys()]
+            title = titles.get(attribute_keys[0], None)
 
             data["event"] = CalfEvent.objects.filter(
                 title__icontains=title.get("query_title", None), farm=the_farm
