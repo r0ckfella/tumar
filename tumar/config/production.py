@@ -27,7 +27,7 @@ class Production(Common):
     CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND")
 
     # Celery Data Format
-    CELERY_ACCEPT_CONTENT = ["application/json", "pickle"]
+    CELERY_ACCEPT_CONTENT = ["application/json"]
     CELERY_TASK_SERIALIZER = "json"
     CELERY_RESULT_SERIALIZER = "json"
     CELERY_TIMEZONE = "Asia/Almaty"
