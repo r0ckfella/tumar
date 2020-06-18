@@ -2,6 +2,7 @@ import datetime
 import logging
 
 from django.db.models import Q
+from django.utils import timezone
 from celery import shared_task
 
 from ..celery import app
@@ -41,10 +42,15 @@ def run_image_processing_task(imagery_request, egistic_cadastre_pk, immediate=Tr
             | handler_task
         ).delay()
     else:
+        scheduled_date = (
+            imagery_request.requested_date
+            if imagery_request.requested_date > timezone.now().date()
+            else timezone.now().date() + timezone.timedelta(days=1)
+        )
         (
             result.on_error(log_error.s(imageryrequest_id=imagery_request.id))
             | handler_task
-        ).apply_async(eta=imagery_request.requested_date)
+        ).apply_async(eta=scheduled_date)
 
 
 @app.task(
@@ -86,7 +92,7 @@ def handle_process_request(result, imageryrequest_id):
             )
         )
 
-    if type(result) == tuple and result[0] == "FINISHED":
+    if type(result) == list and result[0] == "FINISHED":
         # Send notification that this imagery request has finished
         ntfcn = Notification.objects.create(
             receiver=imagery_request.cadastre.farm.user,

@@ -215,9 +215,7 @@ class SearchCadastreView(APIView):
         r = requests.get(url, headers=headers)
 
         if r.status_code != requests.codes.ok:
-            r.raise_for_status(
-                "cadastre number was not specified or not found in the database"
-            )
+            r.raise_for_status()
         response_data = r.json()
         data["pk"] = response_data["id"]
         data["geom"] = response_data["geomjson"]
