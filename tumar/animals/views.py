@@ -1,5 +1,6 @@
 import datetime
 import requests
+import json
 
 
 from django.core.cache import cache
@@ -218,12 +219,11 @@ class SearchCadastreView(APIView):
             r.raise_for_status()
         response_data = r.json()
         data["pk"] = response_data["id"]
-        data["geom"] = response_data["geomjson"]
+        data["geom"] = json.dumps(response_data["geomjson"])
 
         # find nearby town
-        cadastre = GEOSGeometry(data["geom"], srid=3857)
-        data["geom"] = cadastre.geojson
-
+        cadastre = GEOSGeometry(data["geom"])
+        cadastre.srid = 3857
         cad_point = cadastre.point_on_surface
         cad_point.transform(4326)
         coords = tuple(cad_point.coord_seq)
