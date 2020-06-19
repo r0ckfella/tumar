@@ -36,21 +36,21 @@ def run_image_processing_task(imagery_request, egistic_cadastre_pk, immediate=Tr
         queue=result_handler_task_name,
     )
 
+    error_handler = app.signature(
+        "tumar_error_handler_process_cadastres",
+        kwargs={"imageryrequest_id": imagery_request.id},
+        queue=result_handler_task_name,
+    )
+
     if immediate:
-        (
-            result.on_error(log_error.s(imageryrequest_id=imagery_request.id))
-            | handler_task
-        ).delay()
+        (result.on_error(error_handler) | handler_task).delay()
     else:
         scheduled_date = (
             imagery_request.requested_date
             if imagery_request.requested_date > timezone.now().date()
             else timezone.now().date() + timezone.timedelta(days=1)
         )
-        (
-            result.on_error(log_error.s(imageryrequest_id=imagery_request.id))
-            | handler_task
-        ).apply_async(eta=scheduled_date)
+        (result.on_error(error_handler) | handler_task).apply_async(eta=scheduled_date)
 
 
 @app.task(
