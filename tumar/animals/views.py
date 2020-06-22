@@ -216,7 +216,23 @@ class SearchCadastreView(APIView):
         r = requests.get(url, headers=headers)
 
         if r.status_code != requests.codes.ok:
-            r.raise_for_status()
+            if r.status_code == 500:
+                return Response(
+                    {
+                        "error": "Internal Server Error. Contact admin to solve the problem."
+                    },
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                )
+            else:
+                return Response(
+                    {
+                        "error": "The cad_number {} was not found.".format(
+                            data["cad_number"]
+                        )
+                    },
+                    status=status.HTTP_404_NOT_FOUND,
+                )
+
         response_data = r.json()
         data["pk"] = response_data["id"]
         data["geom"] = json.dumps(response_data["geomjson"])
