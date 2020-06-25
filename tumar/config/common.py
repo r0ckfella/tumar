@@ -214,7 +214,3 @@ class Common(Configuration):
             "DRF Token": {"type": "apiKey", "name": "Authorization", "in": "header"}
         }
     }
-
-    PUSH_NOTIFICATIONS_SETTINGS = {
-        "FCM_API_KEY": None,
-    }

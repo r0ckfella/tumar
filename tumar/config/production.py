@@ -76,3 +76,7 @@ class Production(Common):
             "": {"handlers": ["file", "console", "telegram_log"], "level": "INFO"},
         },
     }
+
+    PUSH_NOTIFICATIONS_SETTINGS = {
+        "FCM_API_KEY": os.getenv("FCM_API_KEY"),
+    }
