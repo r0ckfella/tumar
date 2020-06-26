@@ -142,7 +142,7 @@ class Comment(models.Model):
         return str(self.pk) + " of " + str(self.post)
 
     def send_push_notification(self):
-        task_send_push_notification_new_comment_on_post(self)
+        task_send_push_notification_new_comment_on_post.delay(self)
 
     def save(self, *args, **kwargs):
         is_new = self._state.adding
@@ -212,7 +212,7 @@ class CommentVote(models.Model):
         verbose_name_plural = _("Upvotes/Downvotes")
 
     def send_push_notification(self):
-        task_send_push_notification_new_vote_on_comment(self)
+        task_send_push_notification_new_vote_on_comment.delay(self)
 
     def save(self, *args, **kwargs):
         is_new = self._state.adding
