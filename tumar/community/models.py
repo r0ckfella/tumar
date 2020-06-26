@@ -149,7 +149,7 @@ class Comment(models.Model):
         if settings.DEBUG:
             logger.info("Notification has been sent!")
         else:
-            task_send_push_notification_new_comment_on_post.delay(self)
+            task_send_push_notification_new_comment_on_post.delay(self.pk)
 
     def delete(self, *args, **kwargs):
 
@@ -214,4 +214,4 @@ class CommentVote(models.Model):
         if settings.DEBUG:
             logger.info("Notification has been sent!")
         else:
-            task_send_push_notification_new_vote_on_comment.delay(self)
+            task_send_push_notification_new_vote_on_comment.delay(self.pk)

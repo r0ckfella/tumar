@@ -1,12 +1,15 @@
 from ..celery import app
 from ..notify.models import Notification
+from .models import Comment, CommentVote
 
 
 @app.task(
     name="send_push_notification.new_comment_on_post",
     queue="community_push_notifications",
 )
-def task_send_push_notification_new_comment_on_post(comment):
+def task_send_push_notification_new_comment_on_post(comment_pk):
+    comment = Comment.objects.get(pk=comment_pk)
+
     ntfcn = Notification.objects.create(
         receiver=comment.post.user,
         content=('На ваш пост "{}..." ответили комментарием "{}..."!').format(
@@ -20,7 +23,9 @@ def task_send_push_notification_new_comment_on_post(comment):
     name="send_push_notification.new_vote_on_comment",
     queue="community_push_notifications",
 )
-def task_send_push_notification_new_vote_on_comment(comment_vote):
+def task_send_push_notification_new_vote_on_comment(comment_vote_pk):
+    comment_vote = CommentVote.objects.get(pk=comment_vote_pk)
+
     ntfcn = Notification.objects.create(
         receiver=comment_vote.comment.user,
         content=('Ваш комментарий "{}..." кому-то {}.').format(
