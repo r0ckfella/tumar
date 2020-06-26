@@ -144,14 +144,6 @@ class Comment(models.Model):
     def send_push_notification(self):
         task_send_push_notification_new_comment_on_post.delay(self)
 
-    def save(self, *args, **kwargs):
-        is_new = self._state.adding
-
-        if is_new:
-            self.send_push_notification()
-
-        super().save(*args, **kwargs)
-
     def delete(self, *args, **kwargs):
 
         if self.replies.all().exists():
@@ -213,11 +205,3 @@ class CommentVote(models.Model):
 
     def send_push_notification(self):
         task_send_push_notification_new_vote_on_comment.delay(self)
-
-    def save(self, *args, **kwargs):
-        is_new = self._state.adding
-
-        if is_new:
-            self.send_push_notification()
-
-        super().save(*args, **kwargs)
