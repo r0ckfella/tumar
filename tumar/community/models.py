@@ -1,3 +1,5 @@
+import logging
+
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
@@ -7,6 +9,8 @@ from .tasks import (
     task_send_push_notification_new_comment_on_post,
     task_send_push_notification_new_vote_on_comment,
 )
+
+logger = logging.getLogger()
 
 # Create your models here.
 
@@ -142,7 +146,10 @@ class Comment(models.Model):
         return str(self.pk) + " of " + str(self.post)
 
     def send_push_notification(self):
-        task_send_push_notification_new_comment_on_post.delay(self)
+        if settings.DEBUG:
+            logger.info("Notification has been sent!")
+        else:
+            task_send_push_notification_new_comment_on_post.delay(self)
 
     def delete(self, *args, **kwargs):
 
@@ -204,4 +211,7 @@ class CommentVote(models.Model):
         verbose_name_plural = _("Upvotes/Downvotes")
 
     def send_push_notification(self):
-        task_send_push_notification_new_vote_on_comment.delay(self)
+        if settings.DEBUG:
+            logger.info("Notification has been sent!")
+        else:
+            task_send_push_notification_new_vote_on_comment.delay(self)
