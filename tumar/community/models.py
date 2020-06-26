@@ -4,11 +4,8 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
 
+from ..celery import app
 from ..users.utils import compress
-from .tasks import (
-    task_send_push_notification_new_comment_on_post,
-    task_send_push_notification_new_vote_on_comment,
-)
 
 logger = logging.getLogger()
 
@@ -149,7 +146,14 @@ class Comment(models.Model):
         if settings.DEBUG:
             logger.info("Notification has been sent!")
         else:
-            task_send_push_notification_new_comment_on_post.delay(self.pk)
+            ntfcn_task = app.signature(
+                "send_push_notification.new_comment_on_post",
+                kwargs={"comment_pk": self.pk},
+                queue="community_push_notifications",
+                priority=5,
+            )
+
+            ntfcn_task.delay()
 
     def delete(self, *args, **kwargs):
 
@@ -214,4 +218,11 @@ class CommentVote(models.Model):
         if settings.DEBUG:
             logger.info("Notification has been sent!")
         else:
-            task_send_push_notification_new_vote_on_comment.delay(self.pk)
+            ntfcn_task = app.signature(
+                "send_push_notification.new_vote_on_comment",
+                kwargs={"comment_vote_pk": self.pk},
+                queue="community_push_notifications",
+                priority=5,
+            )
+
+            ntfcn_task.delay()
