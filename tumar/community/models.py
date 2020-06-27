@@ -102,6 +102,19 @@ class PostVote(models.Model):
         verbose_name = _("Upvote/Downvote")
         verbose_name_plural = _("Upvotes/Downvotes")
 
+    def send_push_notification(self):
+        if settings.DEBUG:
+            logger.info("Notification has been sent!")
+        else:
+            ntfcn_task = app.signature(
+                "send_push_notification.new_vote_on_post",
+                kwargs={"post_vote_pk": self.pk},
+                queue="community_push_notifications",
+                priority=5,
+            )
+
+            ntfcn_task.delay()
+
 
 class Comment(models.Model):
     user = models.ForeignKey(
@@ -148,6 +161,19 @@ class Comment(models.Model):
         else:
             ntfcn_task = app.signature(
                 "send_push_notification.new_comment_on_post",
+                kwargs={"comment_pk": self.pk},
+                queue="community_push_notifications",
+                priority=5,
+            )
+
+            ntfcn_task.delay()
+
+    def send_push_notification_to_reply_object(self):
+        if settings.DEBUG:
+            logger.info("Notification has been sent!")
+        else:
+            ntfcn_task = app.signature(
+                "send_push_notification.new_reply_comment",
                 kwargs={"comment_pk": self.pk},
                 queue="community_push_notifications",
                 priority=5,

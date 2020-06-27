@@ -139,12 +139,14 @@ class PostVoteView(APIView):
         if created:
             vote.type = vote_type
             vote.save()
+            vote.send_push_notification()
         else:
             if vote.type == vote_type:
                 vote.delete()
             else:
                 vote.type = vote_type
                 vote.save()
+                vote.send_push_notification()
 
         return Response({"success": True}, status=status.HTTP_200_OK)
 
@@ -169,6 +171,8 @@ class CommentCreateView(APIView):
         if serializer.is_valid():
             serializer.save(user=request.user)
             serializer.instance.send_push_notification()
+            if serializer.instance.reply_object:
+                serializer.instance.send_push_notification_to_reply_object()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
