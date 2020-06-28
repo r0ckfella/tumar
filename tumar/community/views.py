@@ -19,6 +19,7 @@ from .serializers import (
     PostSerializer,
     PostCreateUpdateSerializer,
 )
+from .exceptions import ExceededLinksCountError
 
 # Create your views here.
 
@@ -71,9 +72,21 @@ class PostCreateView(APIView):
 
         serializer = PostCreateUpdateSerializer(data=request.data)
 
-        if serializer.is_valid():
-            serializer.save(user=request.user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        try:
+            if serializer.is_valid():
+                serializer.save(user=request.user)
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+        except ExceededLinksCountError:
+            return Response(
+                {
+                    "error": (
+                        "There can be only one YouTube link and"
+                        " one general link for this post."
+                    )
+                },
+                status=status.HTTP_409_CONFLICT,
+            )
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -105,9 +118,21 @@ class PostUpdateDestroyView(APIView):
 
         serializer = PostCreateUpdateSerializer(post, data=request.data, partial=True)
 
-        if serializer.is_valid():
-            serializer.save(user=request.user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        try:
+            if serializer.is_valid():
+                serializer.save(user=request.user)
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+        except ExceededLinksCountError:
+            return Response(
+                {
+                    "error": (
+                        "There can be only one YouTube link and"
+                        " one general link for this post."
+                    )
+                },
+                status=status.HTTP_409_CONFLICT,
+            )
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, post_pk):
