@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.db.models import Q
 from django import forms
 
-from .models import Post, Comment, PostImage, CommentImage
+from .models import Post, Comment, PostImage, CommentImage, PostLink
 
 # Register your models here.
 
@@ -15,6 +15,12 @@ class InLineComment(admin.TabularInline):
 class InLinePostImage(admin.TabularInline):
     model = PostImage
     extra = 1
+
+
+class InLinePostLink(admin.TabularInline):
+    model = PostLink
+    extra = 1
+    max_num = 2
 
 
 class InLineCommentImage(admin.TabularInline):
@@ -40,7 +46,7 @@ class CommentForm(forms.ModelForm):
 
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
-    inlines = [InLinePostImage, InLineComment]
+    inlines = [InLinePostImage, InLineComment, InLinePostLink]
 
 
 @admin.register(Comment)

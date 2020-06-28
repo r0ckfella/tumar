@@ -58,7 +58,7 @@ class MyPostsView(APIView):
 
 class PostCreateView(APIView):
     def post(self, request):
-        # Prohibit if a user assigned Лучшее category to a post
+        # Prohibit the user assigning Лучшее category to a post
         if not request.user.is_superuser and "categories" in request.data:
             categories_data = request.data.get("categories")
             hot_category_id = Category.objects.get(name="Лучшее").id

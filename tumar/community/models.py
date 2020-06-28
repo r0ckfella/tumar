@@ -6,6 +6,8 @@ from django.conf import settings
 
 from ..celery import app
 from ..users.utils import compress
+from .exceptions import ExceededLinksCountError
+from .managers import PostLinkManager
 
 logger = logging.getLogger()
 
@@ -76,6 +78,33 @@ class PostImage(models.Model):
 
             # set self.image to new_image
             self.image = new_image
+
+        super().save(*args, **kwargs)
+
+
+class PostLink(models.Model):
+    post = models.ForeignKey(
+        Post, on_delete=models.CASCADE, related_name="links", verbose_name=_("Post"),
+    )
+    type = models.CharField(
+        max_length=1,
+        choices=[("Y", "YouTube"), ("G", _("General"))],
+        default="G",
+        verbose_name=_("Type of the Post Link"),
+    )
+    display_text = models.TextField(blank=True, verbose_name=_("Display Text"))
+
+    objects = PostLinkManager()
+
+    class Meta:
+        verbose_name = _("Post Lin")
+        verbose_name_plural = _("Post Link")
+
+    def save(self, *args, **kwargs):
+        if (self.post.links.youtube_links_count() == 1 and self.type == "Y") or (
+            self.post.links.general_links_count() == 1 and self.type == "G"
+        ):
+            raise ExceededLinksCountError(post_pk=self.post.pk)
 
         super().save(*args, **kwargs)
 

@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from ..users.serializers import UserPreviewSerializer
-from .models import Category, Comment, Post, PostImage, CommentImage
+from .models import Category, Comment, Post, PostImage, CommentImage, PostLink
 
 
 class PostCategorySerializer(serializers.ModelSerializer):
@@ -20,6 +20,16 @@ class PostImageSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "image",
+        )
+
+
+class PostLinkSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PostLink
+        fields = (
+            "id",
+            "type",
+            "display_text",
         )
 
 
@@ -98,6 +108,7 @@ class CommentSerializer(serializers.ModelSerializer):
 class PostSerializer(serializers.ModelSerializer):
     categories = PostCategorySerializer(many=True, read_only=True)
     images = PostImageSerializer(required=False, allow_null=True, many=True)
+    links = PostLinkSerializer(required=False, allow_null=True, many=True)
     user = UserPreviewSerializer(required=False, allow_null=True)
     my_upvote = serializers.SerializerMethodField()
     my_downvote = serializers.SerializerMethodField()
@@ -115,6 +126,7 @@ class PostSerializer(serializers.ModelSerializer):
             "is_active",
             "user",
             "images",
+            "links",
             "categories",
             "my_upvote",
             "my_downvote",
@@ -138,6 +150,7 @@ class PostSerializer(serializers.ModelSerializer):
 
 class PostCreateUpdateSerializer(serializers.ModelSerializer):
     images = PostImageSerializer(required=False, allow_null=True, many=True)
+    links = PostLinkSerializer(required=False, allow_null=True, many=True)
     user = UserPreviewSerializer(required=False, allow_null=True)
     categories = serializers.PrimaryKeyRelatedField(
         many=True, read_only=False, queryset=Category.objects.all(),
@@ -156,6 +169,7 @@ class PostCreateUpdateSerializer(serializers.ModelSerializer):
             "is_active",
             "user",
             "images",
+            "links",
             "categories",
         )
         read_only_fields = (
@@ -169,12 +183,16 @@ class PostCreateUpdateSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         images_data = validated_data.pop("images", [])
+        links_data = validated_data.pop("links", [])
         categories = validated_data.pop("categories", [])
 
         post = Post.objects.create(**validated_data)
 
         for image_data in images_data:
             post.images.create(**image_data)
+
+        for link_data in links_data:
+            post.links.create(**link_data)
 
         for category in categories:
             # if a category needs to be created instantly, it can be done here
@@ -184,6 +202,7 @@ class PostCreateUpdateSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         images_data = validated_data.pop("images", [])
+        links_data = validated_data.pop("links", [])
         categories = validated_data.pop("categories", [])
 
         if "id" in validated_data:
@@ -195,6 +214,10 @@ class PostCreateUpdateSerializer(serializers.ModelSerializer):
         for image_data in images_data:
             if "id" not in image_data:
                 instance.images.create(**image_data)
+
+        for link_data in links_data:
+            if "id" not in link_data:
+                instance.links.create(**link_data)
 
         if categories:
             # if a category needs to be created instantly, it can be done here
