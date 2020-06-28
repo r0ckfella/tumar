@@ -62,7 +62,7 @@ def task_send_push_notification_new_vote_on_post(post_vote_pk):
     ntfcn = Notification.objects.create(
         receiver=post_vote.post.user,
         content=('Ваш пост "{}..." кому-то {}.').format(
-            post_vote.post.content[:10],
+            post_vote.post.title[:10],
             "понравился" if post_vote.type == "U" else "не понравился",
         ),
     )
@@ -78,8 +78,6 @@ def task_send_push_notifications_new_post(post_pk_list):
 
         ntfcn = Notification.objects.create(
             receiver=post.user,
-            content=('Новый пост "{}..." был только что опубликован.').format(
-                post.content[:10],
-            ),
+            content=('Новый пост: "{}..."').format(post.title[:20],),
         )
         ntfcn.send(extra={"post_pk": pk})
