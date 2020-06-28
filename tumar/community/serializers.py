@@ -30,6 +30,7 @@ class PostLinkSerializer(serializers.ModelSerializer):
             "id",
             "type",
             "display_text",
+            "url",
         )
 
 

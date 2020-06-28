@@ -98,8 +98,8 @@ class PostLink(models.Model):
     objects = PostLinkManager()
 
     class Meta:
-        verbose_name = _("Post Lin")
-        verbose_name_plural = _("Post Link")
+        verbose_name = _("Post Link")
+        verbose_name_plural = _("Post Links")
 
     def save(self, *args, **kwargs):
         if (self.post.links.youtube_links_count() == 1 and self.type == "Y") or (
