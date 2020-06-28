@@ -93,6 +93,7 @@ class PostLink(models.Model):
         verbose_name=_("Type of the Post Link"),
     )
     display_text = models.TextField(blank=True, verbose_name=_("Display Text"))
+    url = models.URLField(max_length=300, verbose_name=_("URL Link"))
 
     objects = PostLinkManager()
 

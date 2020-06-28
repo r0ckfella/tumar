@@ -1,6 +1,6 @@
 from ..celery import app
 from ..notify.models import Notification
-from .models import Comment, CommentVote, PostVote
+from .models import Comment, CommentVote, PostVote, Post
 
 
 @app.task(
@@ -72,5 +72,14 @@ def task_send_push_notification_new_vote_on_post(post_vote_pk):
 @app.task(
     name="send_push_notifications.new_post", queue="community_push_notifications",
 )
-def task_send_push_notifications_new_post(post):
-    pass
+def task_send_push_notifications_new_post(post_pk_list):
+    for pk in post_pk_list:
+        post = Post.objects.get(pk=pk)
+
+        ntfcn = Notification.objects.create(
+            receiver=post.user,
+            content=('Новый пост "{}..." был только что опубликован.').format(
+                post.content[:10],
+            ),
+        )
+        ntfcn.send(extra={"post_pk": pk})
