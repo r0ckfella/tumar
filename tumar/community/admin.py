@@ -52,6 +52,9 @@ class CommentForm(forms.ModelForm):
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
     inlines = [InLinePostImage, InLineComment, InLinePostLink]
+    actions = [
+        "send_push_notifications",
+    ]
 
     @method_decorator(staff_member_required)
     def send_push_notifications(self, request, queryset):
