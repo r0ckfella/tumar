@@ -14,6 +14,9 @@ DJANGO_CONFIGURATION = config("DJANGO_CONFIGURATION", default="Production")
 # from configurations import importer  # noqa
 
 # importer.install()
+import configurations  # noqa
+
+configurations.setup()
 
 app = Celery("tumar-tasks")
 
