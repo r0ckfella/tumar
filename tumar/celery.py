@@ -3,9 +3,13 @@ import os
 
 from celery import Celery
 from celery.schedules import crontab
+from decouple import config
 from django.conf import settings  # noqa
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+DJANGO_SETTINGS_MODULE = config("DJANGO_SETTINGS_MODULE", "tumar.config")
+DJANGO_CONFIGURATION = config("DJANGO_CONFIGURATION", "Production")
 
 from configurations import importer  # noqa
 
