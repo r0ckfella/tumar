@@ -4,8 +4,8 @@ services:
   web:
     image: "tumar/nginx:latest"
     restart: "always"
-    expose:
-      - "80"
+    # expose:
+    #   - "80"
     # ports:
     #   - "80:80"
     volumes:
