@@ -12,7 +12,6 @@ class Production(Common):
     SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
     ALLOWED_HOSTS = ["tumarb.winext.kz", "www.tumarb.winext.kz"]
     INSTALLED_APPS += ("django_log_to_telegram",)
-    # STATIC_ROOT = "/static/"
 
     # Postgis
     DATABASES = {
