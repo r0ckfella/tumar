@@ -7,7 +7,7 @@ set +a
 
 ### Configuration ###
 
-REMOTE_SCRIPT_PATH=~/projects/tumar-backend/deploy/deploy.sh
+REMOTE_SCRIPT_PATH=/home/user/projects/tumar-backend/deploy/deploy.sh
 
 # This is sensitive data
 # Do not commit the data
