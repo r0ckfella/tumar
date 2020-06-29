@@ -1,8 +1,8 @@
 import os
-import dj_database_url
 
-from distutils.util import strtobool
+from decouple import config
 from configurations import Configuration
+from dj_database_url import parse as db_url
 
 from django.utils.translation import gettext_lazy as _
 
@@ -56,7 +56,7 @@ class Common(Configuration):
 
     ALLOWED_HOSTS = ["*"]
     ROOT_URLCONF = "tumar.urls"
-    SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
+    SECRET_KEY = config("DJANGO_SECRET_KEY")
     WSGI_APPLICATION = "tumar.wsgi.application"
 
     FILE_UPLOAD_PERMISSIONS = 0o644
@@ -68,10 +68,7 @@ class Common(Configuration):
 
     # Postgres
     DATABASES = {
-        "default": dj_database_url.config(
-            default=os.getenv("TUMAR_DB"),
-            conn_max_age=int(os.getenv("POSTGRES_CONN_MAX_AGE", 600)),
-        ),
+        "default": config("TUMAR_DB", cast=db_url),
     }
     # DATABASES['default']['ENGINE'] = 'django.contrib.gis.db.backends.postgis'
 
@@ -125,7 +122,7 @@ class Common(Configuration):
 
     # Set DEBUG to False as a default for safety
     # https://docs.djangoproject.com/en/dev/ref/settings/#debug
-    DEBUG = strtobool(os.getenv("DJANGO_DEBUG", "no"))
+    DEBUG = config("DJANGO_DEBUG", default=False, cast=bool)
 
     # Password Validation
     # https://docs.djangoproject.com/en/2.0/topics/auth/passwords/#module-django.contrib.auth.password_validation
@@ -170,7 +167,7 @@ class Common(Configuration):
     # Django Rest Framework
     REST_FRAMEWORK = {
         "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
-        "PAGE_SIZE": int(os.getenv("DJANGO_PAGINATION_LIMIT", 30)),
+        "PAGE_SIZE": config("DJANGO_PAGINATION_LIMIT", default=30, cast=int),
         "DATETIME_FORMAT": "%Y-%m-%dT%H:%M:%S%z",
         "DEFAULT_RENDERER_CLASSES": ("rest_framework.renderers.JSONRenderer",),
         "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
@@ -194,19 +191,19 @@ class Common(Configuration):
         {"app": "users", "models": ("users.User", "auth.Group", "authtoken.Token")},
     )
 
-    DOWNLOAD_GEOLOCATIONS_URL = os.getenv("DOWNLOAD_GEOLOCATIONS_URL")
-    GET_BATTERY_CHARGE_URL = os.getenv("GET_BATTERY_CHARGE_URL")
-    CHINESE_LOGIN_URL = os.getenv("CHINESE_LOGIN_URL")
-    EGISTIC_CADASTRE_QUERY_URL = os.getenv("EGISTIC_CADASTRE_QUERY_URL")
-    EGISTIC_TOKEN = os.getenv("EGISTIC_TOKEN")
-    STANDARD_LOGIN_PASSWORD = os.getenv("STANDARD_LOGIN_PASSWORD")
+    DOWNLOAD_GEOLOCATIONS_URL = config("DOWNLOAD_GEOLOCATIONS_URL")
+    GET_BATTERY_CHARGE_URL = config("GET_BATTERY_CHARGE_URL")
+    CHINESE_LOGIN_URL = config("CHINESE_LOGIN_URL")
+    EGISTIC_CADASTRE_QUERY_URL = config("EGISTIC_CADASTRE_QUERY_URL")
+    EGISTIC_TOKEN = config("EGISTIC_TOKEN")
+    STANDARD_LOGIN_PASSWORD = config("STANDARD_LOGIN_PASSWORD")
 
     DAYS_BETWEEN_IMAGERY_REQUESTS = 5
 
     CACHES = {
         "default": {
             "BACKEND": "django.core.cache.backends.memcached.MemcachedCache",
-            "LOCATION": os.getenv("MEMCACHED_ADDRESS"),
+            "LOCATION": config("MEMCACHED_ADDRESS"),
         }
     }
 

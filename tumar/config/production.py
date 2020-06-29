@@ -1,6 +1,7 @@
 import os
 
-import dj_database_url
+from decouple import config
+from dj_database_url import parse as db_url
 
 from .common import Common
 
@@ -9,21 +10,18 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 class Production(Common):
     INSTALLED_APPS = Common.INSTALLED_APPS
-    SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
+    SECRET_KEY = config("DJANGO_SECRET_KEY")
     ALLOWED_HOSTS = ["tumarb.winext.kz", "www.tumarb.winext.kz"]
-    INSTALLED_APPS += ("django_log_to_telegram",)
+    # INSTALLED_APPS += ("",)
 
     # Postgis
     DATABASES = {
-        "default": dj_database_url.config(
-            default=os.getenv("TUMAR_DB"),
-            conn_max_age=int(os.getenv("POSTGRES_CONN_MAX_AGE", 600)),
-        ),
+        "default": config("TUMAR_DB", cast=db_url),
     }
 
     # CELERY SETTIGS
-    CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL")
-    CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND")
+    CELERY_BROKER_URL = config("CELERY_BROKER_URL")
+    CELERY_RESULT_BACKEND = config("CELERY_RESULT_BACKEND")
 
     # Celery Data Format
     CELERY_ACCEPT_CONTENT = ["application/json"]
@@ -37,8 +35,6 @@ class Production(Common):
     CELERY_CREATE_MISSING_QUEUES = True
     CELERY_TASK_REMOTE_TRACEBACKS = True
     CELERY_TASK_DEFAULT_QUEUE = "tumar_queue"
-
-    LOG_TO_TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 
     LOGGING = {
         "version": 1,
@@ -57,8 +53,9 @@ class Production(Common):
             "telegram_log": {
                 "level": "ERROR",
                 "filters": ["require_debug_false"],
-                "class": "django_log_to_telegram.log.AdminTelegramHandler",
-                "bot_token": LOG_TO_TELEGRAM_BOT_TOKEN,
+                "class": "telegram_handler.TelegramHandler",
+                "token": config("TELEGRAM_BOT_TOKEN"),
+                "chat_id": config("TELEGRAM_CHAT_ID"),
             },
             "file": {
                 "level": "INFO",
@@ -77,5 +74,5 @@ class Production(Common):
     }
 
     PUSH_NOTIFICATIONS_SETTINGS = {
-        "FCM_API_KEY": os.getenv("FCM_API_KEY"),
+        "FCM_API_KEY": config("FCM_API_KEY"),
     }

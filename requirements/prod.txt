@@ -1,4 +1,4 @@
 -r common.txt
 
-django-log-to-telegram==2020.1.23
+python-telegram-handler==2.2
 uwsgi==2.0.18
