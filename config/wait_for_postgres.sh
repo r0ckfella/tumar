@@ -41,4 +41,4 @@ done
 # Start app
 >&2 echo "Postgres is up - executing command"
 
-./start.sh
+./config/start.sh
