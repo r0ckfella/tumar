@@ -40,7 +40,6 @@ start-dev: start-db-conda
 
 pull:
 	@echo '--- Pulling the app updates from the repository...'
-	git stash
 	git pull
 
 deploy: stop-compose build-django-app start-compose
