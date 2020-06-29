@@ -3,7 +3,6 @@ import os
 
 from celery import Celery
 from celery.schedules import crontab
-from decouple import config
 from django.conf import settings  # noqa
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -12,8 +11,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 from configurations import importer  # noqa
 
 importer.install()
-DJANGO_SETTINGS_MODULE = config("DJANGO_SETTINGS_MODULE", default="tumar.config")
-DJANGO_CONFIGURATION = config("DJANGO_CONFIGURATION", default="Production")
+
+# set the default Django settings module for the 'celery' program.
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tumar.config")
+os.environ.setdefault("DJANGO_CONFIGURATION", "Production")
 
 app = Celery("tumar-tasks")
 
