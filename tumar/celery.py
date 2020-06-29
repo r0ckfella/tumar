@@ -8,15 +8,12 @@ from django.conf import settings  # noqa
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+
+from configurations import importer  # noqa
+
+importer.install()
 DJANGO_SETTINGS_MODULE = config("DJANGO_SETTINGS_MODULE", default="tumar.config")
 DJANGO_CONFIGURATION = config("DJANGO_CONFIGURATION", default="Production")
-
-# from configurations import importer  # noqa
-
-# importer.install()
-import configurations  # noqa
-
-configurations.setup()
 
 app = Celery("tumar-tasks")
 
