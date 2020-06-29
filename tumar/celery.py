@@ -7,14 +7,14 @@ from django.conf import settings  # noqa
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+# set the default Django settings module for the 'celery' program.
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tumar.config")
+os.environ.setdefault("DJANGO_CONFIGURATION", "Production")
 
 from configurations import importer  # noqa
 
 importer.install()
 
-# set the default Django settings module for the 'celery' program.
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tumar.config")
-os.environ.setdefault("DJANGO_CONFIGURATION", "Production")
 
 app = Celery("tumar-tasks")
 
