@@ -4,9 +4,10 @@
 # usage: make <command>
 # for example: `make start-compose` executes `docker-compose up -d`
 
-.PHONY: start-compose stop-compose ssh-nginx ssh-django ssh-worker check-network-config-details build-django-app export-curr-user start-db-conda start-dev deploy
+.PHONY: start-compose stop-compose ssh-nginx ssh-django ssh-worker check-network-config-details build-django-app start-db-conda start-dev deploy
 start-compose:
 	@echo '--- Starting the updated app in the background...'
+	@export CURRENT_UID=$(id -u):$(id -g)
 	docker-compose up -d
 
 stop-compose:
@@ -29,9 +30,6 @@ build-django-app:
 	@echo '--- Building the app with the new updates...'
 	@docker build -t tumar/app:latest .
 
-export-curr-user:
-	@export CURRENT_UID=$(id -u):$(id -g)
-
 start-db-conda:
 	@echo '--- Turning on postgres database in the conda development environment...'
 	pg_ctl -D ./pgdata/ start
@@ -45,4 +43,4 @@ pull:
 	git stash
 	git pull
 
-deploy: stop-compose build-django-app export-curr-user start-compose
+deploy: stop-compose build-django-app start-compose
