@@ -18,7 +18,7 @@ user = result.username
 password = result.password
 host = result.hostname
 port = result.port
-print(result)
+
 try:
     conn = psycopg2.connect(
         dbname=dbname,

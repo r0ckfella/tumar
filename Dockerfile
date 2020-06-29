@@ -33,7 +33,3 @@ COPY . .
 # EXPOSE 8088
 
 RUN mkdir /static
-
-# The script should have executable permissions for docker-compose's
-# command to properly start.
-RUN chmod +x ./config/wait_for_postgres.sh
