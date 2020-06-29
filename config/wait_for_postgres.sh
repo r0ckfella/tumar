@@ -1,5 +1,9 @@
 #!/bin/bash
 
+set -a # automatically export all variables
+. .env
+set +a
+
 # wait for Postgres to start
 function postgres_ready() {
 python << END
@@ -14,7 +18,7 @@ user = result.username
 password = result.password
 host = result.hostname
 port = result.port
-
+print(result)
 try:
     conn = psycopg2.connect(
         dbname=dbname,

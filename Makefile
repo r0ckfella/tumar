@@ -7,7 +7,8 @@
 .PHONY: start-compose stop-compose ssh-nginx ssh-django ssh-worker check-network-config-details build-django-app start-db-conda start-dev deploy
 start-compose:
 	@echo '--- Starting the updated app in the background...'
-	@export CURRENT_UID=$(id -u):$(id -g)
+	# ; \ is used for the docker-compose command to see the env variable
+	@export CURRENT_UID=$(id -u):$(id -g); \
 	docker-compose up -d
 
 stop-compose:
@@ -40,6 +41,6 @@ start-dev: start-db-conda
 
 pull:
 	@echo '--- Pulling the app updates from the repository...'
-	git pull
+	@git pull
 
 deploy: stop-compose build-django-app start-compose
