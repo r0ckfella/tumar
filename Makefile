@@ -6,10 +6,11 @@
 
 .PHONY: start-compose stop-compose ssh-nginx ssh-django ssh-worker check-network-config-details build-django-app export-curr-user start-db-conda start-dev deploy
 start-compose:
+	@echo '--- Starting the updated app in the background...'
 	docker-compose up -d
 
 stop-compose:
-	@eval docker stop $$(docker ps -a -q)
+	@echo '--- Stopping the app...'
 	@docker-compose down
 
 ssh-nginx:
@@ -25,13 +26,14 @@ check-network-config-details:
 	@docker network inspect tumar
 
 build-django-app:
+	@echo '--- Building the app with the new updates...'
 	@docker build -t tumar/app:latest .
 
 export-curr-user:
 	@export CURRENT_UID=$(id -u):$(id -g)
 
 start-db-conda:
-	@echo 'Turning on postgres database in the conda development environment...'
+	@echo '--- Turning on postgres database in the conda development environment...'
 	pg_ctl -D ./pgdata/ start
 
 start-dev: start-db-conda
@@ -39,6 +41,7 @@ start-dev: start-db-conda
 	python manage.py runserver 0.0.0.0:8000
 
 pull:
+	@echo '--- Pulling the app updates from the repository...'
 	git stash
 	git pull
 
