@@ -6,11 +6,8 @@ services:
     restart: "always"
     expose:
       - "80"
-    ports:
-      - "80:80"
-    environment:
-      - "DOMAIN_NAME=${DOMAIN_NAME}"
-      - "PROXY_PASS=http://app:80"
+    # ports:
+    #   - "80:80"
     volumes:
       - "./config/:/etc/nginx/conf.d/"
       - ./static:/static
@@ -19,8 +16,6 @@ services:
       - app
     networks:
       - "tumar"
-    labels:
-      - "traefik.frontend.rule=Host:${DOMAIN_NAME}"
     command: /bin/bash -c "nginx -g 'daemon off;'"
 
   app:
