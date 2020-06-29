@@ -69,7 +69,7 @@ from .dashboard.views import (
     CowSKTAverageView,
     CowCountByYearView,
 )
-from .notify.views import NotificationListView
+from .notify.views import NotificationListView, NotificationMarkAsReadView
 from .usersupport.views import SupportTicketCreateView
 
 router = DefaultRouter()
@@ -216,6 +216,10 @@ urlpatterns = i18n_patterns(
                 path("dashboard/cow-skt-average/", CowSKTAverageView.as_view()),
                 path("dashboard/cow-count-by-year/", CowCountByYearView.as_view()),
                 path("notifications/latest/", NotificationListView.as_view()),
+                path(
+                    "notifications/mark-as-read/<int:pk>/",
+                    NotificationMarkAsReadView.as_view(),
+                ),
                 path("usersupport/", SupportTicketCreateView.as_view()),
             ]
             + router.urls
