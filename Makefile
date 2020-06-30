@@ -4,7 +4,7 @@
 # usage: make <command>
 # for example: `make start-compose` executes `docker-compose up -d`
 
-.PHONY: start-compose stop-compose ssh-nginx ssh-django ssh-worker check-network-config-details build-django-app start-db-conda start-dev deploy
+.PHONY: start-compose stop-compose ssh-nginx ssh-django ssh-worker check-network-config-details build-django-app start-db start-dev deploy
 start-compose:
 	@echo '--- Starting the updated app in the background...'
 	@export CURRENT_UID=$(id -u):$(id -g); \
@@ -30,11 +30,11 @@ build-django-app:
 	@echo '--- Building the app with the new updates...'
 	@docker build -t tumar/app:latest .
 
-start-db-conda:
+start-db:
 	@echo '--- Turning on postgres database in the conda development environment...'
 	pg_ctl -D ./pgdata/ start
 
-start-dev: start-db-conda
+start-dev:
 	@python manage.py migrate
 	python manage.py runserver 0.0.0.0:8000
 

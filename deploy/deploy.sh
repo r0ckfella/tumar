@@ -7,8 +7,6 @@ APP_DIR=~/projects/tumar-backend
 
 ### Automation steps ###
 
-set -x
-
 cd $APP_DIR/
 
 # Using predefined set of commands from Makefile
