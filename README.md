@@ -2,6 +2,8 @@
 
 A RESTful Django backend system for monitoring multiple GPS trackers.. Check out the project's [swagger (interactive API on a web page)](http://tumarb.winext.kz/swagger/).
 
+<br>
+
 ## Local Development Setup
 
 1. Install [Conda](https://docs.conda.io/en/latest/miniconda.html) (not anaconda) for Python 3.7+ (to check whether the conda is installed run ```conda info```)
@@ -64,10 +66,7 @@ A RESTful Django backend system for monitoring multiple GPS trackers.. Check out
     ```
 
 ---
-> :information_source: If you want to use caching when developing, you can start memcached service in another terminal:
-    ```shell
-    memcached -m 1024 -l 127.0.0.1 -p 11211
-    ```
+> :information_source: If you want to use caching when developing, you can start memcached service in another terminal: ```memcached -m 1024 -l 127.0.0.1 -p 11211```
 ---
 
 5. Start development server using predefined Makefile commands:
@@ -81,6 +80,7 @@ A RESTful Django backend system for monitoring multiple GPS trackers.. Check out
     make start-dev # migrates, and runs dev server
     ```
 
+<br>
 
 ## Deploy process
 
@@ -104,9 +104,11 @@ A RESTful Django backend system for monitoring multiple GPS trackers.. Check out
 
 > :information_source: The remote server already contains ```.env``` file in the project's root directory.
 
+<br>
+
 ## Useful Commands
 
-#### PostgreSQL commands:
+#### PostgreSQL commands
     
 
 - Connect to psql terminal using root user if you forgot user and password:
@@ -133,7 +135,7 @@ A RESTful Django backend system for monitoring multiple GPS trackers.. Check out
     pg_restore -C -U <database_user> -h <ip_address> -p <port> -d <database_name> < <file_name>.bak
     ```
 
-Commands below are executed inside psql terminal.
+**Commands below are executed inside psql terminal.**
 
 - List all databases:
 
