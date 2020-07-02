@@ -25,9 +25,14 @@ app.autodiscover_tasks()
 
 # Celery beat
 app.conf.beat_schedule = {
-    "scheduled": {
+    "scheduled_lonlat": {
         "task": "tumar.animals.tasks.task_download_latest_geolocations",
         "schedule": crontab(minute="*/15"),
         "options": {"queue": "tumar_celerybeat"},
-    }
+    },
+    "scheduled_battery": {
+        "task": "tumar.animals.tasks.task_download_latest_battery_percentage",
+        "schedule": crontab(minute="*/30"),
+        "options": {"queue": "tumar_celerybeat"},
+    },
 }
