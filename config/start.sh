@@ -4,7 +4,7 @@
 python ./manage.py collectstatic --noinput &&
 python ./manage.py migrate &&
 python ./manage.py compilemessages &&
-uwsgi --ini ./config/uwsgi.ini --uid $CURRENT_UID
+uwsgi --ini ./config/uwsgi.ini --uid $(id -u)
 
 # if [ ${PRODUCTION} == "false" ]; then
 #     # use development server
