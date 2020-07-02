@@ -37,4 +37,7 @@ RUN mkdir /static
 RUN groupadd --gid 1000 mainuser \
     && useradd --uid 1000 --gid mainuser --shell /bin/bash --create-home mainuser
 
+# Chown all the files to the app user.
+RUN chown -R mainuser:mainuser /code
+
 USER mainuser
