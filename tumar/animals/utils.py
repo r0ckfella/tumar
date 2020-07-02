@@ -49,7 +49,7 @@ def download_geolocations(farm_pk, external_farm_id):
     if r.status_code != requests.codes.ok:
         r.raise_for_status()
     geo_history = r.json()
-
+    print(geo_history)
     for location in geo_history["data"]["data"]:
         my_tz = pytz.timezone("Asia/Almaty")
         my_date = dt.strptime(location["CreateTime"], "%Y-%m-%d %H:%M:%S")

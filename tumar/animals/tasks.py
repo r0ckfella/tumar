@@ -42,7 +42,7 @@ def task_download_latest_battery_percentage():
             if r.status_code != requests.codes.ok:
                 r.raise_for_status()
             response_data = r.json()
-
+            print(response_data)
             for item in response_data["data"]:
                 if item.get("voltage", None):
                     my_tz = pytz.timezone("Asia/Almaty")
