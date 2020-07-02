@@ -7,8 +7,8 @@
 .PHONY: start-compose stop-compose ssh-nginx ssh-django ssh-worker check-network-config-details build-django-app start-db start-dev deploy
 start-compose:
 	@echo '--- Starting the updated app in the background...'
-	@export CELERY_UID=$(id -u); \
-	@export CELERY_GID=$(id -g); \
+	@export CURRENT_UID=$(id -u); \
+	@export CURRENT_GID=$(id -g); \
 	docker-compose up -d
 
 stop-compose:
