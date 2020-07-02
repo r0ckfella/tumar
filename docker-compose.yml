@@ -48,7 +48,7 @@ services:
     volumes:
       - ".:/code"
     command: >
-      bash -c "celery -A tumar worker -Q tumar_celerybeat,tumar_handler_process_cadastres,community_push_notifications -c 4 -n tumar_main_worker -l INFO"
+      bash -c "celery -A tumar worker -Q tumar_celerybeat,tumar_handler_process_cadastres,community_push_notifications -c 4 -l INFO"
   
   celerybeat:
     image: "tumar/app:latest"
