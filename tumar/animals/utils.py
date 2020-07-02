@@ -2,6 +2,7 @@ import json
 import django.utils.timezone as tz
 import pytz
 import requests
+import logging
 
 from datetime import datetime as dt
 from dateutil.relativedelta import relativedelta
@@ -16,6 +17,7 @@ from django.db.utils import InternalError
 from .models import Animal, Geolocation, Farm
 
 faker = FakerFactory.create()
+logger = logging.getLogger()
 
 
 def get_linestring_from_geolocations(geolocations_qs):
@@ -24,16 +26,23 @@ def get_linestring_from_geolocations(geolocations_qs):
     )
 
 
-def download_geolocations(farm_pk, farm_api_key):
+def download_geolocations(farm_pk, external_farm_id):
     endtime = dt.now() + relativedelta(months=1)
     url = settings.DOWNLOAD_GEOLOCATIONS_URL
+    external_key = settings.CHINESE_API_KEY
     headers = {"Content-type": "application/json", "Accept": "application/json"}
     payload = {
-        "key": farm_api_key,
-        "begintime": "2018-01-01 00:00",
-        "endtime": endtime.strftime("%Y-%m-%d %H:%M"),
-        "imeis": "",
+        "key": external_key,
+        "farmid": external_farm_id,
+        "begintime": "2018-01-01 00:00:00",
+        "endtime": endtime.strftime("%Y-%m-%d %H:%M:%S"),
+        "imeis": [],
     }
+
+    the_farm = Farm.objects.get(pk=farm_pk)
+
+    for imei in the_farm.animal_set.all().values_list("imei", flat=True):
+        payload["imeis"].append({"imei": str(imei)})
 
     r = requests.post(url, data=json.dumps(payload), headers=headers)
 
@@ -41,7 +50,7 @@ def download_geolocations(farm_pk, farm_api_key):
         r.raise_for_status()
     geo_history = r.json()
 
-    for location in geo_history["data"]:
+    for location in geo_history["data"]["data"]:
         my_tz = pytz.timezone("Asia/Almaty")
         my_date = dt.strptime(location["CreateTime"], "%Y-%m-%d %H:%M:%S")
 
@@ -57,12 +66,7 @@ def download_geolocations(farm_pk, farm_api_key):
             if not Geolocation.geolocations.filter(**arguments).exists():
                 Geolocation.geolocations.create(**arguments)
         except Animal.DoesNotExist:
-            the_farm = Farm.objects.get(pk=farm_pk)
-            while Animal.objects.filter(tag_number=location["cow_code"]).exists():
-                location["cow_code"] = location["cow_code"] + faker.numerify(text="##")
-            temp_animal = Animal.objects.create(
-                farm=the_farm, imei=location["imei"], tag_number=location["cow_code"]
-            )
+            temp_animal = Animal.objects.create(farm=the_farm, imei=location["imei"])
             Geolocation.geolocations.create(
                 animal=temp_animal,
                 position=Point(
@@ -70,9 +74,12 @@ def download_geolocations(farm_pk, farm_api_key):
                 ),
                 time=tz.make_aware(my_date, my_tz),
             )
-            print("New animal is added, and the corresponding location too.")
+            logger.info(
+                "New animal {} is added, and the corresponding location too.\n",
+                str(temp_animal.pk),
+            )
         except InternalError:
-            print("Wrong Chinese API attributes")
+            logger.info("Wrong Chinese API attributes.\n")
 
 
 def cluster_geolocations(qs_list, zoom_distance, zoom_level):

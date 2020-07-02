@@ -20,8 +20,8 @@ class Production(Common):
     }
 
     # CELERY SETTIGS
-    CELERY_BROKER_URL = config("CELERY_BROKER_URL")
-    CELERY_RESULT_BACKEND = config("CELERY_RESULT_BACKEND")
+    CELERY_BROKER_URL = config("CELERY_BROKER_URL", default="rpc://")
+    CELERY_RESULT_BACKEND = config("CELERY_RESULT_BACKEND", default="rpc://")
 
     # Celery Data Format
     CELERY_ACCEPT_CONTENT = ["application/json"]
@@ -74,5 +74,5 @@ class Production(Common):
     }
 
     PUSH_NOTIFICATIONS_SETTINGS = {
-        "FCM_API_KEY": config("FCM_API_KEY"),
+        "FCM_API_KEY": config("FCM_API_KEY", "not found"),
     }

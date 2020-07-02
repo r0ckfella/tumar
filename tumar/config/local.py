@@ -34,7 +34,7 @@ class Local(Common):
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
     # CELERY SETTINGS
-    CELERY_BROKER_URL = config("CELERY_BROKER_URL")
+    CELERY_BROKER_URL = config("CELERY_BROKER_URL", default="rpc://")
     CELERY_RESULT_BACKEND = config("CELERY_RESULT_BACKEND", default="rpc://")
     CELERY_ACCEPT_CONTENT = ["application/json"]
     CELERY_TASK_SERIALIZER = "json"

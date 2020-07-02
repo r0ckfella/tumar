@@ -176,7 +176,7 @@ class BaseAnimal(models.Model):
         if self.tag_number:
             return self.tag_number
 
-        return self.id
+        return str(self.id)
 
     def save(self, *args, **kwargs):
         if self.image:
