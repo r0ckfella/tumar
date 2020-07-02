@@ -7,7 +7,7 @@
 .PHONY: start-compose stop-compose ssh-nginx ssh-django ssh-worker check-network-config-details build-django-app start-db start-dev deploy
 start-compose:
 	@echo '--- Starting the updated app in the background...'
-	@export CURRENT_UID=$(id -u):$(id -g); \
+#@export CURRENT_UID=$(id -u):$(id -g);
 	docker-compose up -d
 
 stop-compose:
