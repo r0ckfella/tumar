@@ -39,5 +39,6 @@ RUN groupadd --gid 1000 mainuser \
 
 # Chown all the files to the app user.
 RUN chown -R mainuser:mainuser /code
+RUN chown -R mainuser:mainuser /usr/local/lib/python3.6/site-packages/celery
 
 USER mainuser
