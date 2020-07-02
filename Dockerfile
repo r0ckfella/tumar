@@ -33,3 +33,8 @@ COPY . .
 # EXPOSE 8088
 
 RUN mkdir /static
+
+RUN groupadd --gid 1000 mainuser \
+    && useradd --uid 1000 --gid mainuser --shell /bin/bash --create-home mainuser
+
+USER mainuser
