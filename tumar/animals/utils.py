@@ -51,7 +51,7 @@ def download_geolocations(farm_pk, external_farm_id):
     geo_history = r.json()
 
     if not geo_history["data"].get("data", None):
-        logger.info("No data for farm {}\n", farm_pk)
+        logger.info("No data for farm {}\n".format(farm_pk))
         return
 
     for location in geo_history["data"]["data"]:

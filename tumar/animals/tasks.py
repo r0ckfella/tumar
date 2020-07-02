@@ -2,6 +2,7 @@ import requests
 import django.utils.timezone as tz
 import pytz
 import json
+import logging
 
 
 from datetime import datetime as dt
@@ -10,6 +11,8 @@ from django.conf import settings
 from .models import Farm, Animal
 from .utils import download_geolocations
 from ..celery import app
+
+logger = logging.getLogger()
 
 
 @app.task
@@ -42,7 +45,11 @@ def task_download_latest_battery_percentage():
             if r.status_code != requests.codes.ok:
                 r.raise_for_status()
             response_data = r.json()
-            print(response_data)
+
+            if not response_data.get("data", None):
+                logger.info("No voltage data for farm {}\n".format(farm[0]))
+                return
+
             for item in response_data["data"]:
                 if item.get("voltage", None):
                     my_tz = pytz.timezone("Asia/Almaty")
