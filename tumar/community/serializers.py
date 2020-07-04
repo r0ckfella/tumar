@@ -217,8 +217,11 @@ class PostCreateUpdateSerializer(serializers.ModelSerializer):
                 instance.images.create(**image_data)
 
         for link_data in links_data:
-            if "id" not in link_data:
-                instance.links.create(**link_data)
+            if link_data.get("type", None) == "Y":
+                instance.links.filter(type="Y").delete()
+            else:
+                instance.links.filter(type="G").delete()
+            instance.links.create(**link_data)
 
         if categories:
             # if a category needs to be created instantly, it can be done here
