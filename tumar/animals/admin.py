@@ -107,6 +107,7 @@ class BreedingStockAdmin(admin.ModelAdmin):
         "tag_number",
         "name",
         "farm",
+        "active",
     )
 
 
