@@ -61,15 +61,16 @@ def download_geolocations(farm_pk, external_farm_id):
 
         try:
             temp_animal = Animal.objects.get(imei=location["imei"])
-            arguments = dict(
-                animal=temp_animal,
-                position=Point(
-                    float(location["longitude"]), float(location["latitude"]), srid=4326
-                ),
-                time=tz.make_aware(my_date, my_tz),
-            )
+            arguments = dict(animal=temp_animal, time=tz.make_aware(my_date, my_tz),)
             if not Geolocation.geolocations.filter(**arguments).exists():
-                Geolocation.geolocations.create(**arguments)
+                Geolocation.geolocations.create(
+                    position=Point(
+                        float(location["longitude"]),
+                        float(location["latitude"]),
+                        srid=4326,
+                    ),
+                    **arguments
+                )
         except Animal.DoesNotExist:
             temp_animal = Animal.objects.create(farm=the_farm, imei=location["imei"])
             Geolocation.geolocations.create(
