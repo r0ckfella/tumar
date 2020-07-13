@@ -2,7 +2,8 @@ from dateutil.relativedelta import relativedelta
 
 from django.db.models.signals import pre_save, post_save
 
-from tumar.animals.models import BreedingStock, Calf, MALE, FEMALE
+from tumar.animals.models import BreedingStock, Calf
+from tumar.animals.choices import MALE, FEMALE
 from .models import HANDLING, FEEDING
 
 
