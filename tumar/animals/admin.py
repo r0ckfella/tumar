@@ -107,7 +107,6 @@ class BreedingStockAdmin(admin.ModelAdmin):
         "tag_number",
         "name",
         "farm",
-        "active",
     )
 
 
@@ -131,6 +130,7 @@ class CalfAdmin(admin.ModelAdmin):
         "name",
         "mother",
         "farm",
+        "active",
     )
 
 
