@@ -36,6 +36,7 @@ def download_geolocations(farm_pk, external_farm_id):
         "farmid": external_farm_id,
         "begintime": "2018-01-01 00:00:00",
         "endtime": endtime.strftime("%Y-%m-%d %H:%M:%S"),
+        "maptype": "2",
         "imeis": [],
     }
 
