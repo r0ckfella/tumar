@@ -1,9 +1,10 @@
 import datetime
+import logging
 
 from dateutil.relativedelta import relativedelta
 
 from django.contrib.gis.db.models.functions import Cast
-from django.db import models
+from django.contrib.gis.db import models
 from django.db.models import (
     OuterRef,
     Subquery,
@@ -21,6 +22,8 @@ from django.db.models.functions import ExtractDay, Coalesce
 from ..ecalendar.models import SingleCalfEvent, SingleBreedingStockEvent
 from .choices import MALE, FEMALE
 
+logger = logging.getLogger()
+
 
 class GeolocationQuerySet(models.QuerySet):
     def get_path(self, animal_imei, start_time, end_time):
@@ -30,6 +33,47 @@ class GeolocationQuerySet(models.QuerySet):
 
 
 class CalfManager(models.Manager):
+    def convert_to_adult(self, user, id_list):
+        from .models import BreedingStock, BreedingBull
+
+        qs = self.get_queryset().filter(active=True, farm__user=user, id__in=id_list)
+        res_dict = {"breedingstock": [], "breedingbulls": []}
+
+        for calf in qs:
+            try:
+                if calf.gender == MALE:
+                    bb1 = BreedingBull.objects.create(
+                        farm=calf.farm,
+                        tag_number=calf.tag_number,
+                        name=calf.name,
+                        birth_date=calf.birth_date,
+                        image=calf.image,
+                        breed=calf.breed,
+                    )
+                    res_dict["breedingbulls"].append(bb1.pk)
+                else:
+                    bs1 = BreedingStock.objects.create(
+                        farm=calf.farm,
+                        tag_number=calf.tag_number,
+                        name=calf.name,
+                        birth_date=calf.birth_date,
+                        image=calf.image,
+                        breed=calf.breed,
+                    )
+                    res_dict["breedingstock"].append(bs1.pk)
+            except Exception as e:
+                logger.error(
+                    (
+                        "Calf with id {} has not been converted to an adult.\n"
+                        "The error is {}"
+                    ).format(calf.id, e)
+                )
+            else:
+                calf.active = False
+                calf.save()
+
+        return res_dict
+
     def less_12_months_count(self):
         time_threshold = datetime.date.today() - relativedelta(months=12)
         return (

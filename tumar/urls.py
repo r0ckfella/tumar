@@ -24,6 +24,7 @@ from .animals.views import (
     BreedingBullViewSet,
     CalfViewSet,
     StoreCattleViewSet,
+    ConvertToAdultView,
 )
 from .users.views import (
     UserViewSet,
@@ -134,6 +135,11 @@ urlpatterns = i18n_patterns(
                 path("users/reset-password/", ResetPasswordView.as_view()),
                 path("users/change-phone-num/", ChangePhoneNumberView.as_view()),
                 path("get-path/", GetAnimalPathView.as_view(), name="get_path"),
+                path(
+                    "calf/convert-to-adult/",
+                    ConvertToAdultView.as_view(),
+                    name="convert_to_adult",
+                ),
                 path(
                     "latest-geolocs/",
                     SimpleGroupedGeolocationsView.as_view(),

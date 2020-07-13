@@ -1,6 +1,7 @@
 import datetime
 import requests
 import json
+import logging
 
 
 from django.core.cache import cache
@@ -49,7 +50,7 @@ from .serializers import (
 )
 
 User = get_user_model()
-
+logger = logging.getLogger()
 
 # Create your views here.
 
@@ -189,6 +190,21 @@ class MyFarmView(APIView):
         return Response(serializer.data)
 
 
+class ConvertToAdultView(APIView):
+    def post(self, request):
+        try:
+            res_dict = Calf.objects.convert_to_adult(
+                request.user, request.data.get("ids", [])
+            )
+        except Exception as e:
+            logger.error(e)
+            return Response(
+                {"error": "true"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+        return Response(res_dict)
+
+
 class SearchCadastreView(APIView):
     """
     Search cadastres by cadastre number in Kazakhstan Cadastre Database
@@ -219,7 +235,10 @@ class SearchCadastreView(APIView):
             if r.status_code == 500:
                 return Response(
                     {
-                        "error": "Internal Server Error. Contact admin to solve the problem."
+                        "error": (
+                            "Internal Server Error."
+                            " Contact admin to solve the problem."
+                        )
                     },
                     status=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 )

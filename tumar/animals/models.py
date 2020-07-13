@@ -219,11 +219,11 @@ class BreedingStock(BaseAnimal):  # Маточное поголовье
         verbose_name=_("Breed of the animal"),
     )
 
+    objects = BreedingStockManager()
+
     class Meta:
         verbose_name = _("Breeding Stock")
         verbose_name_plural = _("Breeding Stock")
-
-    objects = BreedingStockManager()
 
 
 class Calf(BaseAnimal):  # Телята
@@ -258,11 +258,11 @@ class Calf(BaseAnimal):  # Телята
             .event.attributes.get("birth_weight", None)
         )
 
+    objects = CalfManager()
+
     class Meta:
         verbose_name = _("Calf")
         verbose_name_plural = _("Calves")
-
-    objects = CalfManager()
 
 
 class BreedingBull(BaseAnimal):  # Племенной бык
