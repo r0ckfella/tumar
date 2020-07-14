@@ -210,6 +210,7 @@ class CalfMeasurementView(APIView):
                 Q(event__title__icontains="скт")
                 | Q(event__title__icontains="отел")
                 | Q(event__title__icontains="отъем")
+                | Q(event__title__icontains="взвешивание")
             )
             .order_by("-completion_date", "event__title")
         )
