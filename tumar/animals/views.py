@@ -132,7 +132,7 @@ class CalfViewSet(FilterByUserMixin, viewsets.ModelViewSet):
     Lists, retrieves, creates, and deletes calves
     """
 
-    queryset = Calf.objects.all().order_by("id")
+    queryset = Calf.objects.filter(active=True).order_by("id")
     model = Calf
     serializer_class = CalfSerializer
     filter_backends = (filters.DjangoFilterBackend,)
