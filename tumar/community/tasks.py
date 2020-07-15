@@ -18,8 +18,8 @@ def task_send_push_notification_new_comment_on_post(comment_pk):
     )
 
     unread_count = Notification.objects.filter(
-        receiver=comment.post.user
-    ).unread_count()
+        receiver=comment.post.user, read=False
+    ).count()
     ntfcn.send(
         extra={"post_pk": comment.post.pk, "comment_pk": comment.pk},
         badge=unread_count,
@@ -41,8 +41,8 @@ def task_send_push_notification_new_reply_comment(comment_pk):
     )
 
     unread_count = Notification.objects.filter(
-        receiver=comment.reply_object.user
-    ).unread_count()
+        receiver=comment.reply_object.user, read=False
+    ).count()
     ntfcn.send(
         extra={"post_pk": comment.post.pk, "comment_pk": comment.pk}, badge=unread_count
     )
@@ -64,8 +64,8 @@ def task_send_push_notification_new_vote_on_comment(comment_vote_pk):
     )
 
     unread_count = Notification.objects.filter(
-        receiver=comment_vote.comment.user
-    ).unread_count()
+        receiver=comment_vote.comment.user, read=False
+    ).count()
 
     ntfcn.send(
         extra={
@@ -92,8 +92,8 @@ def task_send_push_notification_new_vote_on_post(post_vote_pk):
     )
 
     unread_count = Notification.objects.filter(
-        receiver=post_vote.post.user
-    ).unread_count()
+        receiver=post_vote.post.user, read=False
+    ).count()
     ntfcn.send(extra={"post_pk": post_vote.post.pk}, badge=unread_count)
 
 
@@ -108,5 +108,7 @@ def task_send_push_notifications_new_post(post_pk_list):
             receiver=post.user, content=('"{}..." Подробнее').format(post.title[:50],),
         )
 
-        unread_count = Notification.objects.filter(receiver=post.user).unread_count()
+        unread_count = Notification.objects.filter(
+            receiver=post.user, read=False
+        ).count()
         ntfcn.send(extra={"post_pk": pk}, badge=unread_count)

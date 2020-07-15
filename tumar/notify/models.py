@@ -1,8 +1,6 @@
 from django.conf import settings
 from django.db import models
 
-from .managers import NotificationManager
-
 # Create your models here.
 
 
@@ -15,8 +13,6 @@ class Notification(models.Model):
     content = models.CharField(max_length=255, blank=True)
     read = models.BooleanField(default=False)
     created_at = models.DateField(auto_now_add=True)
-
-    objects = NotificationManager()
 
     def mark_as_read(self):
         self.read = True
