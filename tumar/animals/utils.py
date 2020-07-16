@@ -28,8 +28,8 @@ def get_linestring_from_geolocations(geolocations_qs):
 
 def download_geolocations(farm_pk, external_farm_id):
     endtime = dt.now() + relativedelta(months=1)
-    url = settings.DOWNLOAD_GEOLOCATIONS_URL
     external_key = settings.CHINESE_API_KEY
+
     headers = {"Content-type": "application/json", "Accept": "application/json"}
     payload = {
         "key": external_key,
@@ -41,6 +41,11 @@ def download_geolocations(farm_pk, external_farm_id):
     }
 
     the_farm = Farm.objects.get(pk=farm_pk)
+    url = (
+        settings.DOWNLOAD_GEOLOCATIONS_URL
+        if the_farm.url_type == 1
+        else settings.DOWNLOAD_GEOLOCATIONS_URL_2
+    )
 
     for imei in the_farm.animal_set.all().values_list("imei", flat=True):
         payload["imeis"].append({"imei": str(imei)})

@@ -44,6 +44,11 @@ class Farm(models.Model):
         help_text="Переводит ваш логин в другой формат для быстрого использования"
         + " (к примеру, kh001 в ff80808170c314600170c393dace234)",
     )
+    url_type = models.PositiveSmallIntegerField(
+        default=1,
+        verbose_name=_("Chinese API URL type"),
+        help_text="Возможные варианты 1 и 2.",
+    )
 
     @property
     def calf_count(self):
