@@ -223,10 +223,11 @@ class SearchCadastreView(APIView):
         }
 
         url = "{}{}".format(settings.EGISTIC_CADASTRE_QUERY_URL, data["cad_number"])
+        token = utils.get_egistic_token()
         headers = {
             "Content-type": "application/json",
             "Accept": "application/json",
-            "Authorization": "Token {}".format(settings.EGISTIC_TOKEN),
+            "Authorization": "Token {}".format(token),
         }
 
         r = requests.get(url, headers=headers)

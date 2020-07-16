@@ -14,10 +14,30 @@ from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.measure import Distance as D
 from django.db.utils import InternalError
 
-from .models import Animal, Geolocation, Farm
-
 faker = FakerFactory.create()
 logger = logging.getLogger()
+
+
+def get_egistic_token():
+    headers = {
+        "Content-type": "application/json",
+        "Accept": "application/json",
+    }
+
+    payload = {
+        "username": settings.EGISTIC_USERNAME,
+        "password": settings.EGISTIC_PASSWORD,
+    }
+
+    r = requests.post(
+        settings.EGISTIC_LOGIN_URL, headers=headers, data=json.dumps(payload)
+    )
+
+    if r.status_code != requests.codes.ok:
+        r.raise_for_status()
+    response_data = r.json()
+
+    return response_data["token"]
 
 
 def get_linestring_from_geolocations(geolocations_qs):
@@ -27,6 +47,8 @@ def get_linestring_from_geolocations(geolocations_qs):
 
 
 def download_geolocations(farm_pk, external_farm_id):
+    from .models import Animal, Geolocation, Farm
+
     endtime = dt.now() + relativedelta(months=1)
     external_key = settings.CHINESE_API_KEY
 
@@ -94,6 +116,8 @@ def download_geolocations(farm_pk, external_farm_id):
 
 
 def cluster_geolocations(qs_list, zoom_distance, zoom_level):
+    from .models import Geolocation
+
     groups = []
     queryset = Geolocation.geolocations.filter(pk__in=qs_list)
     animal_group_mapping = dict.fromkeys(qs_list)

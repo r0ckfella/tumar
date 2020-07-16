@@ -62,7 +62,9 @@ A RESTful Django backend system for monitoring multiple GPS trackers.. Check out
     TELEGRAM_CHAT_ID=""
     MEMCACHED_ADDRESS="127.0.0.1:11211"
     EGISTIC_CADASTRE_QUERY_URL=""
-    EGISTIC_TOKEN=""
+    EGISTIC_LOGIN_URL=""
+    EGISTIC_USERNAME=""
+    EGISTIC_PASSWORD=""
     ```
 
 ---

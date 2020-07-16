@@ -19,6 +19,7 @@ from rest_framework.exceptions import ValidationError
 from ..users.utils import compress
 from .managers import GeolocationQuerySet, BreedingStockManager, CalfManager
 from .choices import BREED_CHOICES, GENDER_CHOICES, FEMALE, NO_BREED
+from .utils import get_egistic_token
 
 
 class Farm(models.Model):
@@ -361,10 +362,11 @@ class Cadastre(models.Model):
             Else returns primary key of the cadastre in the egistic db.
         """
         url = "{}{}".format(settings.EGISTIC_CADASTRE_QUERY_URL, self.cad_number)
+        token = get_egistic_token()
         headers = {
             "Content-type": "application/json",
             "Accept": "application/json",
-            "Authorization": "Token {}".format(settings.EGISTIC_TOKEN),
+            "Authorization": "Token {}".format(token),
         }
 
         r = requests.get(url, headers=headers)
@@ -379,10 +381,11 @@ class Cadastre(models.Model):
     def save(self, *args, **kwargs):
         if self.cad_number and not self.geom:
             url = "{}{}".format(settings.EGISTIC_CADASTRE_QUERY_URL, self.cad_number)
+            token = get_egistic_token()
             headers = {
                 "Content-type": "application/json",
                 "Accept": "application/json",
-                "Authorization": "Token {}".format(settings.EGISTIC_TOKEN),
+                "Authorization": "Token {}".format(token),
             }
 
             r = requests.get(url, headers=headers)
