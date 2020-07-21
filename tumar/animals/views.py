@@ -317,7 +317,7 @@ class GetAnimalPathView(APIView):
                     filtered_data.qs[filtered_data.qs.count() - 2 :]
                 )
             else:
-                geometry = filtered_data.first().geom.geojson
+                geometry = filtered_data.qs.first().geom.geojson
 
         return Response(
             geometry.geojson
