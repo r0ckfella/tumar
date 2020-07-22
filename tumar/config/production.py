@@ -45,6 +45,10 @@ class Production(Common):
                 + " %(message)s"
             },
             "simple": {"format": "[%(levelname)s] %(message)s"},
+            "telegram": {
+                "class": "telegram_handler.HtmlFormatter",
+                "fmt": "<code>%(asctime)s</code> <b>%(levelname)s</b>\n%(message)s",
+            },
         },
         "filters": {
             "require_debug_false": {"()": "django.utils.log.RequireDebugFalse"}
@@ -56,6 +60,7 @@ class Production(Common):
                 "class": "telegram_handler.TelegramHandler",
                 "token": config("TELEGRAM_BOT_TOKEN"),
                 "chat_id": config("TELEGRAM_CHAT_ID"),
+                "formatter": "telegram",
             },
             "file": {
                 "level": "INFO",
