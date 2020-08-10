@@ -47,6 +47,7 @@ A RESTful Django backend system for monitoring multiple GPS trackers.. Check out
 
     pg_ctl -D base_db -l logfile start # start the PostgreSQL server
     ```
+    > :information_source: After computer turns off and turns on, postgres database needs to be started, you can use predefined Make command ```make start-db``` (you should start it only once when you turn on your computer)
 
     <br>
 
@@ -58,11 +59,9 @@ A RESTful Django backend system for monitoring multiple GPS trackers.. Check out
     createdb --owner=tumar_user tumar_db # tumar_db can be changed
     ```
 
-    > :information_source: After computer turns off and turns on, postgres database needs to be started, you can use predefined Make command ```make start-db``` (you should start it only once when you turn on your computer)
-
     <br>
 
-    Enter the PostgreSQL shell as superuser which is the current user you are logged in as.
+    Enter the PostgreSQL shell as superuser which is the current logged user in the system.
 
     ```shell
     psql -h localhost -d tumar_db
