@@ -119,3 +119,5 @@ venv.bak/
 wait_for_postgres.py
 /media/
 /pgdata
+/base_db
+logfile

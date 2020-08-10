@@ -32,11 +32,16 @@ build-django-app:
 
 start-db:
 	@echo '--- Turning on postgres database in the conda development environment...'
-	pg_ctl -D ./pgdata/ start
+	pg_ctl -D base_db -l logfile start
 
 start-dev:
+	@echo '--- Turning on postgres database in the conda development environment...'
 	@python manage.py migrate
-	python manage.py runserver 0.0.0.0:8000
+	@echo '--- Collecting static files (js, html, css, etc)...'
+	@python ./manage.py collectstatic --noinput
+	@echo '--- Compiling translations (primarily for Russian language)...'
+	@python ./manage.py compilemessages
+	@python manage.py runserver 0.0.0.0:8000
 
 pull:
 	@echo '--- Pulling the app updates from the repository...'

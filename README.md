@@ -6,54 +6,90 @@ A RESTful Django backend system for monitoring multiple GPS trackers.. Check out
 
 ## Local Development Setup
 
-1. Install [Conda](https://docs.conda.io/en/latest/miniconda.html) (not anaconda) for Python 3.7+ (to check whether the conda is installed run ```conda info```)
+1. Install [Miniconda](https://docs.conda.io/en/latest/miniconda.html) (not anaconda) for Python 3.7+ (to check whether the conda is installed run ```conda info```)
+
+    > :information_source: You don't need to install Python 3.6 externally for this project. Miniconda environment installs the correct Python version in the third step. 
+
+    Then run the following commands:
+
+    ```shell
+    conda config --add channels conda-forge
+    conda config --set channel_priority strict
+    ```    
 
 <br>
 
-2. Create an environment from the file named ```environment.yml``` in the project's root directory (where ```manage.py``` file exists):
+2. Open the file named ```environment.yml``` in the project's root directory (where ```manage.py``` file exists). 
+
+    Then change the *prefix* line which is shown below:
     
+    - *USER* is the system user you use
+    - *MINICONDA_DIRECTORY* is the folder name where you installed miniconda
+
+    ```
+    prefix: /home/{USER}/{MINICONDA_DIRECTORY}/envs/tumar_dev
+    ```
+
     <br>
+
+3. Create an environment. The below command uses the ```environment.yml``` file:
 
     ```shell
     conda env create
     ```
 
-3. Create database using postgres cli (command line interface) which was installed in the environment from the previous step:
-    
     <br>
-    
+
+4. Set up the database using postgres cli (command line interface) which was installed in the environment from the previous step:
+
     ```shell
-    export PGDATA=./pgdata
-    mkdir $PGDATA # creates a directory with the name "pgdata" in the current directory
-    pg_ctl initdb 
-    pg_ctl start
-    psql -c "create database tumar;" postgres # creates a database with the name "tumar"
+    initdb -D base_db # create a base database locally
+
+    pg_ctl -D base_db -l logfile start # start the PostgreSQL server
     ```
 
-    When you are connected to the **psql** terminal, create user and give him permissions for the *tumar* database (do not forget ; symbol at the end of a line):
-    
     <br>
 
-    ```sql
-    CREATE USER tester WITH PASSWORD 'test_password'; # come up with your own user and password
-    GRANT ALL PRIVILEGES ON DATABASE 'tumar' to tester;
+    Now create a user and create the *tumar* database setting the user as the owner:
+
+    ```shell
+    createuser --encrypted --pwprompt tumar_user # tumar_user can be changed
+    
+    createdb --owner=tumar_user tumar_db # tumar_db can be changed
     ```
 
     > :information_source: After computer turns off and turns on, postgres database needs to be started, you can use predefined Make command ```make start-db``` (you should start it only once when you turn on your computer)
 
     <br>
 
-4. Create ```.env``` file in the project's root directory and populate it with sensitive data (you can ask the admin):
+    Enter the PostgreSQL shell as superuser which is the current user you are logged in as.
+
+    ```shell
+    psql -h localhost -d tumar_db
+    ```
+
+    In the shell add the PostGIS extension to the *tumar* database. This adds support for geographical data.
+
+    ```
+    tumar_db=# CREATE EXTENSION postgis;
+    ```
 
     <br>
 
+5. Create ```.env``` file in the project's root directory and populate it with sensitive data (you can ask the admin):
+
+
     > :information_source: This version of ```.env``` file is only for local development. In production environment it has additional key value pairs!
+
+    <br>
+
+    > :warning: Remove the comments otherwise Django wouldn't read ```.env`` file correctly!
 
     ```
     DJANGO_SECRET_KEY="" # this is a string that you can generate (google "generate Django secret key")
     DJANGO_CONFIGURATION="Local"
     DJANGO_SETTINGS_MODULE="tumar.config"
-    TUMAR_DB="postgis://tester:test_password@localhost:5432/tumar" # insert your own user and password
+    TUMAR_DB="postgis://tumar_user:test_password@localhost:5432/tumar_db" # insert your own user and password
     DOWNLOAD_GEOLOCATIONS_URL="" # ask the rest of the data from the admin
     GET_BATTERY_CHARGE_URL=""
     CHINESE_LOGIN_URL=""
@@ -71,16 +107,27 @@ A RESTful Django backend system for monitoring multiple GPS trackers.. Check out
 > :information_source: If you want to use caching when developing, you can start memcached service in another terminal: ```memcached -m 1024 -l 127.0.0.1 -p 11211```
 ---
 
-5. Start development server using predefined Makefile commands:
-    
-    <br>
+<br>
 
-    > :information_source: You can inspect ```Makefile``` file in the project's root directory to understand which commands are invoked! I decided to use Makefile since it is the oldest standard and it is technology-agnostic.
+6. Configure Django. The first command creates tables in *tumar_db*. The second command creates a superuser or an admin:
 
     ```shell
-    make start-db # start postgres database only once when you start your PC
-    make start-dev # migrates, and runs dev server
+    python manage.py migrate
+    python manage.py createsuperuser
     ```
+
+<br>
+
+## Every time start the development server using predefined Makefile commands:
+
+```shell
+make start-db # You should start tumar_db only once when you start your PC
+make start-dev # migrates, and runs dev server
+```
+
+> :information_source: You can inspect ```Makefile``` file in the project's root directory to understand which commands are invoked! I decided to use Makefile since it is the oldest standard and it is technology-agnostic.
+
+> :information_source: To stop the database instance, firstly, check whether it is running by executing ```ps aux | grep postgres``` (Ignore the line that ends with ```grep --color=auto postgres```). The database instance corresponds to the line ending with 'postgres -D /path/to/tumar_db'. The second column of this line is the process ID that we need. Finally, run ```kill <process id>``` .
 
 <br>
 
@@ -88,7 +135,7 @@ A RESTful Django backend system for monitoring multiple GPS trackers.. Check out
 
 1. Add remote server's sensitive SSH data (ask the admin for the data) to local ```.env``` file:
     
-    <br>
+
     
     ```
     DEPLOY_SSH_USER="test_user"
@@ -98,7 +145,6 @@ A RESTful Django backend system for monitoring multiple GPS trackers.. Check out
 
 2. After adding code and commiting it to GitHub. Start the automatic deployment shell script from the project's root directory. This script prompts server's SSH password to continue the deployment process:
 
-    <br>
 
     ```shell
     ./deploy/initiate.sh 
@@ -113,17 +159,15 @@ A RESTful Django backend system for monitoring multiple GPS trackers.. Check out
 #### PostgreSQL commands
     
 
-- Connect to psql terminal using root user if you forgot user and password:
+- Connect to psql terminal as user:
 
-    <br>
 
     ```shell
-    sudo -u postgres psql
+    psql -U tumar_user -h localhost -d tumar_db
     ```
 
 - Back up a database into a ```.bak``` file:
 
-    <br>
 
     ```shell
     pg_dump -U <database_user> -h <ip_address> -p <port> -Fc <database_name> > <file_name>.bak
@@ -131,7 +175,6 @@ A RESTful Django backend system for monitoring multiple GPS trackers.. Check out
 
 - Restore a database from a ```.bak``` file:
 
-    <br>
 
     ```shell
     pg_restore -C -U <database_user> -h <ip_address> -p <port> -d <database_name> < <file_name>.bak
@@ -141,7 +184,6 @@ A RESTful Django backend system for monitoring multiple GPS trackers.. Check out
 
 - List all databases:
 
-    <br>
 
     ```sql
     \l
@@ -149,7 +191,6 @@ A RESTful Django backend system for monitoring multiple GPS trackers.. Check out
 
 - Connect to a database:
 
-    <br>
 
     ```sql
     \c <database_name>
@@ -157,7 +198,6 @@ A RESTful Django backend system for monitoring multiple GPS trackers.. Check out
 
 - List all tables in the current database:
 
-    <br>
 
     ```sql
     \dt
@@ -165,7 +205,6 @@ A RESTful Django backend system for monitoring multiple GPS trackers.. Check out
 
 - Delete a database:
 
-    <br>
 
     ```sql
     DROP DATABASE <database_name>
@@ -173,7 +212,6 @@ A RESTful Django backend system for monitoring multiple GPS trackers.. Check out
 
 - List all users:
 
-    <br>
 
     ```sql
     \du
@@ -181,7 +219,6 @@ A RESTful Django backend system for monitoring multiple GPS trackers.. Check out
 
 - Delete a user:
 
-    <br>
 
     ```sql
     DROP USER <username>
@@ -191,7 +228,6 @@ A RESTful Django backend system for monitoring multiple GPS trackers.. Check out
 
 - Activate conda environment in the current terminal:
 
-    <br>
 
     ```shell
     conda activate ENVNAME
@@ -199,7 +235,6 @@ A RESTful Django backend system for monitoring multiple GPS trackers.. Check out
 
 - Deactivate conda environment in the current terminal:
 
-    <br>
 
     ```shell
     conda deactivate
@@ -207,7 +242,6 @@ A RESTful Django backend system for monitoring multiple GPS trackers.. Check out
 
 - List all packages and versions in the active environment:
 
-    <br>
 
     ```shell
     conda list
@@ -215,7 +249,6 @@ A RESTful Django backend system for monitoring multiple GPS trackers.. Check out
 
 - Delete an environment:
 
-    <br>
 
     ```shell
     conda remove --name ENVNAME --all
@@ -223,39 +256,20 @@ A RESTful Django backend system for monitoring multiple GPS trackers.. Check out
 
 - Export an environment to a YAML (```environment.yml```) file:
 
-    <br>
 
     ```shell
-    conda env export --name ENVNAME > environment.yml
-    ```
-
-- Create an environment from the file named ```environment.yml``` in the current directory file:
-
-    <br>
-
-    ```shell
-    conda env create
+    conda env export --no-builds --name ENVNAME > environment.yml
     ```
 
 - Detailed information about package versions:
 
-    <br>
 
     ```shell
     conda search PKGNAME --info
     ```
 
-- Search for a package in currently configured channels with version range >=3.1.0, <3.2:
-
-    <br>
-
-    ```shell
-    conda search PKGNAME=3.1 "PKGNAME [version='>=3.1.0,<3.2']"
-    ```
-
 - Install package from a specific channel:
 
-    <br>
 
     ```shell
     conda install conda-forge::PKGNAME
@@ -263,31 +277,13 @@ A RESTful Django backend system for monitoring multiple GPS trackers.. Check out
 
 - Install a package by exact version number (3.1.4):
 
-    <br>
 
     ```shell
     conda install PKGNAME==3.1.4
     ```
 
-- Install following several constraints (AND):
-
-    <br>
-
-    ```shell
-    conda install "PKGNAME>2.5,<3.2"
-    ```
-
-- Add a channel to your Conda configuration:
-
-    <br>
-
-    ```shell
-    conda config --add channels CHANNELNAME
-    ```
-
 - Remove unused cached files including unused packages:
 
-    <br>
 
     ```shell
     conda clean --all
@@ -295,42 +291,15 @@ A RESTful Django backend system for monitoring multiple GPS trackers.. Check out
 
 - Remove a package from an environment:
 
-    <br>
 
     ```shell
     conda uninstall PKGNAME --name ENVNAME
-    ```
-
-- Remove a package from an environment:
-
-    <br>
-
-    ```shell
-    conda uninstall PKGNAME --name ENVNAME
-    ```
-
-- Run most commands without requiring a user prompt (useful for scripts):
-
-    <br>
-
-    ```shell
-    conda install --yes PKG1 PKG2
-    ```
-
-- Examine Conda configuration and configuration services:
-
-    <br>
-
-    ```shell
-    conda config --show
-    conda config --show-sources
     ```
 
 #### Git Commands
 
 - Отменить последний коммит не удаляя написанный код:
 
-    <br>
 
     ```shell
     git reset HEAD~
