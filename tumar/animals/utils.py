@@ -78,7 +78,7 @@ def download_geolocations(farm_pk, external_farm_id):
         r.raise_for_status()
     geo_history = r.json()
 
-    if type(geo_history["data"]) == list or "data" not in geo_history["data"]:
+    if "data" not in geo_history and (type(geo_history["data"]) == list or "data" not in geo_history["data"]):
         logger.info("No data for farm {}\n".format(farm_pk))
         return
 

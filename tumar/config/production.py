@@ -79,6 +79,6 @@ class Production(Common):
     }
 
     PUSH_NOTIFICATIONS_SETTINGS = {
-        "FCM_API_KEY": config("FCM_API_KEY", "not found"),
-        "APNS_CERTIFICATE": config("APNS_CERTIFICATE_PATH", "/path/to/your/certificate.pem"),
+        "FCM_API_KEY": config("FCM_API_KEY", ""),
+        "APNS_CERTIFICATE": config("APNS_CERTIFICATE_PATH", ""),
     }
