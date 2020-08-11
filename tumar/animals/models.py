@@ -9,6 +9,7 @@ from django.db.models import (
     Count,
 )
 from django.contrib.gis.db.models.functions import Area
+from django.contrib.gis.geos import GEOSGeometry
 from django.core.validators import RegexValidator
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -393,7 +394,14 @@ class Cadastre(models.Model):
             if r.status_code != requests.codes.ok:
                 r.raise_for_status()
             response_data = r.json()
-            self.geom = response_data["geomjson"]
+            
+            if "geomjson" not in response_data:
+                return
+
+            geom_str = str(response_data["geomjson"])
+
+            geom_geos = GEOSGeometry(geom_str.replace(" ", ""))
+            self.geom = geom_geos.wkt
         elif not self.cad_number and not self.geom:
             raise ValidationError("Either cad_number or geometry must be sent")
         elif self.cad_number and self.geom:

@@ -187,7 +187,7 @@ class Common(Configuration):
         "community",
         "ecalendar",
         "indicators",
-        {"app": "push_notifications", "models": ("push_notifications.GCMDevice",)},
+        {"app": "push_notifications", "models": ("push_notifications.GCMDevice", "push_notifications.APNSDevice")},
         {"app": "users", "models": ("users.User", "auth.Group", "authtoken.Token")},
     )
 

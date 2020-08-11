@@ -32,3 +32,6 @@ class Notification(models.Model):
             self.receiver.gcmdevice_set.all().send_message(
                 self.content, *args, **kwargs
             )
+            self.receiver.apnsdevice_set.all().send_message(
+                self.content, *args, **kwargs
+            )

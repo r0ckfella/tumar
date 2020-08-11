@@ -77,7 +77,6 @@ A RESTful Django backend system for monitoring multiple GPS trackers.. Check out
 
 5. Create ```.env``` file in the project's root directory and populate it with sensitive data (you can ask the admin):
 
-
     > :information_source: This version of ```.env``` file is only for local development. In production environment it has additional key value pairs!
 
     <br>
@@ -90,8 +89,10 @@ A RESTful Django backend system for monitoring multiple GPS trackers.. Check out
     DJANGO_SETTINGS_MODULE="tumar.config"
     TUMAR_DB="postgis://tumar_user:test_password@localhost:5432/tumar_db" # insert your own user and password
     DOWNLOAD_GEOLOCATIONS_URL="" # ask the rest of the data from the admin
+    DOWNLOAD_GEOLOCATIONS_URL_2=""
     GET_BATTERY_CHARGE_URL=""
     CHINESE_LOGIN_URL=""
+    CHINESE_API_KEY=""
     STANDARD_LOGIN_PASSWORD=""
     TELEGRAM_BOT_TOKEN=""
     TELEGRAM_CHAT_ID=""
@@ -120,6 +121,7 @@ A RESTful Django backend system for monitoring multiple GPS trackers.. Check out
 ## Every time start the development server using predefined Makefile commands:
 
 ```shell
+conda activate tumar_dev # enters tumar_dev environment
 make start-db # You should start tumar_db only once when you start your PC
 make start-dev # migrates, and runs dev server
 ```
