@@ -2,3 +2,4 @@
 
 python-telegram-handler==2.2
 uwsgi==2.0.18
+sentry-sdk==0.16.3

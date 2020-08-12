@@ -1,5 +1,7 @@
 import os
+import sentry_sdk
 
+from sentry_sdk.integrations.django import DjangoIntegration
 from decouple import config
 from dj_database_url import parse as db_url
 
@@ -82,3 +84,12 @@ class Production(Common):
         "FCM_API_KEY": config("FCM_API_KEY", ""),
         "APNS_CERTIFICATE": config("APNS_CERTIFICATE_PATH", ""),
     }
+
+    sentry_sdk.init(
+        dsn="https://1ae2c99727cc4cd3bf5a8a94546b6f42@o433194.ingest.sentry.io/5387873",
+        integrations=[DjangoIntegration()],
+
+        # If you wish to associate users to errors (assuming you are using
+        # django.contrib.auth) you may enable sending PII data.
+        send_default_pii=True
+    )
