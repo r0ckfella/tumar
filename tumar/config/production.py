@@ -86,10 +86,9 @@ class Production(Common):
     }
 
     sentry_sdk.init(
-        dsn="https://1ae2c99727cc4cd3bf5a8a94546b6f42@o433194.ingest.sentry.io/5387873",
+        dsn=config("SENTRY_DSN", ""),
         integrations=[DjangoIntegration()],
-
         # If you wish to associate users to errors (assuming you are using
         # django.contrib.auth) you may enable sending PII data.
-        send_default_pii=True
+        send_default_pii=True,
     )

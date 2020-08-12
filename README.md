@@ -101,6 +101,7 @@ A RESTful Django backend system for monitoring multiple GPS trackers.. Check out
     EGISTIC_LOGIN_URL=""
     EGISTIC_USERNAME=""
     EGISTIC_PASSWORD=""
+    SENTRY_DSN=""
     ```
 
 ---
