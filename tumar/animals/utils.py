@@ -79,28 +79,39 @@ def download_geolocations(farm_pk, external_farm_id):
     geo_history = r.json()
     response_data_list = None
 
-    if the_farm.url_type == 1:
-        if (
-            "data" in geo_history
-            and geo_history["data"]
-            and "message" in geo_history["data"][0]
-        ):
-            logger.info(
-                "Error for farm: {} with message: {}\n".format(
-                    farm_pk, geo_history["data"][0]["message"]
+    try:
+        if the_farm.url_type == 1:
+            if (
+                "data" in geo_history
+                and geo_history["data"]
+                and "message" in geo_history["data"][0]
+            ):
+                logger.info(
+                    "Error for farm: {} with message: {}\n".format(
+                        farm_pk, geo_history["data"][0]["message"]
+                    )
                 )
-            )
-            return
-        response_data_list = geo_history["data"]
-    else:
-        if "data" in geo_history and "message" in geo_history["data"]:
-            logger.info(
-                "Error for farm: {} with message: {}\n".format(
-                    farm_pk, geo_history["data"]["message"]
+                return
+            response_data_list = geo_history["data"]
+        else:
+            if "data" in geo_history and "message" in geo_history["data"]:
+                logger.info(
+                    "Error for farm: {} with message: {}\n".format(
+                        farm_pk, geo_history["data"]["message"]
+                    )
                 )
-            )
-            return
-        response_data_list = geo_history["data"]["data"]
+                return
+            response_data_list = geo_history["data"]["data"]
+    except Exception as e:
+        logger.error(
+            e,
+            exc_info=1,
+            extra={
+                "geo_history": geo_history,
+                "farm_pk": farm_pk,
+                "farmid": external_farm_id,
+            },
+        )
 
     for location in response_data_list:
         my_tz = pytz.timezone("Asia/Almaty")

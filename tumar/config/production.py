@@ -2,6 +2,7 @@ import os
 import sentry_sdk
 
 from sentry_sdk.integrations.django import DjangoIntegration
+from sentry_sdk.integrations.celery import CeleryIntegration
 from decouple import config
 from dj_database_url import parse as db_url
 
@@ -87,7 +88,7 @@ class Production(Common):
 
     sentry_sdk.init(
         dsn=config("SENTRY_DSN", ""),
-        integrations=[DjangoIntegration()],
+        integrations=[DjangoIntegration(), CeleryIntegration()],
         # If you wish to associate users to errors (assuming you are using
         # django.contrib.auth) you may enable sending PII data.
         send_default_pii=True,
