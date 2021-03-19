@@ -20,7 +20,7 @@ python-memcached==1.58
 django-memcache-status==2.2
 
 # Rest apis
-djangorestframework==3.9.1
+djangorestframework==3.11.2
 Markdown==3.0.1
 django-filter==2.1.0
 drf-yasg==1.17.1
