@@ -33,7 +33,7 @@ requests==2.22.0
 django-push-notifications==2.0.0
 
 # Async/Scheduling
-celery==4.4.0
+celery==5.2.2
 redis==3.3.11
 
 # GeoSpatial packages
